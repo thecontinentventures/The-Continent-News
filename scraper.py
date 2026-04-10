@@ -42,7 +42,6 @@ def ai_rewrite(title, summary):
                   f"write a detailed, standalone 6-sentence news report. "
                   f"Do not mention other news outlets. Write it as an exclusive, definitive account.")
         response = model.generate_content(prompt)
-        # Clean text for JavaScript compatibility
         return response.text.strip().replace('"', '&quot;').replace("'", "\\'")
     except:
         return f"Developments regarding {title} continue to emerge."
@@ -73,8 +72,6 @@ def generate_sections():
             full_story = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
             preview = full_story[:120] + "..."
             img_url = get_image(entry)
-            
-            # Prepare clean title for JS function call
             js_safe_title = entry.title.replace("'", "\\'")
             
             html += f"""
@@ -158,10 +155,13 @@ def update_website():
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {{
       "symbols": [
-        {{ "proName": "NSE:NASI", "title": "NSE ALL SHARE INDEX" }},
-        {{ "proName": "NSE:NSE20", "title": "NSE 20 SHARE INDEX" }},
-        {{ "proName": "NSE:NSE25", "title": "NSE 25 SHARE INDEX" }},
-        {{ "proName": "FX_IDC:USDKES", "title": "USD / KES" }}
+        {{ "proName": "NSE:NASI", "title": "NSE ALL SHARE" }},
+        {{ "proName": "NSE:NSE20", "title": "NSE 20 INDEX" }},
+        {{ "proName": "FX_IDC:USDKES", "title": "USD/KES" }},
+        {{ "proName": "NSE:SCOM", "title": "Safaricom PLC" }},
+        {{ "proName": "NSE:EQTY", "title": "Equity Group" }},
+        {{ "proName": "NSE:KCB", "title": "KCB Group" }},
+        {{ "proName": "NSE:EABL", "title": "E.A. Breweries" }}
       ],
       "showSymbolLogo": true,
       "colorTheme": "dark",
@@ -231,26 +231,17 @@ def update_website():
             document.body.style.overflow = "auto";
         }}
 
-        // SILENT REFRESH LOGIC (Every 5 minutes)
         setInterval(function() {{
-            console.log("Checking for updates...");
             fetch('index.html')
                 .then(response => response.text())
                 .then(htmlText => {{
                     const parser = new DOMParser();
                     const newDoc = parser.parseFromString(htmlText, 'text/html');
-                    
-                    // Update only the news container content to prevent flash
                     const newContainer = newDoc.getElementById('news-container').innerHTML;
                     document.getElementById('news-container').innerHTML = newContainer;
-                    
-                    // Update the timestamp
                     const newSync = newDoc.getElementById('sync-info').innerText;
                     document.getElementById('sync-info').innerText = newSync;
-
-                    // Re-apply visibility for the current section
                     switchPage(currentActiveSection);
-                    console.log("News updated silently.");
                 }})
                 .catch(err => console.log("Refresh failed: ", err));
         }}, 300000); 
@@ -268,7 +259,6 @@ def update_website():
         f.write(full_html)
     print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Success: index.html generated.")
 
-# CONTINUOUS EXECUTION LOOP
 if __name__ == "__main__":
     while True:
         try:
