@@ -74,7 +74,7 @@ def generate_sections():
             preview = full_story[:120] + "..."
             img_url = get_image(entry)
             
-            # FIXED: Prepare clean title outside the f-string to avoid SyntaxError with backslashes
+            # Prepare clean title for JS function call
             js_safe_title = entry.title.replace("'", "\\'")
             
             html += f"""
@@ -158,11 +158,13 @@ def update_website():
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {{
       "symbols": [
+        {{ "proName": "NSE:NASI", "title": "NSE ALL SHARE" }},
+        {{ "proName": "NSE:NSE20", "title": "NSE 20 INDEX" }},
         {{ "proName": "FX_IDC:USDKES", "title": "USD/KES" }},
         {{ "description": "Safaricom", "proName": "NSE:SCOM" }},
         {{ "description": "Equity Group", "proName": "NSE:EQTY" }},
         {{ "description": "KCB Group", "proName": "NSE:KCB" }},
-        {{ "description": "East African Breweries", "proName": "NSE:EABL" }}
+        {{ "description": "E.A. Breweries", "proName": "NSE:EABL" }}
       ],
       "showSymbolLogo": true,
       "colorTheme": "dark",
@@ -241,7 +243,7 @@ def update_website():
                     const parser = new DOMParser();
                     const newDoc = parser.parseFromString(htmlText, 'text/html');
                     
-                    // Update only the news container
+                    // Update only the news container content to prevent flash
                     const newContainer = newDoc.getElementById('news-container').innerHTML;
                     document.getElementById('news-container').innerHTML = newContainer;
                     
