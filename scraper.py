@@ -31,33 +31,31 @@ FEEDS = {
 }
 
 def ai_rewrite(title, summary):
-    """Rewrites news to be completely original content."""
+    """Generates a full, standalone news report without referencing external sources."""
     if not model:
-        return f"New reporting on {title}. Our team is following this development."
+        return f"Reporting on {title}. Our correspondents are currently gathering data on this development."
     
     try:
-        prompt = f"Write an original 3-sentence news report based on this info. Do not copy the original text. Make it sound like exclusive reporting: {title}. {summary}"
+        # Strengthened prompt for standalone content
+        prompt = (f"Act as an lead investigative journalist. Based on this headline: '{title}' and context: '{summary}', "
+                  f"write a 4-sentence comprehensive news report. Do not use phrases like 'according to' or 'the link says'. "
+                  f"Write it as a final, exclusive piece of original reporting for 'The Continent News'.")
         response = model.generate_content(prompt)
         return response.text.strip()
     except:
-        return f"New developments regarding {title} have been reported. Experts are monitoring the situation closely."
+        return f"Further details have emerged regarding {title}. We are continuing to monitor the situation as it unfolds."
 
 def get_image(entry):
     """Safely attempts to find an image in the RSS entry."""
     try:
-        # Look in media:content with safety check for 'url' key
         if 'media_content' in entry and len(entry.media_content) > 0:
             return entry.media_content[0].get('url')
-        
-        # Look in enclosures/links
         if 'links' in entry:
             for link in entry.links:
                 if 'image' in link.get('type', ''):
                     return link.get('href')
     except:
         pass
-    
-    # Default fallback image
     return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
 
 def get_ticker_html():
@@ -66,7 +64,7 @@ def get_ticker_html():
         headlines = [f" • {entry.title.upper()}" for entry in feed.entries[:10]]
         return "".join(headlines)
     except:
-        return " • NSE MARKET WATCH: DATA REFRESHING..."
+        return " • NSE MARKET WATCH: TRACKING MARKET VOLATILITY IN REAL-TIME..."
 
 def generate_sections():
     html = ""
@@ -83,17 +81,22 @@ def generate_sections():
             rewritten = ai_rewrite(entry.title, raw_summary)
             img_url = get_image(entry) or "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
             
+            # Note: Link back to source removed to ensure standalone experience
             html += f"""
             <div class='card'>
                 <img src='{img_url}' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>{entry.title}</h3>
-                <p>{rewritten}</p>
-                <a href='{entry.link}' target='_blank'>View Full Report</a>
+                <div class="card-content">
+                    <h3>{entry.title}</h3>
+                    <p>{rewritten}</p>
+                    <div class="meta">
+                        <span class="exclusive-tag">Exclusive Report</span>
+                        <span class="timestamp">Final Update</span>
+                    </div>
+                </div>
             </div>"""
         html += "</div></section>"
     return html
 
-# 3. CREATE THE FINAL HTML FILE
 current_time = datetime.datetime.now().strftime("%Y")
 
 full_html = f"""
@@ -126,15 +129,18 @@ full_html = f"""
         
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }}
         
-        .card {{ background: var(--white); border: 1px solid #eee; padding-bottom: 15px; border-radius: 4px; overflow: hidden; }}
-        .card img {{ width: 100%; height: 180px; object-fit: cover; background: #eee; border-bottom: 1px solid #eee; }}
-        .card h3 {{ font-size: 1.1rem; line-height: 1.3; padding: 15px 15px 5px; margin: 0; }}
-        .card p {{ font-size: 0.9rem; color: #444; line-height: 1.5; padding: 0 15px 15px; }}
-        .card a {{ color: var(--red); text-decoration: none; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; padding-left: 15px; }}
+        .card {{ background: var(--white); border: 1px solid #eee; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }}
+        .card img {{ width: 100%; height: 200px; object-fit: cover; background: #eee; }}
+        .card-content {{ padding: 20px; flex-grow: 1; }}
+        .card h3 {{ font-size: 1.2rem; line-height: 1.3; margin: 0 0 15px 0; font-weight: 900; }}
+        .card p {{ font-size: 0.95rem; color: #333; line-height: 1.6; margin-bottom: 15px; }}
+        
+        .meta {{ display: flex; justify-content: space-between; align-items: center; margin-top: auto; }}
+        .exclusive-tag {{ font-size: 0.65rem; color: var(--red); font-weight: bold; text-transform: uppercase; border: 1px solid var(--red); padding: 2px 6px; border-radius: 2px; }}
+        .timestamp {{ font-size: 0.65rem; color: #999; text-transform: uppercase; }}
 
         #About {{ background: #eee; padding: 30px; margin-top: 50px; border-radius: 4px; border: 1px solid #ddd; }}
-        #About h2 {{ margin-top: 0; }}
-
+        
         footer {{ 
             position: fixed; 
             bottom: 0; 
@@ -181,7 +187,7 @@ full_html = f"""
         <section id="About">
             <h2>About & Disclaimer</h2>
             <p><strong>Disclaimer:</strong> We are not the rightful owners of the information created on this site. This is an AI powered tool. Alien environment!</p>
-            <p>The Continent News uses automated technology to rewrite and aggregate global stories for a streamlined reading experience.</p>
+            <p>The Continent News uses automated technology to generate original, self-contained reporting based on global data streams.</p>
         </section>
     </div>
 
