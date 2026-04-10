@@ -1,33 +1,41 @@
 name: Update News Portal
+
 on:
   schedule:
-    - cron: '0 * * * *' # Updates every hour
-  workflow_dispatch:
+    - cron: '0 * * * *' # This triggers the update automatically every hour
+  workflow_dispatch: # This allows you to click "Run workflow" manually to test
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # Essential for the bot to save the new index.html
+    
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
       - name: Install Dependencies
-        run: pip install feedparser
+        run: |
+          python -m pip install --upgrade pip
+          pip install feedparser google-generativeai
 
-      - name: Generate Site
+      - name: Run News Scraper and AI Rewriter
+        env:
+          # This pulls your API key from Settings > Secrets > Actions
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
         run: python scraper.py
 
-      - name: Deploy to GitHub Pages
+      - name: Commit and Push Updates
         run: |
-          git config --global user.name "NewsBot"
-          git config --global user.email "bot@thecontinent.com"
+          git config --global user.name "TheContinentBot"
+          git config --global user.email "bot@thecontinentnews.com"
           git add index.html
-          git commit -m "Automated News Update" || exit 0
+          # The '|| exit 0' ensures the workflow doesn't fail if there's no news change
+          git commit -m "Automated News Refresh: $(date)" || exit 0
           git push
