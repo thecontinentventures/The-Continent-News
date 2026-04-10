@@ -42,6 +42,7 @@ def ai_rewrite(title, summary):
                   f"write a detailed, standalone 6-sentence news report. "
                   f"Do not mention other news outlets. Write it as an exclusive, definitive account.")
         response = model.generate_content(prompt)
+        # Clean text for JavaScript compatibility
         return response.text.strip().replace('"', '&quot;').replace("'", "\\'")
     except:
         return f"Developments regarding {title} continue to emerge."
@@ -73,6 +74,9 @@ def generate_sections():
             preview = full_story[:120] + "..."
             img_url = get_image(entry)
             
+            # FIXED: Prepare clean title outside the f-string to avoid SyntaxError with backslashes
+            js_safe_title = entry.title.replace("'", "\\'")
+            
             html += f"""
             <div class='card'>
                 <img src='{img_url}' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
@@ -80,7 +84,7 @@ def generate_sections():
                     <h3>{entry.title}</h3>
                     <p>{preview}</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('{entry.title.replace("'", "\\'")}', '{full_story}', '{img_url}')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('{js_safe_title}', '{full_story}', '{img_url}')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
