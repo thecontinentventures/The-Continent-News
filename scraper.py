@@ -32,19 +32,27 @@ FEEDS = {
 }
 
 def ai_rewrite(title, summary):
-    """Generates a long-form rewrite using Gemini."""
+    """Generates a multi-paragraph investigative report using Gemini."""
     if not model:
         return f"Full report on {title} is being processed."
     
     try:
+        # Prompt modified to request multiple paragraphs
         prompt = (f"Act as a lead investigative journalist for The Continent News. "
                   f"Based on this headline: '{title}' and summary: '{summary}', "
-                  f"write a detailed, standalone 6-sentence news report. "
+                  f"write a detailed, standalone 3-paragraph news report. "
+                  f"Paragraph 1: The core facts and immediate impact. "
+                  f"Paragraph 2: Historical context or underlying causes. "
+                  f"Paragraph 3: Future implications or a concluding statement. "
                   f"Do not mention other news outlets. Write it as an exclusive, definitive account.")
+        
         response = model.generate_content(prompt)
-        return response.text.strip().replace('"', '&quot;').replace("'", "\\'")
+        # Clean text and preserve newlines for HTML
+        clean_text = response.text.strip().replace('"', '&quot;').replace("'", "\\'")
+        # Convert double newlines to double line breaks for HTML display
+        return clean_text.replace('\n\n', '<br><br>')
     except:
-        return f"Developments regarding {title} continue to emerge."
+        return f"Developments regarding {title} continue to emerge as our correspondents track the situation on the ground."
 
 def get_image(entry):
     try:
@@ -70,7 +78,9 @@ def generate_sections():
 
         for entry in all_entries:
             full_story = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
-            preview = full_story[:120] + "..."
+            # Create a plain text version for the card preview
+            preview_text = full_story.replace('<br><br>', ' ')
+            preview = preview_text[:120] + "..."
             img_url = get_image(entry)
             js_safe_title = entry.title.replace("'", "\\'")
             
@@ -111,10 +121,10 @@ def update_website():
         header {{ background: var(--white); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; cursor: pointer; }}
         header h1 {{ margin: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }}
         
-        .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); overflow: hidden; }}
+        .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); }}
         
         nav {{ background: var(--white); padding: 10px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }}
-        nav a {{ color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; cursor: pointer; padding: 5px 0; }}
+        nav a {{ color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; cursor: pointer; padding: 5px 0; transition: 0.3s; }}
         nav a.active {{ color: var(--red); border-bottom: 2px solid var(--red); }}
 
         .container {{ max-width: 1100px; margin: 20px auto; padding: 0 20px; min-height: 80vh; }}
@@ -140,7 +150,7 @@ def update_website():
         .close {{ position: absolute; right: 20px; top: 10px; font-size: 35px; cursor: pointer; }}
         .modal-img {{ width: 100%; height: 400px; object-fit: cover; margin-bottom: 25px; }}
         .modal-body h2 {{ font-size: 2.2rem; margin-bottom: 20px; line-height: 1.1; font-weight: 900; }}
-        .modal-body p {{ font-size: 1.2rem; line-height: 1.8; color: #111; }}
+        .modal-body .story-content {{ font-size: 1.2rem; line-height: 1.8; color: #111; }}
 
         #sync-info {{ position: fixed; bottom: 70px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-family: monospace; z-index: 500; }}
         footer {{ position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #999; text-align: center; padding: 15px 0; font-size: 0.65rem; z-index: 1000; }}
@@ -154,15 +164,12 @@ def update_website():
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {{
       "symbols": [
+        {{ "proName": "NSEKE:NSE", "title": "NSE ALL SHARE" }},
         {{ "proName": "FX_IDC:USDKES", "title": "USD/KES" }},
-        {{ "proName": "NSEKE:SCOM", "title": "Safaricom" }},
-        {{ "proName": "NSEKE:EQTY", "title": "Equity Group" }},
-        {{ "proName": "NSEKE:KCB", "title": "KCB Group" }},
-        {{ "proName": "NSEKE:EABL", "title": "E.A. Breweries" }},
-        {{ "proName": "NSEKE:COOP", "title": "Co-op Bank" }},
-        {{ "proName": "NSEKE:ABSAS", "title": "ABSA Bank KE" }},
-        {{ "proName": "FX_IDC:GBPKES", "title": "GBP/KES" }},
-        {{ "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin/USD" }}
+        {{ "description": "Safaricom", "proName": "NSEKE:SCOM" }},
+        {{ "description": "Equity Group", "proName": "NSEKE:EQTY" }},
+        {{ "description": "KCB Group", "proName": "NSEKE:KCB" }},
+        {{ "description": "E.A. Breweries", "proName": "NSEKE:EABL" }}
       ],
       "showSymbolLogo": true,
       "colorTheme": "dark",
@@ -193,11 +200,11 @@ def update_website():
             <span class="close" onclick="closeStory()">&times;</span>
             <img id="modalImg" class="modal-img" src="">
             <h2 id="modalTitle"></h2>
-            <p id="modalText"></p>
+            <div id="modalText" class="story-content"></div>
         </div>
     </div>
 
-    <footer>&copy; {current_time} The Continent News • AI JOURNALISM</footer>
+    <footer>&copy; {current_time} The Continent News • AI JOURNALISM • SILENT SYNC ACTIVE</footer>
 
     <script>
         let currentActiveSection = 'LatestNews';
@@ -211,15 +218,17 @@ def update_website():
             navLinks.forEach(link => link.classList.remove('active'));
 
             const target = document.getElementById(sectionId);
-            if (target) target.classList.add('active');
+            if (target) {{
+                target.classList.add('active');
+            }}
 
             const activeBtn = document.getElementById('btn-' + sectionId);
             if (activeBtn) activeBtn.classList.add('active');
         }}
 
-        function openStory(title, text, img) {{
+        function openStory(title, htmlContent, img) {{
             document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalText').innerText = text;
+            document.getElementById('modalText').innerHTML = htmlContent;
             document.getElementById('modalImg').src = img;
             document.getElementById('storyModal').style.display = "block";
             document.body.style.overflow = "hidden";
@@ -230,19 +239,20 @@ def update_website():
             document.body.style.overflow = "auto";
         }}
 
+        // SILENT UPDATE ENGINE
         setInterval(function() {{
-            fetch('index.html')
+            fetch(window.location.href + '?t=' + new Date().getTime())
                 .then(response => response.text())
                 .then(htmlText => {{
                     const parser = new DOMParser();
                     const newDoc = parser.parseFromString(htmlText, 'text/html');
-                    const newContainer = newDoc.getElementById('news-container').innerHTML;
-                    document.getElementById('news-container').innerHTML = newContainer;
-                    const newSync = newDoc.getElementById('sync-info').innerText;
-                    document.getElementById('sync-info').innerText = newSync;
+                    const newContent = newDoc.getElementById('news-container').innerHTML;
+                    document.getElementById('news-container').innerHTML = newContent;
+                    const newTime = newDoc.getElementById('sync-info').innerText;
+                    document.getElementById('sync-info').innerText = newTime;
                     switchPage(currentActiveSection);
                 }})
-                .catch(err => console.log("Refresh failed: ", err));
+                .catch(err => console.warn("Background update failed:", err));
         }}, 300000); 
 
         window.onclick = function(event) {{
@@ -256,7 +266,7 @@ def update_website():
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(full_html)
-    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Success: index.html generated.")
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Success: index.html updated.")
 
 if __name__ == "__main__":
     while True:
