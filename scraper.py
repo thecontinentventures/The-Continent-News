@@ -111,14 +111,13 @@ def update_website():
         header {{ background: var(--white); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; cursor: pointer; }}
         header h1 {{ margin: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }}
         
-        .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); }}
+        .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); overflow: hidden; }}
         
         nav {{ background: var(--white); padding: 10px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }}
         nav a {{ color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; cursor: pointer; padding: 5px 0; }}
         nav a.active {{ color: var(--red); border-bottom: 2px solid var(--red); }}
 
         .container {{ max-width: 1100px; margin: 20px auto; padding: 0 20px; min-height: 80vh; }}
-        
         .news-section {{ display: none; }}
         .news-section.active {{ display: block; animation: fadeIn 0.4s ease-in-out; }}
 
@@ -155,13 +154,15 @@ def update_website():
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {{
       "symbols": [
-        {{ "proName": "NSE:NASI", "title": "NSE ALL SHARE" }},
-        {{ "proName": "NSE:NSE20", "title": "NSE 20 INDEX" }},
         {{ "proName": "FX_IDC:USDKES", "title": "USD/KES" }},
-        {{ "proName": "NSE:SCOM", "title": "Safaricom PLC" }},
-        {{ "proName": "NSE:EQTY", "title": "Equity Group" }},
-        {{ "proName": "NSE:KCB", "title": "KCB Group" }},
-        {{ "proName": "NSE:EABL", "title": "E.A. Breweries" }}
+        {{ "proName": "NSEKE:SCOM", "title": "Safaricom" }},
+        {{ "proName": "NSEKE:EQTY", "title": "Equity Group" }},
+        {{ "proName": "NSEKE:KCB", "title": "KCB Group" }},
+        {{ "proName": "NSEKE:EABL", "title": "E.A. Breweries" }},
+        {{ "proName": "NSEKE:COOP", "title": "Co-op Bank" }},
+        {{ "proName": "NSEKE:ABSAS", "title": "ABSA Bank KE" }},
+        {{ "proName": "FX_IDC:GBPKES", "title": "GBP/KES" }},
+        {{ "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin/USD" }}
       ],
       "showSymbolLogo": true,
       "colorTheme": "dark",
@@ -196,7 +197,7 @@ def update_website():
         </div>
     </div>
 
-    <footer>&copy; {current_time} The Continent News • AI JOURNALISM • NO FLICKER SYNC ACTIVE</footer>
+    <footer>&copy; {current_time} The Continent News • AI JOURNALISM</footer>
 
     <script>
         let currentActiveSection = 'LatestNews';
@@ -210,9 +211,7 @@ def update_website():
             navLinks.forEach(link => link.classList.remove('active'));
 
             const target = document.getElementById(sectionId);
-            if (target) {{
-                target.classList.add('active');
-            }}
+            if (target) target.classList.add('active');
 
             const activeBtn = document.getElementById('btn-' + sectionId);
             if (activeBtn) activeBtn.classList.add('active');
