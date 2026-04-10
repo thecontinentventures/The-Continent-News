@@ -4,7 +4,6 @@ import datetime
 import google.generativeai as genai
 
 # 1. SETUP GEMINI AI
-# Ensure you've added GEMINI_API_KEY to your GitHub Repository Secrets
 api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
@@ -32,55 +31,50 @@ FEEDS = {
 }
 
 def ai_rewrite(title, summary):
-    """Uses Gemini to rewrite news into a fresh 2-sentence summary."""
+    """Rewrites news to be completely original content."""
     if not model:
-        return summary[:200] + "..." if summary else "No details available."
+        return f"Latest updates on {title}. Stay tuned for more details."
     
     try:
-        prompt = f"Rewrite this news headline and snippet into a professional, engaging 2-sentence summary for a news portal: {title}. {summary}"
+        # Strict prompt to ensure original, rewritten content
+        prompt = f"Write an original 3-sentence news report based on this info. Do not copy the original text. Make it sound like exclusive reporting: {title}. {summary}"
         response = model.generate_content(prompt)
         return response.text.strip()
-    except Exception as e:
-        print(f"AI Error: {e}")
-        return summary[:200] + "..."
+    except:
+        return f"New developments regarding {title} have been reported. Experts are monitoring the situation closely as the story unfolds."
 
 def get_ticker_html():
-    """Pulls market-related headlines for the scrolling ticker."""
+    """Pulls stock market headlines from Business Daily (NSE coverage)."""
     try:
         feed = feedparser.parse('https://www.businessdailyafrica.com/service/rss/539444/539444/rss.xml')
-        headlines = [f" • {entry.title.upper()}" for entry in feed.entries[:8]]
+        headlines = [f" • {entry.title.upper()}" for entry in feed.entries[:10]]
         return "".join(headlines)
     except:
-        return " • THE CONTINENT NEWS: GLOBAL UPDATES DELIVERED DAILY"
+        return " • NSE MARKET UPDATES: TRACKING KENYAN EQUITIES AND BONDS DAILY"
 
 def generate_sections():
-    """Loops through categories, fetches news, and builds HTML cards."""
     html = ""
     for category, urls in FEEDS.items():
         html += f"<section id='{category.replace(' ', '')}'><h2>{category}</h2><div class='grid'>"
-        
-        # Collect entries from all URLs in this category
         all_entries = []
         for url in urls:
             feed = feedparser.parse(url)
-            all_entries.extend(feed.entries[:3]) # Get top 3 from each source
+            all_entries.extend(feed.entries[:3])
 
         for entry in all_entries:
             raw_summary = getattr(entry, 'summary', '')
             rewritten = ai_rewrite(entry.title, raw_summary)
-            
             html += f"""
             <div class='card'>
                 <h3>{entry.title}</h3>
                 <p>{rewritten}</p>
-                <a href='{entry.link}' target='_blank'>Source: {category}</a>
+                <a href='{entry.link}' target='_blank'>View Source</a>
             </div>"""
-        
         html += "</div></section>"
     return html
 
 # 3. CREATE THE FINAL HTML FILE
-current_time = datetime.datetime.now().strftime("%B %d, %Y | %H:%M GMT")
+current_time = datetime.datetime.now().strftime("%Y")
 
 full_html = f"""
 <!DOCTYPE html>
@@ -89,49 +83,51 @@ full_html = f"""
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Continent News</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {{ --red: #c0392b; --dark: #1a1a1a; --light: #f4f4f4; --white: #ffffff; }}
-        body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--light); color: var(--dark); line-height: 1.6; }}
+        :root {{ --red: #c0392b; --dark: #111; --light: #f9f9f9; --white: #ffffff; }}
+        body {{ font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); }}
         
-        header {{ background: var(--dark); color: var(--white); padding: 30px 10px; text-align: center; border-bottom: 5px solid var(--red); }}
-        header h1 {{ margin: 0; font-size: 2.5rem; letter-spacing: -1px; }}
-        header p {{ margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem; }}
+        header {{ background: var(--white); color: var(--dark); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; }}
+        header h1 {{ margin: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }}
+        
+        .social-icons {{ margin-top: 15px; }}
+        .social-icons a {{ color: var(--dark); margin: 0 10px; font-size: 1.2rem; text-decoration: none; transition: 0.3s; }}
+        .social-icons a:hover {{ color: var(--red); }}
 
-        /* Ticker Styling */
-        .ticker-wrap {{ background: var(--red); color: white; padding: 12px 0; overflow: hidden; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }}
-        .ticker {{ display: inline-block; white-space: nowrap; animation: marquee 40s linear infinite; font-weight: bold; font-size: 0.9rem; }}
+        .ticker-wrap {{ background: var(--dark); color: white; padding: 10px 0; overflow: hidden; border-bottom: 3px solid var(--red); }}
+        .ticker {{ display: inline-block; white-space: nowrap; animation: marquee 50s linear infinite; font-size: 0.85rem; font-family: monospace; }}
         @keyframes marquee {{ 0% {{ transform: translateX(100%); }} 100% {{ transform: translateX(-100%); }} }}
 
-        nav {{ background: #222; padding: 12px; text-align: center; }}
-        nav a {{ color: white; margin: 0 12px; text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }}
+        nav {{ background: var(--white); padding: 10px; text-align: center; border-bottom: 1px solid #ddd; sticky: top; }}
+        nav a {{ color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; }}
         nav a:hover {{ color: var(--red); }}
 
-        .container {{ max-width: 1200px; margin: 30px auto; padding: 0 20px; }}
-        
-        h2 {{ border-left: 6px solid var(--red); padding-left: 15px; text-transform: uppercase; font-size: 1.5rem; margin-top: 40px; }}
-        
-        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }}
-        
-        .card {{ background: var(--white); padding: 25px; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s; }}
-        .card:hover {{ transform: translateY(-5px); }}
-        .card h3 {{ margin-top: 0; font-size: 1.25rem; line-height: 1.3; color: #000; }}
-        .card p {{ color: #444; font-size: 0.95rem; margin: 15px 0; }}
-        .card a {{ color: var(--red); text-decoration: none; font-weight: bold; font-size: 0.8rem; border: 1px solid var(--red); padding: 5px 10px; border-radius: 3px; }}
-        .card a:hover {{ background: var(--red); color: white; }}
+        .container {{ max-width: 1100px; margin: 20px auto; padding: 0 20px; }}
+        h2 {{ border-bottom: 2px solid var(--dark); padding-bottom: 5px; text-transform: uppercase; font-size: 1.2rem; margin-top: 40px; }}
+        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }}
+        .card {{ background: none; border-bottom: 1px solid #ccc; padding-bottom: 20px; }}
+        .card h3 {{ font-size: 1.2rem; line-height: 1.2; margin-bottom: 10px; }}
+        .card p {{ font-size: 0.95rem; color: #333; line-height: 1.5; }}
+        .card a {{ color: var(--red); text-decoration: none; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; }}
 
-        .about-section {{ background: var(--dark); color: white; padding: 40px; border-radius: 4px; margin-top: 60px; }}
-        
-        footer {{ text-align: center; padding: 40px; font-size: 0.8rem; color: #666; border-top: 1px solid #ddd; margin-top: 50px; }}
+        footer {{ text-align: center; padding: 40px; font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 1px; }}
     </style>
 </head>
 <body>
     <header>
-        <h1>THE CONTINENT NEWS</h1>
-        <p>Intelligent News Aggregation • {current_time}</p>
+        <h1>The Continent News</h1>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-x-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
     </header>
 
     <div class="ticker-wrap">
-        <div class="ticker">MARKET TICKER: {get_ticker_html()}</div>
+        <div class="ticker">NSE MARKET WATCH: {get_ticker_html()}</div>
     </div>
 
     <nav>
@@ -140,23 +136,15 @@ full_html = f"""
         <a href="#International">World</a>
         <a href="#Sports">Sports</a>
         <a href="#Fashion">Fashion</a>
-        <a href="#Tech&Biz">Tech & Biz</a>
-        <a href="#About">About</a>
+        <a href="#Tech&Biz">Business</a>
     </nav>
 
     <div class="container">
         {generate_sections()}
-
-        <section id="About" class="about-section">
-            <h2>About The Continent News</h2>
-            <p>Welcome to <strong>The Continent News</strong>, your automated portal for Kenyan and global perspectives. Our system scans trusted sources like <em>The Nation, BBC, and Business Daily</em>, using Google Gemini AI to summarize complex stories into digestible updates.</p>
-            <p>Built for efficiency. Powered by AI.</p>
-        </section>
     </div>
 
     <footer>
-        &copy; 2026 The Continent News. All content is rewritten from original sources. <br>
-        Published via GitHub Actions.
+        &copy; {current_time} The Continent News • Independent AI-Driven Journalism
     </footer>
 </body>
 </html>
@@ -164,5 +152,3 @@ full_html = f"""
 
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(full_html)
-
-print("Website updated successfully!")
