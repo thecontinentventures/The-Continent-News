@@ -2,14 +2,16 @@ name: Update News Portal
 
 on:
   schedule:
-    - cron: '0 * * * *' # Automatically updates every hour
-  workflow_dispatch: # Allows you to click "Run workflow" manually to test
+    # GitHub's minimum interval is usually 15-30 minutes. 
+    # This triggers the bot to check for news every 15 minutes.
+    - cron: '*/15 * * * *' 
+  workflow_dispatch: # Allows you to manually click "Run workflow" in the Actions tab
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Essential for the bot to save the new index.html
+      contents: write 
     
     steps:
       - name: Checkout Repository
@@ -18,28 +20,31 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # Upgraded to 3.10 to remove warnings
+          python-version: '3.11'
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install feedparser google-generativeai
 
-      - name: Run News Scraper and AI Rewriter
+      - name: Run News Scraper
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
-        run: python scraper.py
+        # This command triggers ONLY the update function once, 
+        # bypassing the "while True" loop in your scraper script.
+        run: python -c "from scraper import update_website; update_website()"
 
       - name: Commit and Push Updates
         run: |
           git config --global user.name "TheContinentBot"
           git config --global user.email "bot@thecontinentnews.com"
           
-          # Stage the newly created index.html
           git add index.html
           
-          # Commit only if there are changes; if no news changed, exit gracefully
-          git commit -m "Automated News Refresh: $(date)" || exit 0
-          
-          # Force push ensures that your manual edits don't block the automated updates
-          git push origin main --force
+          # Only commit and push if the news actually changed to avoid empty commits
+          if git diff --staged --quiet; then
+            echo "No new updates found in RSS feeds."
+          else
+            git commit -m "Automated News Refresh: $(date)"
+            git push origin main --force
+          fi
