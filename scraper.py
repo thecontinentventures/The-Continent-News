@@ -31,22 +31,22 @@ FEEDS = {
 }
 
 def ai_rewrite(title, summary):
-    """Generates a full, standalone news report without referencing external sources."""
+    """Generates a long-form rewrite to serve as the 'Full Story'."""
     if not model:
-        return f"Reporting on {title}. Our correspondents are currently gathering data on this development."
+        return f"Full report on {title} is being processed."
     
     try:
-        # Strengthened prompt for standalone content
-        prompt = (f"Act as an lead investigative journalist. Based on this headline: '{title}' and context: '{summary}', "
-                  f"write a 4-sentence comprehensive news report. Do not use phrases like 'according to' or 'the link says'. "
-                  f"Write it as a final, exclusive piece of original reporting for 'The Continent News'.")
+        prompt = (f"Act as a lead investigative journalist for The Continent News. "
+                  f"Based on this headline: '{title}' and summary: '{summary}', "
+                  f"write a detailed, standalone 6-sentence news report. "
+                  f"Do not mention other news outlets. Write it as an exclusive, definitive account.")
         response = model.generate_content(prompt)
-        return response.text.strip()
+        # Clean the text for HTML safety
+        return response.text.strip().replace('"', '&quot;').replace("'", "\\'")
     except:
-        return f"Further details have emerged regarding {title}. We are continuing to monitor the situation as it unfolds."
+        return f"Developments regarding {title} continue to emerge."
 
 def get_image(entry):
-    """Safely attempts to find an image in the RSS entry."""
     try:
         if 'media_content' in entry and len(entry.media_content) > 0:
             return entry.media_content[0].get('url')
@@ -54,22 +54,14 @@ def get_image(entry):
             for link in entry.links:
                 if 'image' in link.get('type', ''):
                     return link.get('href')
-    except:
-        pass
+    except: pass
     return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
-
-def get_ticker_html():
-    try:
-        feed = feedparser.parse('https://www.businessdailyafrica.com/service/rss/539444/539444/rss.xml')
-        headlines = [f" • {entry.title.upper()}" for entry in feed.entries[:10]]
-        return "".join(headlines)
-    except:
-        return " • NSE MARKET WATCH: TRACKING MARKET VOLATILITY IN REAL-TIME..."
 
 def generate_sections():
     html = ""
     for category, urls in FEEDS.items():
-        html += f"<section id='{category.replace(' ', '')}'><h2>{category}</h2><div class='grid'>"
+        cat_id = category.replace(' ', '')
+        html += f"<section id='{cat_id}'><h2>{category}</h2><div class='grid'>"
         all_entries = []
         for url in urls:
             feed = feedparser.parse(url)
@@ -77,20 +69,19 @@ def generate_sections():
                 all_entries.extend(feed.entries[:3])
 
         for entry in all_entries:
-            raw_summary = getattr(entry, 'summary', '')
-            rewritten = ai_rewrite(entry.title, raw_summary)
-            img_url = get_image(entry) or "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
+            full_story = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
+            preview = full_story[:120] + "..."
+            img_url = get_image(entry)
             
-            # Note: Link back to source removed to ensure standalone experience
             html += f"""
             <div class='card'>
                 <img src='{img_url}' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 <div class="card-content">
                     <h3>{entry.title}</h3>
-                    <p>{rewritten}</p>
+                    <p>{preview}</p>
                     <div class="meta">
-                        <span class="exclusive-tag">Exclusive Report</span>
-                        <span class="timestamp">Final Update</span>
+                        <button class="read-more-btn" onclick="openStory('{entry.title.replace("'", "\\'")}', '{full_story}', '{img_url}')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>"""
@@ -110,65 +101,63 @@ full_html = f"""
     <style>
         :root {{ --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; }}
         body {{ font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; }}
-        
-        header {{ background: var(--white); color: var(--dark); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; }}
+        header {{ background: var(--white); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; }}
         header h1 {{ margin: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }}
         
-        .social-icons {{ margin-top: 10px; }}
-        .social-icons a {{ color: var(--dark); margin: 0 8px; font-size: 1.1rem; text-decoration: none; }}
-
-        .ticker-wrap {{ background: var(--dark); color: white; padding: 10px 0; overflow: hidden; border-bottom: 3px solid var(--red); }}
-        .ticker {{ display: inline-block; white-space: nowrap; animation: marquee 60s linear infinite; font-size: 0.8rem; font-family: monospace; }}
-        @keyframes marquee {{ 0% {{ transform: translateX(100%); }} 100% {{ transform: translateX(-100%); }} }}
-
+        /* TICKER STYLING */
+        .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); }}
+        
         nav {{ background: var(--white); padding: 10px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }}
         nav a {{ color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; }}
 
         .container {{ max-width: 1100px; margin: 20px auto; padding: 0 20px; }}
-        h2 {{ border-bottom: 2px solid var(--dark); padding-bottom: 5px; text-transform: uppercase; font-size: 1.2rem; margin-top: 40px; }}
-        
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }}
-        
         .card {{ background: var(--white); border: 1px solid #eee; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }}
-        .card img {{ width: 100%; height: 200px; object-fit: cover; background: #eee; }}
-        .card-content {{ padding: 20px; flex-grow: 1; }}
-        .card h3 {{ font-size: 1.2rem; line-height: 1.3; margin: 0 0 15px 0; font-weight: 900; }}
-        .card p {{ font-size: 0.95rem; color: #333; line-height: 1.6; margin-bottom: 15px; }}
-        
-        .meta {{ display: flex; justify-content: space-between; align-items: center; margin-top: auto; }}
-        .exclusive-tag {{ font-size: 0.65rem; color: var(--red); font-weight: bold; text-transform: uppercase; border: 1px solid var(--red); padding: 2px 6px; border-radius: 2px; }}
-        .timestamp {{ font-size: 0.65rem; color: #999; text-transform: uppercase; }}
+        .card img {{ width: 100%; height: 200px; object-fit: cover; }}
+        .card-content {{ padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }}
+        .card h3 {{ font-size: 1.1rem; margin: 0 0 10px 0; line-height: 1.3; font-weight: 900; }}
+        .card p {{ font-size: 0.9rem; color: #444; line-height: 1.5; margin-bottom: 15px; }}
 
-        #About {{ background: #eee; padding: 30px; margin-top: 50px; border-radius: 4px; border: 1px solid #ddd; }}
-        
-        footer {{ 
-            position: fixed; 
-            bottom: 0; 
-            width: 100%; 
-            background: var(--dark); 
-            color: #999; 
-            text-align: center; 
-            padding: 15px 0; 
-            font-size: 0.65rem; 
-            text-transform: uppercase; 
-            z-index: 1000;
-        }}
+        .meta {{ display: flex; justify-content: space-between; align-items: center; margin-top: auto; }}
+        .read-more-btn {{ background: none; border: none; color: var(--red); font-weight: bold; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; padding: 0; }}
+        .exclusive-tag {{ font-size: 0.6rem; color: #999; text-transform: uppercase; border: 1px solid #ccc; padding: 2px 5px; }}
+
+        #storyModal {{ display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; }}
+        .modal-body {{ background: var(--white); margin: 3% auto; padding: 40px; width: 90%; max-width: 750px; border-radius: 4px; position: relative; }}
+        .close {{ position: absolute; right: 20px; top: 10px; font-size: 35px; cursor: pointer; }}
+        .modal-img {{ width: 100%; height: 400px; object-fit: cover; margin-bottom: 25px; }}
+        .modal-body h2 {{ font-size: 2.2rem; margin-bottom: 20px; line-height: 1.1; font-weight: 900; }}
+        .modal-body p {{ font-size: 1.2rem; line-height: 1.8; color: #111; }}
+
+        footer {{ position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #999; text-align: center; padding: 15px 0; font-size: 0.65rem; z-index: 1000; }}
     </style>
 </head>
 <body>
-    <header>
-        <h1>The Continent News</h1>
-        <div class="social-icons">
-            <a href="#"><i class="fab fa-x-twitter"></i></a>
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#"><i class="fab fa-youtube"></i></a>
-        </div>
-    </header>
+    <header><h1>The Continent News</h1></header>
 
-    <div class="ticker-wrap">
-        <div class="ticker">NSE MARKET WATCH: {get_ticker_html()}</div>
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {{
+      "symbols": [
+        {{ "proName": "FX_IDC:USDKES", "title": "USD/KES" }},
+        {{ "description": "Safaricom", "proName": "NSE:SCOM" }},
+        {{ "description": "Equity Group", "proName": "NSE:EQTY" }},
+        {{ "description": "KCB Group", "proName": "NSE:KCB" }},
+        {{ "description": "East African Breweries", "proName": "NSE:EABL" }},
+        {{ "description": "Co-op Bank", "proName": "NSE:COOP" }},
+        {{ "description": "Absa Bank Kenya", "proName": "NSE:ABSA" }},
+        {{ "description": "NCBA Group", "proName": "NSE:NCBA" }},
+        {{ "description": "Kenya Re", "proName": "NSE:KNRE" }},
+        {{ "description": "Britam Holdings", "proName": "NSE:BRIT" }}
+      ],
+      "showSymbolLogo": true,
+      "colorTheme": "dark",
+      "isTransparent": true,
+      "displayMode": "adaptive",
+      "locale": "en"
+    }}
+      </script>
     </div>
 
     <nav>
@@ -178,22 +167,42 @@ full_html = f"""
         <a href="#Sports">Sports</a>
         <a href="#Fashion">Fashion</a>
         <a href="#Tech&Biz">Business</a>
-        <a href="#About">About</a>
     </nav>
 
     <div class="container">
         {generate_sections()}
-
-        <section id="About">
-            <h2>About & Disclaimer</h2>
-            <p><strong>Disclaimer:</strong> We are not the rightful owners of the information created on this site. This is an AI powered tool. Alien environment!</p>
-            <p>The Continent News uses automated technology to generate original, self-contained reporting based on global data streams.</p>
-        </section>
     </div>
 
-    <footer>
-        &copy; {current_time} The Continent News • Alien Environment • AI Powered Journalism
-    </footer>
+    <div id="storyModal">
+        <div class="modal-body">
+            <span class="close" onclick="closeStory()">&times;</span>
+            <img id="modalImg" class="modal-img" src="">
+            <h2 id="modalTitle"></h2>
+            <p id="modalText"></p>
+            <p style="font-size: 0.75rem; color: #777; border-top: 1px solid #eee; padding-top: 20px; margin-top: 40px;">
+                THE CONTINENT NEWS • ALIEN ENVIRONMENT • AI EXCLUSIVE
+            </p>
+        </div>
+    </div>
+
+    <footer>&copy; {current_time} The Continent News • Real-Time NSE Data • AI Journalism</footer>
+
+    <script>
+        function openStory(title, text, img) {{
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalText').innerText = text;
+            document.getElementById('modalImg').src = img;
+            document.getElementById('storyModal').style.display = "block";
+            document.body.style.overflow = "hidden";
+        }}
+        function closeStory() {{
+            document.getElementById('storyModal').style.display = "none";
+            document.body.style.overflow = "auto";
+        }}
+        window.onclick = function(event) {{
+            if (event.target == document.getElementById('storyModal')) {{ closeStory(); }}
+        }}
+    </script>
 </body>
 </html>
 """
