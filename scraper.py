@@ -41,7 +41,6 @@ def ai_rewrite(title, summary):
                   f"write a detailed, standalone 6-sentence news report. "
                   f"Do not mention other news outlets. Write it as an exclusive, definitive account.")
         response = model.generate_content(prompt)
-        # Clean the text for HTML safety
         return response.text.strip().replace('"', '&quot;').replace("'", "\\'")
     except:
         return f"Developments regarding {title} continue to emerge."
@@ -60,13 +59,14 @@ def get_image(entry):
 def generate_sections():
     html = ""
     for category, urls in FEEDS.items():
-        cat_id = category.replace(' ', '')
-        html += f"<section id='{cat_id}'><h2>{category}</h2><div class='grid'>"
+        cat_id = category.replace(' ', '').replace('&', '')
+        # All sections start as hidden except the logic in JS will show the first one
+        html += f"<section id='{cat_id}' class='news-section'><h2>{category}</h2><div class='grid'>"
         all_entries = []
         for url in urls:
             feed = feedparser.parse(url)
             if hasattr(feed, 'entries'):
-                all_entries.extend(feed.entries[:3])
+                all_entries.extend(feed.entries[:6]) # Increased count for dedicated pages
 
         for entry in all_entries:
             full_story = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
@@ -104,13 +104,20 @@ full_html = f"""
         header {{ background: var(--white); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; }}
         header h1 {{ margin: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }}
         
-        /* TICKER STYLING */
         .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); }}
         
         nav {{ background: var(--white); padding: 10px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }}
-        nav a {{ color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; }}
+        nav a {{ color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; cursor: pointer; padding: 5px 0; }}
+        nav a.active {{ color: var(--red); border-bottom: 2px solid var(--red); }}
 
-        .container {{ max-width: 1100px; margin: 20px auto; padding: 0 20px; }}
+        .container {{ max-width: 1100px; margin: 20px auto; padding: 0 20px; min-height: 80vh; }}
+        
+        /* NEWS SWITCHING LOGIC */
+        .news-section {{ display: none; }}
+        .news-section.active {{ display: block; animation: fadeIn 0.4s ease-in-out; }}
+
+        @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }}
         .card {{ background: var(--white); border: 1px solid #eee; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }}
         .card img {{ width: 100%; height: 200px; object-fit: cover; }}
@@ -133,7 +140,7 @@ full_html = f"""
     </style>
 </head>
 <body>
-    <header><h1>The Continent News</h1></header>
+    <header onclick="switchPage('LatestNews')"><h1>The Continent News</h1></header>
 
     <div class="tradingview-widget-container">
       <div class="tradingview-widget-container__widget"></div>
@@ -144,12 +151,7 @@ full_html = f"""
         {{ "description": "Safaricom", "proName": "NSE:SCOM" }},
         {{ "description": "Equity Group", "proName": "NSE:EQTY" }},
         {{ "description": "KCB Group", "proName": "NSE:KCB" }},
-        {{ "description": "East African Breweries", "proName": "NSE:EABL" }},
-        {{ "description": "Co-op Bank", "proName": "NSE:COOP" }},
-        {{ "description": "Absa Bank Kenya", "proName": "NSE:ABSA" }},
-        {{ "description": "NCBA Group", "proName": "NSE:NCBA" }},
-        {{ "description": "Kenya Re", "proName": "NSE:KNRE" }},
-        {{ "description": "Britam Holdings", "proName": "NSE:BRIT" }}
+        {{ "description": "East African Breweries", "proName": "NSE:EABL" }}
       ],
       "showSymbolLogo": true,
       "colorTheme": "dark",
@@ -160,13 +162,13 @@ full_html = f"""
       </script>
     </div>
 
-    <nav>
-        <a href="#LatestNews">Latest</a>
-        <a href="#Africa">Africa</a>
-        <a href="#International">World</a>
-        <a href="#Sports">Sports</a>
-        <a href="#Fashion">Fashion</a>
-        <a href="#Tech&Biz">Business</a>
+    <nav id="mainNav">
+        <a onclick="switchPage('LatestNews')" id="btn-LatestNews" class="nav-link">Latest</a>
+        <a onclick="switchPage('Africa')" id="btn-Africa" class="nav-link">Africa</a>
+        <a onclick="switchPage('International')" id="btn-International" class="nav-link">World</a>
+        <a onclick="switchPage('Sports')" id="btn-Sports" class="nav-link">Sports</a>
+        <a onclick="switchPage('Fashion')" id="btn-Fashion" class="nav-link">Fashion</a>
+        <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Business</a>
     </nav>
 
     <div class="container">
@@ -188,6 +190,29 @@ full_html = f"""
     <footer>&copy; {current_time} The Continent News • Real-Time NSE Data • AI Journalism</footer>
 
     <script>
+        // PAGE SWITCHER LOGIC
+        function switchPage(sectionId) {{
+            // Hide all sections
+            const sections = document.querySelectorAll('.news-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            // Deactivate all nav links
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+
+            // Show target section
+            const target = document.getElementById(sectionId);
+            if (target) {{
+                target.classList.add('active');
+                window.scrollTo(0,0);
+            }}
+
+            // Highlight nav link
+            const activeBtn = document.getElementById('btn-' + sectionId);
+            if (activeBtn) activeBtn.classList.add('active');
+        }}
+
+        // STORY MODAL LOGIC
         function openStory(title, text, img) {{
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalText').innerText = text;
@@ -202,6 +227,9 @@ full_html = f"""
         window.onclick = function(event) {{
             if (event.target == document.getElementById('storyModal')) {{ closeStory(); }}
         }}
+
+        // Initialize first page
+        window.onload = () => switchPage('LatestNews');
     </script>
 </body>
 </html>
