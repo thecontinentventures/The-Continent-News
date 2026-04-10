@@ -56,10 +56,13 @@
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
       "symbols": [
-        { "proName": "NSE:NASI", "title": "NSE ALL SHARE INDEX" },
-        { "proName": "NSE:NSE20", "title": "NSE 20 SHARE INDEX" },
-        { "proName": "NSE:NSE25", "title": "NSE 25 SHARE INDEX" },
-        { "proName": "FX_IDC:USDKES", "title": "USD / KES" }
+        { "proName": "NSE:NASI", "title": "NSE ALL SHARE" },
+        { "proName": "NSE:NSE20", "title": "NSE 20 INDEX" },
+        { "proName": "FX_IDC:USDKES", "title": "USD/KES" },
+        { "proName": "NSE:SCOM", "title": "Safaricom PLC" },
+        { "proName": "NSE:EQTY", "title": "Equity Group" },
+        { "proName": "NSE:KCB", "title": "KCB Group" },
+        { "proName": "NSE:EABL", "title": "E.A. Breweries" }
       ],
       "showSymbolLogo": true,
       "colorTheme": "dark",
@@ -79,7 +82,7 @@
         <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Business</a>
     </nav>
 
-    <div id="sync-info">LAST UPDATED: 14:05:21</div>
+    <div id="sync-info">LAST UPDATED: 14:12:03</div>
 
     <div class="container" id="news-container">
         <section id='LatestNews' class='news-section'><h2>Latest News</h2><div class='grid'>
@@ -359,6 +362,17 @@
                 </div>
             </div>
             <div class='card'>
+                <img src='https://e0.365dm.com/26/04/1920x1080/skysports-gt-world-challenge_7216079.jpg?20260410141723' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>How to fill your racing fix on Sky Sports with no F1 in April</h3>
+                    <p>Developments regarding How to fill your racing fix on Sky Sports with no F1 in April continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('How to fill your racing fix on Sky Sports with no F1 in April', 'Developments regarding How to fill your racing fix on Sky Sports with no F1 in April continue to emerge.', 'https://e0.365dm.com/26/04/1920x1080/skysports-gt-world-challenge_7216079.jpg?20260410141723')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
                 <img src='https://e1.365dm.com/26/03/1920x1080/skysports-leah-williamson-england-women_7207579.jpg?20260331105200' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 <div class="card-content">
                     <h3>Liverpool agree free transfer for Wolfsburg's Endemann</h3>
@@ -398,17 +412,6 @@
                     <p>Developments regarding Brentford latest: Summer interest in Thiago is natural, says Andrews continue to emerge....</p>
                     <div class="meta">
                         <button class="read-more-btn" onclick="openStory('Brentford latest: Summer interest in Thiago is natural, says Andrews', 'Developments regarding Brentford latest: Summer interest in Thiago is natural, says Andrews continue to emerge.', 'https://e1.365dm.com/25/10/1920x1080/skysports-brentford-news-club_7039245.jpg?20251002155849')">Continue Reading</button>
-                        <span class="exclusive-tag">Exclusive</span>
-                    </div>
-                </div>
-            </div>
-            <div class='card'>
-                <img src='https://e1.365dm.com/26/02/1920x1080/skysports-arsenal-boss-mikel-arteta_7170403.jpg?20260220173200' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <div class="card-content">
-                    <h3>Arteta: No time to discuss Arsenal contract right now</h3>
-                    <p>Developments regarding Arteta: No time to discuss Arsenal contract right now continue to emerge....</p>
-                    <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Arteta: No time to discuss Arsenal contract right now', 'Developments regarding Arteta: No time to discuss Arsenal contract right now continue to emerge.', 'https://e1.365dm.com/26/02/1920x1080/skysports-arsenal-boss-mikel-arteta_7170403.jpg?20260220173200')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -525,26 +528,17 @@
             document.body.style.overflow = "auto";
         }
 
-        // SILENT REFRESH LOGIC (Every 5 minutes)
         setInterval(function() {
-            console.log("Checking for updates...");
             fetch('index.html')
                 .then(response => response.text())
                 .then(htmlText => {
                     const parser = new DOMParser();
                     const newDoc = parser.parseFromString(htmlText, 'text/html');
-                    
-                    // Update only the news container content to prevent flash
                     const newContainer = newDoc.getElementById('news-container').innerHTML;
                     document.getElementById('news-container').innerHTML = newContainer;
-                    
-                    // Update the timestamp
                     const newSync = newDoc.getElementById('sync-info').innerText;
                     document.getElementById('sync-info').innerText = newSync;
-
-                    // Re-apply visibility for the current section
                     switchPage(currentActiveSection);
-                    console.log("News updated silently.");
                 })
                 .catch(err => console.log("Refresh failed: ", err));
         }, 300000); 
