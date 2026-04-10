@@ -9,13 +9,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Allows the bot to save index.html to your repo
-    
+      contents: write # Essential to save index.html
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetches all history so rebase works smoothly
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -37,12 +35,11 @@ jobs:
           git config --global user.name "TheContinentBot"
           git config --global user.email "bot@thecontinentnews.com"
           
-          # Pull latest changes from your edits to prevent the "rejected" error
-          git pull --rebase origin main
-          
+          # Stage the newly generated index.html
           git add index.html
-          # Ensures the workflow doesn't fail if the news content is identical to last hour
+          
+          # Commit the changes (exit quietly if nothing changed)
           git commit -m "Automated News Refresh: $(date)" || exit 0
           
-          # Push the changes back to the main branch
-          git push origin main
+          # Use --force to ensure the update goes through despite conflicts
+          git push origin main --force
