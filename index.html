@@ -8,195 +8,553 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; }
-        body { font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; }
-        
-        header { background: var(--white); color: var(--dark); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; }
+        body { font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; overflow-x: hidden; }
+        header { background: var(--white); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; cursor: pointer; }
         header h1 { margin: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }
         
-        .social-icons { margin-top: 10px; }
-        .social-icons a { color: var(--dark); margin: 0 8px; font-size: 1.1rem; text-decoration: none; }
-
-        .ticker-wrap { background: var(--dark); color: white; padding: 10px 0; overflow: hidden; border-bottom: 3px solid var(--red); }
-        .ticker { display: inline-block; white-space: nowrap; animation: marquee 60s linear infinite; font-size: 0.8rem; font-family: monospace; }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
+        .tradingview-widget-container { width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); }
+        
         nav { background: var(--white); padding: 10px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
-        nav a { color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; }
+        nav a { color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; cursor: pointer; padding: 5px 0; }
+        nav a.active { color: var(--red); border-bottom: 2px solid var(--red); }
 
-        .container { max-width: 1100px; margin: 20px auto; padding: 0 20px; }
-        h2 { border-bottom: 2px solid var(--dark); padding-bottom: 5px; text-transform: uppercase; font-size: 1.2rem; margin-top: 40px; }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 20px; min-height: 80vh; }
         
+        .news-section { display: none; }
+        .news-section.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }
-        
-        .card { background: var(--white); border: 1px solid #eee; padding-bottom: 15px; border-radius: 4px; overflow: hidden; }
-        .card img { width: 100%; height: 180px; object-fit: cover; background: #eee; border-bottom: 1px solid #eee; }
-        .card h3 { font-size: 1.1rem; line-height: 1.3; padding: 15px 15px 5px; margin: 0; }
-        .card p { font-size: 0.9rem; color: #444; line-height: 1.5; padding: 0 15px 15px; }
-        .card a { color: var(--red); text-decoration: none; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; padding-left: 15px; }
+        .card { background: var(--white); border: 1px solid #eee; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card h3 { font-size: 1.1rem; margin: 0 0 10px 0; line-height: 1.3; font-weight: 900; }
+        .card p { font-size: 0.9rem; color: #444; line-height: 1.5; margin-bottom: 15px; }
 
-        #About { background: #eee; padding: 30px; margin-top: 50px; border-radius: 4px; border: 1px solid #ddd; }
-        #About h2 { margin-top: 0; }
+        .meta { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .read-more-btn { background: none; border: none; color: var(--red); font-weight: bold; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; padding: 0; }
+        .exclusive-tag { font-size: 0.6rem; color: #999; text-transform: uppercase; border: 1px solid #ccc; padding: 2px 5px; }
 
-        footer { 
-            position: fixed; 
-            bottom: 0; 
-            width: 100%; 
-            background: var(--dark); 
-            color: #999; 
-            text-align: center; 
-            padding: 15px 0; 
-            font-size: 0.65rem; 
-            text-transform: uppercase; 
-            z-index: 1000;
-        }
+        #storyModal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; }
+        .modal-body { background: var(--white); margin: 3% auto; padding: 40px; width: 90%; max-width: 750px; border-radius: 4px; position: relative; }
+        .close { position: absolute; right: 20px; top: 10px; font-size: 35px; cursor: pointer; }
+        .modal-img { width: 100%; height: 400px; object-fit: cover; margin-bottom: 25px; }
+        .modal-body h2 { font-size: 2.2rem; margin-bottom: 20px; line-height: 1.1; font-weight: 900; }
+        .modal-body p { font-size: 1.2rem; line-height: 1.8; color: #111; }
+
+        #sync-info { position: fixed; bottom: 70px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-family: monospace; z-index: 500; }
+        footer { position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #999; text-align: center; padding: 15px 0; font-size: 0.65rem; z-index: 1000; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>The Continent News</h1>
-        <div class="social-icons">
-            <a href="#"><i class="fab fa-x-twitter"></i></a>
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#"><i class="fab fa-youtube"></i></a>
-        </div>
-    </header>
+    <header onclick="switchPage('LatestNews')"><h1>The Continent News</h1></header>
 
-    <div class="ticker-wrap">
-        <div class="ticker">NSE MARKET WATCH: </div>
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {
+      "symbols": [
+        { "proName": "FX_IDC:USDKES", "title": "USD/KES" },
+        { "description": "Safaricom", "proName": "NSE:SCOM" },
+        { "description": "Equity Group", "proName": "NSE:EQTY" },
+        { "description": "KCB Group", "proName": "NSE:KCB" },
+        { "description": "East African Breweries", "proName": "NSE:EABL" }
+      ],
+      "showSymbolLogo": true,
+      "colorTheme": "dark",
+      "isTransparent": true,
+      "displayMode": "adaptive",
+      "locale": "en"
+    }
+      </script>
     </div>
 
-    <nav>
-        <a href="#LatestNews">Latest</a>
-        <a href="#Africa">Africa</a>
-        <a href="#International">World</a>
-        <a href="#Sports">Sports</a>
-        <a href="#Fashion">Fashion</a>
-        <a href="#Tech&Biz">Business</a>
-        <a href="#About">About</a>
+    <nav id="mainNav">
+        <a onclick="switchPage('LatestNews')" id="btn-LatestNews" class="nav-link">Latest</a>
+        <a onclick="switchPage('Africa')" id="btn-Africa" class="nav-link">Africa</a>
+        <a onclick="switchPage('International')" id="btn-International" class="nav-link">World</a>
+        <a onclick="switchPage('Sports')" id="btn-Sports" class="nav-link">Sports</a>
+        <a onclick="switchPage('Fashion')" id="btn-Fashion" class="nav-link">Fashion</a>
+        <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Business</a>
     </nav>
 
-    <div class="container">
-        <section id='LatestNews'><h2>Latest News</h2><div class='grid'>
+    <div id="sync-info">LAST UPDATED: 13:48:43</div>
+
+    <div class="container" id="news-container">
+        <section id='LatestNews' class='news-section'><h2>Latest News</h2><div class='grid'>
             <div class='card'>
-                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/92eF2CzET17WLMUcTfqv3TuNBx1Byk0ikHJBgu0j.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>From internal wrangles to unsigned tenders: Inside Bitok's Sh7b grade 11 textbook storm</h3>
-                <p>New developments regarding From internal wrangles to unsigned tenders: Inside Bitok's Sh7b grade 11 textbook storm have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.standardmedia.co.ke/article/2001544988/from-internal-wrangles-to-unsigned-tenders-inside-bitok-s-sh7b-grade-11-textbook-storm' target='_blank'>View Full Report</a>
+                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/EcOnESPmGrDIV6tGJeaPqWdUxVYz6DchVoQjwrpq.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Furious Ruto lectures Sakaja, Zaria Group officials over casual dressing</h3>
+                    <p>Developments regarding Furious Ruto lectures Sakaja, Zaria Group officials over casual dressing continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Furious Ruto lectures Sakaja, Zaria Group officials over casual dressing', 'Developments regarding Furious Ruto lectures Sakaja, Zaria Group officials over casual dressing continue to emerge.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/EcOnESPmGrDIV6tGJeaPqWdUxVYz6DchVoQjwrpq.jpg')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
                 <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/RzSVD3dbw1QzRS25lRihCYDfvVJmfBZJc9b0T8WC.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Ousted: Humphrey Wattanga exits KRA</h3>
-                <p>New developments regarding Ousted: Humphrey Wattanga exits KRA have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.standardmedia.co.ke/article/2001544886/ousted-humphrey-wattanga-exits-kra' target='_blank'>View Full Report</a>
+                <div class="card-content">
+                    <h3>Ousted: Humphrey Wattanga exits KRA</h3>
+                    <p>Developments regarding Ousted: Humphrey Wattanga exits KRA continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Ousted: Humphrey Wattanga exits KRA', 'Developments regarding Ousted: Humphrey Wattanga exits KRA continue to emerge.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/RzSVD3dbw1QzRS25lRihCYDfvVJmfBZJc9b0T8WC.jpg')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
                 <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/9jfvkBkur0FRxtePOxiukp1qf3XUjQuTDwwwgSs5.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community</h3>
-                <p>New developments regarding Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.standardmedia.co.ke/article/2001544800/gachagua-unveils-dcp-candidate-for-emurua-dikirr-seat-vows-to-defend-kipsigis-community' target='_blank'>View Full Report</a>
-            </div></div></section><section id='Africa'><h2>Africa</h2><div class='grid'>
-            <div class='card'>
-                <img src='http://images.euronews.com/articles/stories/09/71/66/74/640x360_cmsv2_b04c93cc-1d45-560c-95c5-0da3600c0151-9716674.jpg?1775793432' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Sean 'Diddy' Combs' lawyers urge appeals court to overturn conviction</h3>
-                <p>New developments regarding Sean 'Diddy' Combs' lawyers urge appeals court to overturn conviction have been reported. Experts are monitoring the situation closely.</p>
-                <a href='http://www.africanews.com/2026/04/10/sean-diddy-combs-lawyers-urge-appeals-court-to-overturn-conviction/' target='_blank'>View Full Report</a>
+                <div class="card-content">
+                    <h3>Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community</h3>
+                    <p>Developments regarding Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community continue...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community', 'Developments regarding Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community continue to emerge.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/9jfvkBkur0FRxtePOxiukp1qf3XUjQuTDwwwgSs5.jpg')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
-                <img src='http://images.euronews.com/articles/stories/09/71/65/14/640x360_cmsv2_ecfca4ed-0d55-5f90-964a-8f795d6adc60-9716514.jpg?1775758358' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Iranians pay tribute to slain supreme leader weeks after killing</h3>
-                <p>New developments regarding Iranians pay tribute to slain supreme leader weeks after killing have been reported. Experts are monitoring the situation closely.</p>
-                <a href='http://www.africanews.com/2026/04/10/iranians-pay-tribute-to-slain-supreme-leader-weeks-after-killing/' target='_blank'>View Full Report</a>
+                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/EZT5h6RFPaoOiuhrP8xuPV9LmUn73ChEGhv3d3Rc.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Senate flags ballooning wage bills in county water companies</h3>
+                    <p>Developments regarding Senate flags ballooning wage bills in county water companies continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Senate flags ballooning wage bills in county water companies', 'Developments regarding Senate flags ballooning wage bills in county water companies continue to emerge.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/EZT5h6RFPaoOiuhrP8xuPV9LmUn73ChEGhv3d3Rc.jpg')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
-                <img src='http://images.euronews.com/articles/stories/09/71/67/45/640x360_cmsv2_3d154ce1-7928-5574-bb80-d68c6bd69009-9716745.jpg?1775799392' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Brazil: Indigenous marches in Brasília enter third day over land rights</h3>
-                <p>New developments regarding Brazil: Indigenous marches in Brasília enter third day over land rights have been reported. Experts are monitoring the situation closely.</p>
-                <a href='http://www.africanews.com/2026/04/10/brazil-indigenous-marches-in-brasilia-enter-third-day-over-land-rights/' target='_blank'>View Full Report</a>
-            </div></div></section><section id='International'><h2>International</h2><div class='grid'>
+                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/IfEPeeqeWCtZ4BjQirrfPKsqBezhp13HpBakfKOD.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Gachagua draws DCI fury after linking Ruto to Sh500m exhibit</h3>
+                    <p>Developments regarding Gachagua draws DCI fury after linking Ruto to Sh500m exhibit continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Gachagua draws DCI fury after linking Ruto to Sh500m exhibit', 'Developments regarding Gachagua draws DCI fury after linking Ruto to Sh500m exhibit continue to emerge.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/IfEPeeqeWCtZ4BjQirrfPKsqBezhp13HpBakfKOD.jpg')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/sBI1RYYJgUG8Wbn0VLZoH7z9X15tp1NDfIOKlEMI.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Pre-2012 voters: Who must re-register?</h3>
+                    <p>Developments regarding Pre-2012 voters: Who must re-register? continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Pre-2012 voters: Who must re-register?', 'Developments regarding Pre-2012 voters: Who must re-register? continue to emerge.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/sBI1RYYJgUG8Wbn0VLZoH7z9X15tp1NDfIOKlEMI.jpg')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div></div></section><section id='Africa' class='news-section'><h2>Africa</h2><div class='grid'>
+            <div class='card'>
+                <img src='http://images.euronews.com/articles/stories/09/71/04/03/640x360_cmsv2_19a008cb-7bc3-55c0-9bc1-1fb450885756-9710403.jpg?1775804515' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Senegal's PM Sonko accuses US President Trump of 'destabilising' the world</h3>
+                    <p>Developments regarding Senegal's PM Sonko accuses US President Trump of 'destabilising' the world continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Senegal\'s PM Sonko accuses US President Trump of \'destabilising\' the world', 'Developments regarding Senegal's PM Sonko accuses US President Trump of 'destabilising' the world continue to emerge.', 'http://images.euronews.com/articles/stories/09/71/04/03/640x360_cmsv2_19a008cb-7bc3-55c0-9bc1-1fb450885756-9710403.jpg?1775804515')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='http://images.euronews.com/articles/stories/09/71/69/53/640x360_cmsv2_fb61b7da-61f4-5e85-a41d-4a041fcd5af0-9716953.jpg?1775807941' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Hip-hop pioneer Afrika Bambaataa dies at age 68</h3>
+                    <p>Developments regarding Hip-hop pioneer Afrika Bambaataa dies at age 68 continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Hip-hop pioneer Afrika Bambaataa dies at age 68', 'Developments regarding Hip-hop pioneer Afrika Bambaataa dies at age 68 continue to emerge.', 'http://images.euronews.com/articles/stories/09/71/69/53/640x360_cmsv2_fb61b7da-61f4-5e85-a41d-4a041fcd5af0-9716953.jpg?1775807941')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='http://images.euronews.com/articles/stories/09/71/71/37/640x360_cmsv2_c472994b-7abf-5a96-afee-4bc8c40c743b-9717137.jpg?1775813561' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>US urges citizens to reconsider travel to Nigeria over security risks</h3>
+                    <p>Developments regarding US urges citizens to reconsider travel to Nigeria over security risks continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('US urges citizens to reconsider travel to Nigeria over security risks', 'Developments regarding US urges citizens to reconsider travel to Nigeria over security risks continue to emerge.', 'http://images.euronews.com/articles/stories/09/71/71/37/640x360_cmsv2_c472994b-7abf-5a96-afee-4bc8c40c743b-9717137.jpg?1775813561')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='http://images.euronews.com/articles/stories/09/71/68/58/640x360_cmsv2_c7acccad-1ba5-553f-be99-515f33eea1c4-9716858.jpg?1775804730' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Low turnout as Djibouti votes in election set to extend Guelleh’s long rule</h3>
+                    <p>Developments regarding Low turnout as Djibouti votes in election set to extend Guelleh’s long rule continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Low turnout as Djibouti votes in election set to extend Guelleh’s long rule', 'Developments regarding Low turnout as Djibouti votes in election set to extend Guelleh’s long rule continue to emerge.', 'http://images.euronews.com/articles/stories/09/71/68/58/640x360_cmsv2_c7acccad-1ba5-553f-be99-515f33eea1c4-9716858.jpg?1775804730')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='http://images.euronews.com/articles/stories/09/71/72/18/640x360_cmsv2_90471b22-dbc5-5e4a-8878-ed7ac97d991a-9717218.jpg?1775814845' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Poland: "Frog Patrol" saves thousands of amphibians during migration</h3>
+                    <p>Developments regarding Poland: "Frog Patrol" saves thousands of amphibians during migration continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Poland: "Frog Patrol" saves thousands of amphibians during migration', 'Developments regarding Poland: "Frog Patrol" saves thousands of amphibians during migration continue to emerge.', 'http://images.euronews.com/articles/stories/09/71/72/18/640x360_cmsv2_90471b22-dbc5-5e4a-8878-ed7ac97d991a-9717218.jpg?1775814845')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='http://images.euronews.com/articles/stories/09/71/66/85/640x360_cmsv2_3cf17bf6-bb56-5010-b689-d328fd318a68-9716685.jpg?1775793968' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Nigeria: Jihadists kill army general and soldiers in attack on Borno state base</h3>
+                    <p>Developments regarding Nigeria: Jihadists kill army general and soldiers in attack on Borno state base continue to emerg...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Nigeria: Jihadists kill army general and soldiers in attack on Borno state base', 'Developments regarding Nigeria: Jihadists kill army general and soldiers in attack on Borno state base continue to emerge.', 'http://images.euronews.com/articles/stories/09/71/66/85/640x360_cmsv2_3cf17bf6-bb56-5010-b689-d328fd318a68-9716685.jpg?1775793968')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div></div></section><section id='International' class='news-section'><h2>International</h2><div class='grid'>
             <div class='card'>
                 <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Trump says Iran's handling of Strait of Hormuz is 'not the agreement we have'</h3>
-                <p>New developments regarding Trump says Iran's handling of Strait of Hormuz is 'not the agreement we have' have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.bbc.com/news/articles/cge0xre3d27o?at_medium=RSS&at_campaign=rss' target='_blank'>View Full Report</a>
+                <div class="card-content">
+                    <h3>Trump says Iran's handling of Strait of Hormuz is 'not the agreement we have'</h3>
+                    <p>Developments regarding Trump says Iran's handling of Strait of Hormuz is 'not the agreement we have' continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Trump says Iran\'s handling of Strait of Hormuz is \'not the agreement we have\'', 'Developments regarding Trump says Iran's handling of Strait of Hormuz is 'not the agreement we have' continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
                 <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Ceasefire or no ceasefire, the Middle East's reshuffling is not yet done</h3>
-                <p>New developments regarding Ceasefire or no ceasefire, the Middle East's reshuffling is not yet done have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.bbc.com/news/articles/cp3l4yk5rlgo?at_medium=RSS&at_campaign=rss' target='_blank'>View Full Report</a>
+                <div class="card-content">
+                    <h3>Ceasefire or no ceasefire, the Middle East's reshuffling is not yet done</h3>
+                    <p>Developments regarding Ceasefire or no ceasefire, the Middle East's reshuffling is not yet done continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Ceasefire or no ceasefire, the Middle East\'s reshuffling is not yet done', 'Developments regarding Ceasefire or no ceasefire, the Middle East's reshuffling is not yet done continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
                 <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Melania Trump denies ties to Jeffrey Epstein and urges hearing for survivors</h3>
-                <p>New developments regarding Melania Trump denies ties to Jeffrey Epstein and urges hearing for survivors have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.bbc.com/news/articles/c3ex07l1qvpo?at_medium=RSS&at_campaign=rss' target='_blank'>View Full Report</a>
+                <div class="card-content">
+                    <h3>Melania Trump denies ties to Jeffrey Epstein and urges hearing for survivors</h3>
+                    <p>Developments regarding Melania Trump denies ties to Jeffrey Epstein and urges hearing for survivors continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Melania Trump denies ties to Jeffrey Epstein and urges hearing for survivors', 'Developments regarding Melania Trump denies ties to Jeffrey Epstein and urges hearing for survivors continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
                 <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Russia and Ukraine agree to 32-hour Orthodox Easter ceasefire</h3>
-                <p>New developments regarding Russia and Ukraine agree to 32-hour Orthodox Easter ceasefire have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.aljazeera.com/news/2026/4/10/russia-and-ukraine-agree-to-32-hour-orthodox-easter-ceasefire?traffic_source=rss' target='_blank'>View Full Report</a>
+                <div class="card-content">
+                    <h3>Taiwan opposition leader meets Xi Jinping in Beijing</h3>
+                    <p>Developments regarding Taiwan opposition leader meets Xi Jinping in Beijing continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Taiwan opposition leader meets Xi Jinping in Beijing', 'Developments regarding Taiwan opposition leader meets Xi Jinping in Beijing continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
                 <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Myanmar’s coup leader Min Aung Hlaing sworn in as president</h3>
-                <p>New developments regarding Myanmar’s coup leader Min Aung Hlaing sworn in as president have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.aljazeera.com/news/2026/4/10/myanmars-coup-leader-min-aung-hlaing-sworn-in-as-president?traffic_source=rss' target='_blank'>View Full Report</a>
+                <div class="card-content">
+                    <h3>German transgender far-right extremist arrested in Czech Republic</h3>
+                    <p>Developments regarding German transgender far-right extremist arrested in Czech Republic continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('German transgender far-right extremist arrested in Czech Republic', 'Developments regarding German transgender far-right extremist arrested in Czech Republic continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
                 <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Tyson Fury insists he’s ‘still got it’ ahead of Makhmudov comeback fight</h3>
-                <p>New developments regarding Tyson Fury insists he’s ‘still got it’ ahead of Makhmudov comeback fight have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.aljazeera.com/sports/2026/4/10/tyson-fury-insists-ive-still-go-it-ahead-of-makhmudov-comeback-fight?traffic_source=rss' target='_blank'>View Full Report</a>
-            </div></div></section><section id='Sports'><h2>Sports</h2><div class='grid'>
-            <div class='card'>
-                <img src='https://e1.365dm.com/25/10/1920x1080/skysports-fulham-news-club_7039253.jpg?20251002160142' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Fulham latest: Silva gives update amid contract uncertainty</h3>
-                <p>New developments regarding Fulham latest: Silva gives update amid contract uncertainty have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.skysports.com/football/live-blog/12040/13279313/fulham-transfers-latest-news-rumours-and-gossip-live-updates-goals-and-highlights' target='_blank'>View Full Report</a>
-            </div>
-            <div class='card'>
-                <img src='https://e0.365dm.com/26/04/1920x1080/skysports-luke-littler-darts_7215703.jpg?20260410073529' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Littler booed in Brighton - was his exit a 'knock-on' from Van Veen spat?</h3>
-                <p>New developments regarding Littler booed in Brighton - was his exit a 'knock-on' from Van Veen spat? have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.skysports.com/darts/news/12040/13529896/luke-littler-world-no-1-booed-in-brighton-was-his-premier-league-quarter-final-exit-a-knock-on-from-gian-van-veen-spat' target='_blank'>View Full Report</a>
-            </div>
-            <div class='card'>
-                <img src='https://e0.365dm.com/25/03/1920x1080/skysports-wolverhampton-racing_6871130.jpg?20250330103228' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Today on Sky Sports Racing: Wolverhampton & Sedgefield feature on Friday</h3>
-                <p>New developments regarding Today on Sky Sports Racing: Wolverhampton & Sedgefield feature on Friday have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.skysports.com/racing/news/12040/13529616/today-on-sky-sports-racing-wolverhampton-sedgefield-feature-on-friday' target='_blank'>View Full Report</a>
-            </div></div></section><section id='Fashion'><h2>Fashion</h2><div class='grid'>
-            <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>Keeping the PhotoVogue spirit alive! The PhotoVogue Monday Story</h3>
-                <p>New developments regarding Keeping the PhotoVogue spirit alive! The PhotoVogue Monday Story have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.vogue.com/article/keeping-the-spirit-alive-more-than-a-month-in-pictures-the-pvmonday-story' target='_blank'>View Full Report</a>
+                <div class="card-content">
+                    <h3>Russia and Ukraine agree to Orthodox Easter truce</h3>
+                    <p>Developments regarding Russia and Ukraine agree to Orthodox Easter truce continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Russia and Ukraine agree to Orthodox Easter truce', 'Developments regarding Russia and Ukraine agree to Orthodox Easter truce continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
                 <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>How Elle Fanning Gets Her Perfect Red Lip Right Every Time</h3>
-                <p>New developments regarding How Elle Fanning Gets Her Perfect Red Lip Right Every Time have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.vogue.com/article/how-elle-fanning-gets-her-perfect-red-lip-every-time' target='_blank'>View Full Report</a>
+                <div class="card-content">
+                    <h3>Russia suffers ‘record’ soldier casualties as Ukraine ups drone production</h3>
+                    <p>Developments regarding Russia suffers ‘record’ soldier casualties as Ukraine ups drone production continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Russia suffers ‘record’ soldier casualties as Ukraine ups drone production', 'Developments regarding Russia suffers ‘record’ soldier casualties as Ukraine ups drone production continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
             </div>
             <div class='card'>
                 <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <h3>How Fara Homidi Is Building a Global Beauty Brand</h3>
-                <p>New developments regarding How Fara Homidi Is Building a Global Beauty Brand have been reported. Experts are monitoring the situation closely.</p>
-                <a href='https://www.vogue.com/article/how-fara-homidi-is-building-a-global-beauty-brand' target='_blank'>View Full Report</a>
-            </div></div></section><section id='Tech&Biz'><h2>Tech & Biz</h2><div class='grid'></div></section>
-
-        <section id="About">
-            <h2>About & Disclaimer</h2>
-            <p><strong>Disclaimer:</strong> We are not the rightful owners of the information created on this site. This is an AI powered tool. Alien environment!</p>
-            <p>The Continent News uses automated technology to rewrite and aggregate global stories for a streamlined reading experience.</p>
-        </section>
+                <div class="card-content">
+                    <h3>‘Neither war nor peace’: What Gaza looks like six months into ‘ceasefire’</h3>
+                    <p>Developments regarding ‘Neither war nor peace’: What Gaza looks like six months into ‘ceasefire’ continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('‘Neither war nor peace’: What Gaza looks like six months into ‘ceasefire’', 'Developments regarding ‘Neither war nor peace’: What Gaza looks like six months into ‘ceasefire’ continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Gaza father searches for his children’s remains in the rubble for years</h3>
+                    <p>Developments regarding Gaza father searches for his children’s remains in the rubble for years continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Gaza father searches for his children’s remains in the rubble for years', 'Developments regarding Gaza father searches for his children’s remains in the rubble for years continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Egypt and Al-Ahly keeper El-Shenawy banned four games for striking referee</h3>
+                    <p>Developments regarding Egypt and Al-Ahly keeper El-Shenawy banned four games for striking referee continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Egypt and Al-Ahly keeper El-Shenawy banned four games for striking referee', 'Developments regarding Egypt and Al-Ahly keeper El-Shenawy banned four games for striking referee continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Liverpool boss Slot says club and fans back him before Anfield protests</h3>
+                    <p>Developments regarding Liverpool boss Slot says club and fans back him before Anfield protests continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Liverpool boss Slot says club and fans back him before Anfield protests', 'Developments regarding Liverpool boss Slot says club and fans back him before Anfield protests continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>‘For Trump, this is seen as an unmitigated failure, this war’</h3>
+                    <p>Developments regarding ‘For Trump, this is seen as an unmitigated failure, this war’ continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('‘For Trump, this is seen as an unmitigated failure, this war’', 'Developments regarding ‘For Trump, this is seen as an unmitigated failure, this war’ continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div></div></section><section id='Sports' class='news-section'><h2>Sports</h2><div class='grid'>
+            <div class='card'>
+                <img src='https://e2.365dm.com/26/02/1920x1080/skysports-julian-araujo_7165807.jpg?20260215161708' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Araujo not expected to return to Celtic this season</h3>
+                    <p>Developments regarding Araujo not expected to return to Celtic this season continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Araujo not expected to return to Celtic this season', 'Developments regarding Araujo not expected to return to Celtic this season continue to emerge.', 'https://e2.365dm.com/26/02/1920x1080/skysports-julian-araujo_7165807.jpg?20260215161708')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='https://e1.365dm.com/25/10/1920x1080/skysports-brentford-news-club_7039245.jpg?20251002155849' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Brentford latest: Summer interest in Thiago is natural, says Andrews</h3>
+                    <p>Developments regarding Brentford latest: Summer interest in Thiago is natural, says Andrews continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Brentford latest: Summer interest in Thiago is natural, says Andrews', 'Developments regarding Brentford latest: Summer interest in Thiago is natural, says Andrews continue to emerge.', 'https://e1.365dm.com/25/10/1920x1080/skysports-brentford-news-club_7039245.jpg?20251002155849')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='https://e1.365dm.com/26/02/1920x1080/skysports-arsenal-boss-mikel-arteta_7170403.jpg?20260220173200' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Arteta: No time to discuss Arsenal contract right now</h3>
+                    <p>Developments regarding Arteta: No time to discuss Arsenal contract right now continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Arteta: No time to discuss Arsenal contract right now', 'Developments regarding Arteta: No time to discuss Arsenal contract right now continue to emerge.', 'https://e1.365dm.com/26/02/1920x1080/skysports-arsenal-boss-mikel-arteta_7170403.jpg?20260220173200')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='https://e2.365dm.com/25/10/1920x1080/skysports-crystal-palace-news_7039251.jpg?20251002160103' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Palace latest: Nketiah ruled out for rest of season</h3>
+                    <p>Developments regarding Palace latest: Nketiah ruled out for rest of season continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Palace latest: Nketiah ruled out for rest of season', 'Developments regarding Palace latest: Nketiah ruled out for rest of season continue to emerge.', 'https://e2.365dm.com/25/10/1920x1080/skysports-crystal-palace-news_7039251.jpg?20251002160103')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='https://e2.365dm.com/26/01/1920x1080/skysports-chelsea-latest-club_7135285.jpg?20260114164523' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Chelsea latest: Rosenior gives Enzo update ahead of Man City test</h3>
+                    <p>Developments regarding Chelsea latest: Rosenior gives Enzo update ahead of Man City test continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Chelsea latest: Rosenior gives Enzo update ahead of Man City test', 'Developments regarding Chelsea latest: Rosenior gives Enzo update ahead of Man City test continue to emerge.', 'https://e2.365dm.com/26/01/1920x1080/skysports-chelsea-latest-club_7135285.jpg?20260114164523')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='https://e2.365dm.com/26/04/1920x1080/skysports-roberto-de-zerbi_7216080.jpg?20260410141847' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>'I'm not better than Frank or Tudor' | Best of De Zerbi's first Spurs press conference</h3>
+                    <p>Developments regarding 'I'm not better than Frank or Tudor' | Best of De Zerbi's first Spurs press conference continue t...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('\'I\'m not better than Frank or Tudor\' | Best of De Zerbi\'s first Spurs press conference', 'Developments regarding 'I'm not better than Frank or Tudor' | Best of De Zerbi's first Spurs press conference continue to emerge.', 'https://e2.365dm.com/26/04/1920x1080/skysports-roberto-de-zerbi_7216080.jpg?20260410141847')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div></div></section><section id='Fashion' class='news-section'><h2>Fashion</h2><div class='grid'>
+            <div class='card'>
+                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Laurie Metcalf Requests Your Attention</h3>
+                    <p>Developments regarding Laurie Metcalf Requests Your Attention continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Laurie Metcalf Requests Your Attention', 'Developments regarding Laurie Metcalf Requests Your Attention continue to emerge.', 'None')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Lykke Li Is Ready to Rage</h3>
+                    <p>Developments regarding Lykke Li Is Ready to Rage continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Lykke Li Is Ready to Rage', 'Developments regarding Lykke Li Is Ready to Rage continue to emerge.', 'None')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>Can Amomento Become Korea’s Next Big Fashion Export?</h3>
+                    <p>Developments regarding Can Amomento Become Korea’s Next Big Fashion Export? continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Can Amomento Become Korea’s Next Big Fashion Export?', 'Developments regarding Can Amomento Become Korea’s Next Big Fashion Export? continue to emerge.', 'None')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>How Salter House's Sandeep Salter Packs for Vacation</h3>
+                    <p>Developments regarding How Salter House's Sandeep Salter Packs for Vacation continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('How Salter House\'s Sandeep Salter Packs for Vacation', 'Developments regarding How Salter House's Sandeep Salter Packs for Vacation continue to emerge.', 'None')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>The Scoop With Martha Mosse: On the Paul Smith’s Foundation’s Next Moves</h3>
+                    <p>Developments regarding The Scoop With Martha Mosse: On the Paul Smith’s Foundation’s Next Moves continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('The Scoop With Martha Mosse: On the Paul Smith’s Foundation’s Next Moves', 'Developments regarding The Scoop With Martha Mosse: On the Paul Smith’s Foundation’s Next Moves continue to emerge.', 'None')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="card-content">
+                    <h3>The Vogue Business Beauty Trend Tracker</h3>
+                    <p>Developments regarding The Vogue Business Beauty Trend Tracker continue to emerge....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('The Vogue Business Beauty Trend Tracker', 'Developments regarding The Vogue Business Beauty Trend Tracker continue to emerge.', 'None')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div></div></section><section id='TechBiz' class='news-section'><h2>Tech & Biz</h2><div class='grid'></div></section>
     </div>
 
-    <footer>
-        &copy; 2026 The Continent News • Alien Environment • AI Powered Journalism
-    </footer>
+    <div id="storyModal">
+        <div class="modal-body">
+            <span class="close" onclick="closeStory()">&times;</span>
+            <img id="modalImg" class="modal-img" src="">
+            <h2 id="modalTitle"></h2>
+            <p id="modalText"></p>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 The Continent News • AI JOURNALISM • NO FLICKER SYNC ACTIVE</footer>
+
+    <script>
+        let currentActiveSection = 'LatestNews';
+
+        function switchPage(sectionId) {
+            currentActiveSection = sectionId;
+            const sections = document.querySelectorAll('.news-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.classList.add('active');
+            }
+
+            const activeBtn = document.getElementById('btn-' + sectionId);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function openStory(title, text, img) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalText').innerText = text;
+            document.getElementById('modalImg').src = img;
+            document.getElementById('storyModal').style.display = "block";
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeStory() {
+            document.getElementById('storyModal').style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        // SILENT REFRESH LOGIC (Every 5 minutes)
+        setInterval(function() {
+            console.log("Checking for updates...");
+            fetch('index.html')
+                .then(response => response.text())
+                .then(htmlText => {
+                    const parser = new DOMParser();
+                    const newDoc = parser.parseFromString(htmlText, 'text/html');
+                    
+                    // Update only the news container
+                    const newContainer = newDoc.getElementById('news-container').innerHTML;
+                    document.getElementById('news-container').innerHTML = newContainer;
+                    
+                    // Update the timestamp
+                    const newSync = newDoc.getElementById('sync-info').innerText;
+                    document.getElementById('sync-info').innerText = newSync;
+
+                    // Re-apply visibility for the current section
+                    switchPage(currentActiveSection);
+                    console.log("News updated silently.");
+                })
+                .catch(err => console.log("Refresh failed: ", err));
+        }, 300000); 
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('storyModal')) { closeStory(); }
+        }
+
+        window.onload = () => switchPage('LatestNews');
+    </script>
 </body>
 </html>
