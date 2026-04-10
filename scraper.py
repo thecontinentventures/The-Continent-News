@@ -43,16 +43,21 @@ def ai_rewrite(title, summary):
         return f"New developments regarding {title} have been reported. Experts are monitoring the situation closely."
 
 def get_image(entry):
-    """Attempts to find an image in the RSS entry."""
-    # Look in media:content
-    if 'media_content' in entry:
-        return entry.media_content[0]['url']
-    # Look in enclosures
-    if 'links' in entry:
-        for link in entry.links:
-            if 'image' in link.get('type', ''):
-                return link.get('href')
-    # Default fallback image (can be a logo or generic news image)
+    """Safely attempts to find an image in the RSS entry."""
+    try:
+        # Look in media:content with safety check for 'url' key
+        if 'media_content' in entry and len(entry.media_content) > 0:
+            return entry.media_content[0].get('url')
+        
+        # Look in enclosures/links
+        if 'links' in entry:
+            for link in entry.links:
+                if 'image' in link.get('type', ''):
+                    return link.get('href')
+    except:
+        pass
+    
+    # Default fallback image
     return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
 
 def get_ticker_html():
@@ -70,16 +75,17 @@ def generate_sections():
         all_entries = []
         for url in urls:
             feed = feedparser.parse(url)
-            all_entries.extend(feed.entries[:3])
+            if hasattr(feed, 'entries'):
+                all_entries.extend(feed.entries[:3])
 
         for entry in all_entries:
             raw_summary = getattr(entry, 'summary', '')
             rewritten = ai_rewrite(entry.title, raw_summary)
-            img_url = get_image(entry)
+            img_url = get_image(entry) or "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
             
             html += f"""
             <div class='card'>
-                <img src='{img_url}' alt='News Image'>
+                <img src='{img_url}' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 <h3>{entry.title}</h3>
                 <p>{rewritten}</p>
                 <a href='{entry.link}' target='_blank'>View Full Report</a>
@@ -100,7 +106,7 @@ full_html = f"""
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {{ --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; }}
-        body {{ font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 60px; }}
+        body {{ font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; }}
         
         header {{ background: var(--white); color: var(--dark); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; }}
         header h1 {{ margin: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }}
@@ -121,7 +127,7 @@ full_html = f"""
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }}
         
         .card {{ background: var(--white); border: 1px solid #eee; padding-bottom: 15px; border-radius: 4px; overflow: hidden; }}
-        .card img {{ width: 100%; height: 180px; object-fit: cover; background: #eee; }}
+        .card img {{ width: 100%; height: 180px; object-fit: cover; background: #eee; border-bottom: 1px solid #eee; }}
         .card h3 {{ font-size: 1.1rem; line-height: 1.3; padding: 15px 15px 5px; margin: 0; }}
         .card p {{ font-size: 0.9rem; color: #444; line-height: 1.5; padding: 0 15px 15px; }}
         .card a {{ color: var(--red); text-decoration: none; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; padding-left: 15px; }}
