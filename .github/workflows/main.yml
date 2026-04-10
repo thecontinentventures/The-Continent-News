@@ -2,18 +2,20 @@ name: Update News Portal
 
 on:
   schedule:
-    - cron: '0 * * * *' # This triggers the update automatically every hour
-  workflow_dispatch: # This allows you to click "Run workflow" manually to test
+    - cron: '0 * * * *' # Automatically updates every hour
+  workflow_dispatch: # Allows you to click "Run workflow" manually
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Essential for the bot to save the new index.html
+      contents: write # Allows the bot to save index.html to your repo
     
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches all history so rebase works smoothly
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -27,7 +29,6 @@ jobs:
 
       - name: Run News Scraper and AI Rewriter
         env:
-          # This pulls your API key from Settings > Secrets > Actions
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
         run: python scraper.py
 
@@ -35,7 +36,13 @@ jobs:
         run: |
           git config --global user.name "TheContinentBot"
           git config --global user.email "bot@thecontinentnews.com"
+          
+          # Pull latest changes from your edits to prevent the "rejected" error
+          git pull --rebase origin main
+          
           git add index.html
-          # The '|| exit 0' ensures the workflow doesn't fail if there's no news change
+          # Ensures the workflow doesn't fail if the news content is identical to last hour
           git commit -m "Automated News Refresh: $(date)" || exit 0
-          git push
+          
+          # Push the changes back to the main branch
+          git push origin main
