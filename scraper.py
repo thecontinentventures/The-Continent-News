@@ -104,6 +104,7 @@ def update_website():
     print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Refreshing news database...")
     current_time = datetime.datetime.now().strftime("%Y")
     last_sync = datetime.datetime.now().strftime("%H:%M:%S")
+    GA_ID = "G-ZH9DSKC65T"
     
     sections_content = generate_sections()
 
@@ -111,6 +112,14 @@ def update_website():
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', '{GA_ID}');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Continent News</title>
@@ -227,6 +236,12 @@ def update_website():
         }}
 
         function openStory(title, htmlContent, img) {{
+            // GA4 TRACKING
+            gtag('event', 'select_content', {{
+                'content_type': 'article',
+                'item_id': title
+            }});
+
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalText').innerHTML = htmlContent;
             document.getElementById('modalImg').src = img;
