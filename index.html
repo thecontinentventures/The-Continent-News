@@ -56,11 +56,13 @@
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
       "symbols": [
+        { "proName": "NSE:NASI", "title": "NSE ALL SHARE" },
+        { "proName": "NSE:NSE20", "title": "NSE 20 INDEX" },
         { "proName": "FX_IDC:USDKES", "title": "USD/KES" },
         { "description": "Safaricom", "proName": "NSE:SCOM" },
         { "description": "Equity Group", "proName": "NSE:EQTY" },
         { "description": "KCB Group", "proName": "NSE:KCB" },
-        { "description": "East African Breweries", "proName": "NSE:EABL" }
+        { "description": "E.A. Breweries", "proName": "NSE:EABL" }
       ],
       "showSymbolLogo": true,
       "colorTheme": "dark",
@@ -80,7 +82,7 @@
         <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Business</a>
     </nav>
 
-    <div id="sync-info">LAST UPDATED: 13:48:43</div>
+    <div id="sync-info">LAST UPDATED: 13:58:48</div>
 
     <div class="container" id="news-container">
         <section id='LatestNews' class='news-section'><h2>Latest News</h2><div class='grid'>
@@ -285,10 +287,10 @@
             <div class='card'>
                 <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 <div class="card-content">
-                    <h3>Russia suffers ‘record’ soldier casualties as Ukraine ups drone production</h3>
-                    <p>Developments regarding Russia suffers ‘record’ soldier casualties as Ukraine ups drone production continue to emerge....</p>
+                    <h3>Ukraine says Russia suffers record losses of soldiers</h3>
+                    <p>Developments regarding Ukraine says Russia suffers record losses of soldiers continue to emerge....</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Russia suffers ‘record’ soldier casualties as Ukraine ups drone production', 'Developments regarding Russia suffers ‘record’ soldier casualties as Ukraine ups drone production continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Ukraine says Russia suffers record losses of soldiers', 'Developments regarding Ukraine says Russia suffers record losses of soldiers continue to emerge.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -535,7 +537,7 @@
                     const parser = new DOMParser();
                     const newDoc = parser.parseFromString(htmlText, 'text/html');
                     
-                    // Update only the news container
+                    // Update only the news container content to prevent flash
                     const newContainer = newDoc.getElementById('news-container').innerHTML;
                     document.getElementById('news-container').innerHTML = newContainer;
                     
