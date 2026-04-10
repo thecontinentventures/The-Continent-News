@@ -158,13 +158,10 @@ def update_website():
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {{
       "symbols": [
-        {{ "proName": "NSE:NASI", "title": "NSE ALL SHARE" }},
-        {{ "proName": "NSE:NSE20", "title": "NSE 20 INDEX" }},
-        {{ "proName": "FX_IDC:USDKES", "title": "USD/KES" }},
-        {{ "description": "Safaricom", "proName": "NSE:SCOM" }},
-        {{ "description": "Equity Group", "proName": "NSE:EQTY" }},
-        {{ "description": "KCB Group", "proName": "NSE:KCB" }},
-        {{ "description": "E.A. Breweries", "proName": "NSE:EABL" }}
+        {{ "proName": "NSE:NASI", "title": "NSE ALL SHARE INDEX" }},
+        {{ "proName": "NSE:NSE20", "title": "NSE 20 SHARE INDEX" }},
+        {{ "proName": "NSE:NSE25", "title": "NSE 25 SHARE INDEX" }},
+        {{ "proName": "FX_IDC:USDKES", "title": "USD / KES" }}
       ],
       "showSymbolLogo": true,
       "colorTheme": "dark",
