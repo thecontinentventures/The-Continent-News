@@ -1,0 +1,33 @@
+name: Update News
+on:
+  schedule:
+    - cron: '0 * * * *' # This triggers the update every 60 minutes
+  workflow_dispatch: # This adds a button so you can run it manually anytime
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # This gives the robot permission to save the news file
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install feedparser
+
+      - name: Run scraper
+        run: python scraper.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add index.html
+          git commit -m "The Continent News: Latest Update" || exit 0
+          git push
