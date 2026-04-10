@@ -33,24 +33,35 @@ FEEDS = {
 def ai_rewrite(title, summary):
     """Rewrites news to be completely original content."""
     if not model:
-        return f"Latest updates on {title}. Stay tuned for more details."
+        return f"New reporting on {title}. Our team is following this development."
     
     try:
-        # Strict prompt to ensure original, rewritten content
         prompt = f"Write an original 3-sentence news report based on this info. Do not copy the original text. Make it sound like exclusive reporting: {title}. {summary}"
         response = model.generate_content(prompt)
         return response.text.strip()
     except:
-        return f"New developments regarding {title} have been reported. Experts are monitoring the situation closely as the story unfolds."
+        return f"New developments regarding {title} have been reported. Experts are monitoring the situation closely."
+
+def get_image(entry):
+    """Attempts to find an image in the RSS entry."""
+    # Look in media:content
+    if 'media_content' in entry:
+        return entry.media_content[0]['url']
+    # Look in enclosures
+    if 'links' in entry:
+        for link in entry.links:
+            if 'image' in link.get('type', ''):
+                return link.get('href')
+    # Default fallback image (can be a logo or generic news image)
+    return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
 
 def get_ticker_html():
-    """Pulls stock market headlines from Business Daily (NSE coverage)."""
     try:
         feed = feedparser.parse('https://www.businessdailyafrica.com/service/rss/539444/539444/rss.xml')
         headlines = [f" • {entry.title.upper()}" for entry in feed.entries[:10]]
         return "".join(headlines)
     except:
-        return " • NSE MARKET UPDATES: TRACKING KENYAN EQUITIES AND BONDS DAILY"
+        return " • NSE MARKET WATCH: DATA REFRESHING..."
 
 def generate_sections():
     html = ""
@@ -64,11 +75,14 @@ def generate_sections():
         for entry in all_entries:
             raw_summary = getattr(entry, 'summary', '')
             rewritten = ai_rewrite(entry.title, raw_summary)
+            img_url = get_image(entry)
+            
             html += f"""
             <div class='card'>
+                <img src='{img_url}' alt='News Image'>
                 <h3>{entry.title}</h3>
                 <p>{rewritten}</p>
-                <a href='{entry.link}' target='_blank'>View Source</a>
+                <a href='{entry.link}' target='_blank'>View Full Report</a>
             </div>"""
         html += "</div></section>"
     return html
@@ -85,33 +99,48 @@ full_html = f"""
     <title>The Continent News</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {{ --red: #c0392b; --dark: #111; --light: #f9f9f9; --white: #ffffff; }}
-        body {{ font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); }}
+        :root {{ --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; }}
+        body {{ font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 60px; }}
         
         header {{ background: var(--white); color: var(--dark); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; }}
         header h1 {{ margin: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }}
         
-        .social-icons {{ margin-top: 15px; }}
-        .social-icons a {{ color: var(--dark); margin: 0 10px; font-size: 1.2rem; text-decoration: none; transition: 0.3s; }}
-        .social-icons a:hover {{ color: var(--red); }}
+        .social-icons {{ margin-top: 10px; }}
+        .social-icons a {{ color: var(--dark); margin: 0 8px; font-size: 1.1rem; text-decoration: none; }}
 
         .ticker-wrap {{ background: var(--dark); color: white; padding: 10px 0; overflow: hidden; border-bottom: 3px solid var(--red); }}
-        .ticker {{ display: inline-block; white-space: nowrap; animation: marquee 50s linear infinite; font-size: 0.85rem; font-family: monospace; }}
+        .ticker {{ display: inline-block; white-space: nowrap; animation: marquee 60s linear infinite; font-size: 0.8rem; font-family: monospace; }}
         @keyframes marquee {{ 0% {{ transform: translateX(100%); }} 100% {{ transform: translateX(-100%); }} }}
 
-        nav {{ background: var(--white); padding: 10px; text-align: center; border-bottom: 1px solid #ddd; sticky: top; }}
+        nav {{ background: var(--white); padding: 10px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }}
         nav a {{ color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; }}
-        nav a:hover {{ color: var(--red); }}
 
         .container {{ max-width: 1100px; margin: 20px auto; padding: 0 20px; }}
         h2 {{ border-bottom: 2px solid var(--dark); padding-bottom: 5px; text-transform: uppercase; font-size: 1.2rem; margin-top: 40px; }}
-        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }}
-        .card {{ background: none; border-bottom: 1px solid #ccc; padding-bottom: 20px; }}
-        .card h3 {{ font-size: 1.2rem; line-height: 1.2; margin-bottom: 10px; }}
-        .card p {{ font-size: 0.95rem; color: #333; line-height: 1.5; }}
-        .card a {{ color: var(--red); text-decoration: none; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; }}
+        
+        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }}
+        
+        .card {{ background: var(--white); border: 1px solid #eee; padding-bottom: 15px; border-radius: 4px; overflow: hidden; }}
+        .card img {{ width: 100%; height: 180px; object-fit: cover; background: #eee; }}
+        .card h3 {{ font-size: 1.1rem; line-height: 1.3; padding: 15px 15px 5px; margin: 0; }}
+        .card p {{ font-size: 0.9rem; color: #444; line-height: 1.5; padding: 0 15px 15px; }}
+        .card a {{ color: var(--red); text-decoration: none; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; padding-left: 15px; }}
 
-        footer {{ text-align: center; padding: 40px; font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 1px; }}
+        #About {{ background: #eee; padding: 30px; margin-top: 50px; border-radius: 4px; border: 1px solid #ddd; }}
+        #About h2 {{ margin-top: 0; }}
+
+        footer {{ 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            background: var(--dark); 
+            color: #999; 
+            text-align: center; 
+            padding: 15px 0; 
+            font-size: 0.65rem; 
+            text-transform: uppercase; 
+            z-index: 1000;
+        }}
     </style>
 </head>
 <body>
@@ -137,14 +166,21 @@ full_html = f"""
         <a href="#Sports">Sports</a>
         <a href="#Fashion">Fashion</a>
         <a href="#Tech&Biz">Business</a>
+        <a href="#About">About</a>
     </nav>
 
     <div class="container">
         {generate_sections()}
+
+        <section id="About">
+            <h2>About & Disclaimer</h2>
+            <p><strong>Disclaimer:</strong> We are not the rightful owners of the information created on this site. This is an AI powered tool. Alien environment!</p>
+            <p>The Continent News uses automated technology to rewrite and aggregate global stories for a streamlined reading experience.</p>
+        </section>
     </div>
 
     <footer>
-        &copy; {current_time} The Continent News • Independent AI-Driven Journalism
+        &copy; {current_time} The Continent News • Alien Environment • AI Powered Journalism
     </footer>
 </body>
 </html>
