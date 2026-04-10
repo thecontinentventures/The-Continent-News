@@ -1,6 +1,7 @@
 import feedparser
 import os
 import datetime
+import time
 import google.generativeai as genai
 
 # 1. SETUP GEMINI AI
@@ -31,7 +32,7 @@ FEEDS = {
 }
 
 def ai_rewrite(title, summary):
-    """Generates a long-form rewrite to serve as the 'Full Story'."""
+    """Generates a long-form rewrite using Gemini."""
     if not model:
         return f"Full report on {title} is being processed."
     
@@ -60,13 +61,12 @@ def generate_sections():
     html = ""
     for category, urls in FEEDS.items():
         cat_id = category.replace(' ', '').replace('&', '')
-        # All sections start as hidden except the logic in JS will show the first one
         html += f"<section id='{cat_id}' class='news-section'><h2>{category}</h2><div class='grid'>"
         all_entries = []
         for url in urls:
             feed = feedparser.parse(url)
             if hasattr(feed, 'entries'):
-                all_entries.extend(feed.entries[:6]) # Increased count for dedicated pages
+                all_entries.extend(feed.entries[:6])
 
         for entry in all_entries:
             full_story = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
@@ -88,9 +88,15 @@ def generate_sections():
         html += "</div></section>"
     return html
 
-current_time = datetime.datetime.now().strftime("%Y")
+def update_website():
+    """Main function to update index.html."""
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Refreshing news database...")
+    current_time = datetime.datetime.now().strftime("%Y")
+    last_sync = datetime.datetime.now().strftime("%H:%M:%S")
+    
+    sections_content = generate_sections()
 
-full_html = f"""
+    full_html = f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -100,8 +106,8 @@ full_html = f"""
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {{ --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; }}
-        body {{ font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; }}
-        header {{ background: var(--white); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; }}
+        body {{ font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; overflow-x: hidden; }}
+        header {{ background: var(--white); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; cursor: pointer; }}
         header h1 {{ margin: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }}
         
         .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); }}
@@ -112,14 +118,14 @@ full_html = f"""
 
         .container {{ max-width: 1100px; margin: 20px auto; padding: 0 20px; min-height: 80vh; }}
         
-        /* NEWS SWITCHING LOGIC */
         .news-section {{ display: none; }}
         .news-section.active {{ display: block; animation: fadeIn 0.4s ease-in-out; }}
 
-        @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+        @keyframes fadeIn {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
 
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }}
-        .card {{ background: var(--white); border: 1px solid #eee; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }}
+        .card {{ background: var(--white); border: 1px solid #eee; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; }}
+        .card:hover {{ transform: translateY(-5px); }}
         .card img {{ width: 100%; height: 200px; object-fit: cover; }}
         .card-content {{ padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }}
         .card h3 {{ font-size: 1.1rem; margin: 0 0 10px 0; line-height: 1.3; font-weight: 900; }}
@@ -136,6 +142,7 @@ full_html = f"""
         .modal-body h2 {{ font-size: 2.2rem; margin-bottom: 20px; line-height: 1.1; font-weight: 900; }}
         .modal-body p {{ font-size: 1.2rem; line-height: 1.8; color: #111; }}
 
+        #sync-info {{ position: fixed; bottom: 70px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-family: monospace; z-index: 500; }}
         footer {{ position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #999; text-align: center; padding: 15px 0; font-size: 0.65rem; z-index: 1000; }}
     </style>
 </head>
@@ -171,8 +178,10 @@ full_html = f"""
         <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Business</a>
     </nav>
 
-    <div class="container">
-        {generate_sections()}
+    <div id="sync-info">LAST UPDATED: {last_sync}</div>
+
+    <div class="container" id="news-container">
+        {sections_content}
     </div>
 
     <div id="storyModal">
@@ -181,38 +190,31 @@ full_html = f"""
             <img id="modalImg" class="modal-img" src="">
             <h2 id="modalTitle"></h2>
             <p id="modalText"></p>
-            <p style="font-size: 0.75rem; color: #777; border-top: 1px solid #eee; padding-top: 20px; margin-top: 40px;">
-                THE CONTINENT NEWS • ALIEN ENVIRONMENT • AI EXCLUSIVE
-            </p>
         </div>
     </div>
 
-    <footer>&copy; {current_time} The Continent News • Real-Time NSE Data • AI Journalism</footer>
+    <footer>&copy; {current_time} The Continent News • AI JOURNALISM • NO FLICKER SYNC ACTIVE</footer>
 
     <script>
-        // PAGE SWITCHER LOGIC
+        let currentActiveSection = 'LatestNews';
+
         function switchPage(sectionId) {{
-            // Hide all sections
+            currentActiveSection = sectionId;
             const sections = document.querySelectorAll('.news-section');
             sections.forEach(sec => sec.classList.remove('active'));
 
-            // Deactivate all nav links
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => link.classList.remove('active'));
 
-            // Show target section
             const target = document.getElementById(sectionId);
             if (target) {{
                 target.classList.add('active');
-                window.scrollTo(0,0);
             }}
 
-            // Highlight nav link
             const activeBtn = document.getElementById('btn-' + sectionId);
             if (activeBtn) activeBtn.classList.add('active');
         }}
 
-        // STORY MODAL LOGIC
         function openStory(title, text, img) {{
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalText').innerText = text;
@@ -220,20 +222,56 @@ full_html = f"""
             document.getElementById('storyModal').style.display = "block";
             document.body.style.overflow = "hidden";
         }}
+
         function closeStory() {{
             document.getElementById('storyModal').style.display = "none";
             document.body.style.overflow = "auto";
         }}
+
+        // SILENT REFRESH LOGIC (Every 5 minutes)
+        setInterval(function() {{
+            console.log("Checking for updates...");
+            fetch('index.html')
+                .then(response => response.text())
+                .then(htmlText => {{
+                    const parser = new DOMParser();
+                    const newDoc = parser.parseFromString(htmlText, 'text/html');
+                    
+                    // Update only the news container
+                    const newContainer = newDoc.getElementById('news-container').innerHTML;
+                    document.getElementById('news-container').innerHTML = newContainer;
+                    
+                    // Update the timestamp
+                    const newSync = newDoc.getElementById('sync-info').innerText;
+                    document.getElementById('sync-info').innerText = newSync;
+
+                    // Re-apply visibility for the current section
+                    switchPage(currentActiveSection);
+                    console.log("News updated silently.");
+                }})
+                .catch(err => console.log("Refresh failed: ", err));
+        }}, 300000); 
+
         window.onclick = function(event) {{
             if (event.target == document.getElementById('storyModal')) {{ closeStory(); }}
         }}
 
-        // Initialize first page
         window.onload = () => switchPage('LatestNews');
     </script>
 </body>
 </html>
 """
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(full_html)
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Success: index.html generated.")
 
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(full_html)
+# CONTINUOUS EXECUTION LOOP
+if __name__ == "__main__":
+    while True:
+        try:
+            update_website()
+        except Exception as e:
+            print(f"Loop error: {e}")
+        
+        print("Waiting 5 minutes for next crawl...")
+        time.sleep(300)
