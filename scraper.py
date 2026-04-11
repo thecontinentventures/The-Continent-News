@@ -135,8 +135,15 @@ def generate_sections():
             except: continue
 
         for entry in all_entries:
-            full_story = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
-            preview = full_story.replace('<br><br>', ' ')[:140] + "..."
+            # Get original link for backlink
+            source_url = getattr(entry, 'link', '#')
+            full_story_content = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
+            
+            # Append Backlink to the investigative report
+            backlink_html = f"<hr><p style='font-size:0.8rem; opacity:0.7;'>Source Intelligence: <a href='{source_url}' target='_blank' style='color:var(--red); text-decoration: underline;'>Verify Original Dispatch</a></p>"
+            full_story = full_story_content + backlink_html
+            
+            preview = full_story_content.replace('<br><br>', ' ')[:140] + "..."
             img_url = get_image(entry)
             js_safe_title = entry.title.replace("'", "\\'").replace('"', '&quot;')
             
@@ -187,7 +194,7 @@ def update_website():
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {{ --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; --tg-blue: #0088cc; }}
-        body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; }}
+        body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; overflow-x: hidden; }}
         header {{ background: var(--white); padding: 30px 10px; text-align: center; border-bottom: 4px solid var(--dark); cursor: pointer; }}
         header h1 {{ margin: 0; font-size: 2.5rem; letter-spacing: -1px; text-transform: uppercase; font-weight: 900; }}
         
@@ -220,6 +227,28 @@ def update_website():
         .read-more-btn {{ background: var(--dark); color: white; border: none; padding: 8px 15px; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; }}
         .exclusive-tag {{ font-size: 0.6rem; color: var(--red); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }}
 
+        /* X.com Floating Sidebar with Preview */
+        .x-sidebar-container {{
+            position: fixed; left: -320px; top: 50%; transform: translateY(-50%);
+            width: 360px; height: 500px; background: #fff;
+            display: flex; z-index: 4500; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 5px 0 25px rgba(0,0,0,0.3); border-radius: 0 12px 12px 0; overflow: hidden;
+        }}
+        .x-sidebar-container:hover {{ left: 0; }}
+        
+        .x-preview-window {{ width: 320px; height: 100%; background: #000; overflow-y: auto; }}
+        
+        .x-handle {{
+            width: 40px; height: 100%; background: #000; color: #fff;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer;
+        }}
+        .x-handle i {{ font-size: 1.4rem; }}
+        .x-handle span {{ 
+            writing-mode: vertical-rl; text-transform: uppercase; 
+            font-size: 0.7rem; font-weight: bold; margin-top: 15px; letter-spacing: 3px;
+        }}
+
         #tg-popup {{
             position: fixed; bottom: 100px; right: 20px; width: 300px; background: white;
             border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 4000;
@@ -248,6 +277,17 @@ def update_website():
 </head>
 <body>
     <header onclick="switchPage('LatestNews')"><h1>The Continent News</h1></header>
+
+    <div class="x-sidebar-container">
+        <div class="x-preview-window">
+            <a class="twitter-timeline" data-width="320" data-height="500" data-theme="dark" href="https://twitter.com/sputnik_africa?ref_src=twsrc%5Etfw">Latest from @sputnik_africa</a> 
+            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
+        <div class="x-handle">
+            <i class="fab fa-x-twitter"></i>
+            <span>UPDATES</span>
+        </div>
+    </div>
 
     <div class="tradingview-widget-container">
       <div class="tradingview-widget-container__widget"></div>
