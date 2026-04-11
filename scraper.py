@@ -6,13 +6,16 @@ import json
 import re
 from google import genai
 
-# 1. SETUP GEMINI AI (Updated to modern google-genai)
+# 1. SETUP GEMINI AI
 api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
     client = genai.Client(api_key=api_key)
     model_id = "gemini-1.5-flash"
 else:
     client = None
+
+# DATABASE FILE FOR PERSISTENCE
+DB_FILE = "news_database.json"
 
 # 2. CONFIGURATION: EXPANDED RSS FEEDS
 FEEDS = {
@@ -65,8 +68,22 @@ FEEDS = {
     ]
 }
 
-def ai_rewrite(title, summary):
-    """Generates a strictly structured 4-paragraph investigative report."""
+def load_database():
+    """Loads previous posts to ensure they remain on the website."""
+    if os.path.exists(DB_FILE):
+        with open(DB_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+def save_database(data):
+    """Saves news data to JSON for persistence."""
+    with open(DB_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+def ai_rewrite(title, summary, source_url):
+    """Generates 4-paragraph report with BACKLINKS after paragraphs."""
+    backlink_html = f' <a href="{source_url}" target="_blank" style="color:var(--red); font-size:0.85rem; font-weight:bold; text-decoration:none;">[Read Further for Insights →]</a>'
+    
     if not client:
         return f"Full report on {title} is being processed."
     
@@ -74,23 +91,31 @@ def ai_rewrite(title, summary):
         prompt = (f"Act as a lead investigative journalist for The Continent News. "
                   f"Headline: '{title}' | Summary: '{summary}' "
                   f"Task: Write a detailed 4-paragraph news report. "
-                  f"Paragraph 1 (The Hook): Core facts and immediate impact. "
-                  f"Paragraph 2 (The Context): Historical background and contributing factors. "
-                  f"Paragraph 3 (The Stakes): Socio-economic impact and stakeholder reactions. "
-                  f"Paragraph 4 (The Outlook): Future projections and concluding analysis. "
-                  f"Strict Rules: No mention of other news sources. Exclusive tone. Format with 4 clear paragraphs.")
+                  f"Format: Return 4 paragraphs separated by exactly two newlines. "
+                  f"Paragraph 1: Core facts. Paragraph 2: Historical Context. Paragraph 3: Stakeholder Stakes. Paragraph 4: Outlook. "
+                  f"Strict Rules: No mention of other news sources.")
         
         response = client.models.generate_content(model=model_id, contents=prompt)
-        clean_text = response.text.strip().replace('"', '&quot;').replace("'", "\\'")
-        return clean_text.replace('\n\n', '<br><br>')
+        raw_paragraphs = response.text.strip().split('\n\n')
+        
+        # Inject backlink after every paragraph
+        processed_paragraphs = []
+        for p in raw_paragraphs:
+            if p.strip():
+                clean_p = p.replace('"', '&quot;').replace("'", "\\'")
+                processed_paragraphs.append(f"{clean_p}{backlink_html}")
+        
+        return '<br><br>'.join(processed_paragraphs)
     except Exception:
-        return (f"Developments regarding {title} continue to emerge as our correspondents track the situation.<br><br>"
-                f"Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>"
-                f"Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>"
-                f"As the situation evolves, our analysts expect a formal policy response within the coming business cycle.")
+        fallback = [
+            f"Developments regarding {title} continue to emerge.{backlink_html}",
+            f"Historical trends suggest regional shifts over the last decade.{backlink_html}",
+            f"Local stakeholders are currently being consulted to gauge impact.{backlink_html}",
+            f"Analysts expect a formal policy response soon.{backlink_html}"
+        ]
+        return '<br><br>'.join(fallback)
 
 def get_image(entry):
-    """Deep search for images to ensure visibility."""
     try:
         if 'media_content' in entry and len(entry.media_content) > 0:
             return entry.media_content[0].get('url')
@@ -106,7 +131,6 @@ def get_image(entry):
     return "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80"
 
 def get_telegram_data():
-    """Fetches latest post from Telegram. Returns safe defaults if feed fails."""
     try:
         tg_feed = feedparser.parse("https://rss.rssforever.com/telegram/channel/sputnik_africa")
         if tg_feed.entries:
@@ -120,43 +144,32 @@ def get_telegram_data():
     except: pass
     return {"title": "Live: Regional Updates", "summary": "New developments emerging. Stay tuned for live coverage."}
 
-def generate_sections():
+def generate_sections(db_data):
     html = ""
-    for category, urls in FEEDS.items():
+    for category in FEEDS.keys():
         cat_id = category.replace(' ', '').replace('&', '')
         html += f"<section id='{cat_id}' class='news-section'><h2>{category}</h2><div class='grid'>"
         
-        all_entries = []
-        for url in urls:
-            try:
-                feed = feedparser.parse(url)
-                if hasattr(feed, 'entries'):
-                    all_entries.extend(feed.entries[:3]) 
-            except: continue
+        # Get entries from database for this category
+        category_entries = db_data.get(category, [])
+        # Sort by date (latest first)
+        category_entries.sort(key=lambda x: x.get('timestamp', 0), reverse=True)
 
-        for entry in all_entries:
-            # Get original link for backlink
-            source_url = getattr(entry, 'link', '#')
-            full_story_content = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
-            
-            # Append Backlink to the investigative report
-            backlink_html = f"<hr><p style='font-size:0.8rem; opacity:0.7;'>Source Intelligence: <a href='{source_url}' target='_blank' style='color:var(--red); text-decoration: underline;'>Verify Original Dispatch</a></p>"
-            full_story = full_story_content + backlink_html
-            
-            preview = full_story_content.replace('<br><br>', ' ')[:140] + "..."
-            img_url = get_image(entry)
-            js_safe_title = entry.title.replace("'", "\\'").replace('"', '&quot;')
+        for entry in category_entries:
+            preview = entry['content'].replace('<br><br>', ' ')[:140] + "..."
+            js_safe_title = entry['title'].replace("'", "\\'").replace('"', '&quot;')
+            js_safe_content = entry['content'].replace("'", "\\'").replace('"', '&quot;')
             
             html += f"""
             <div class='card'>
                 <div class="img-container">
-                    <img src='{img_url}' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                    <img src='{entry['image']}' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
-                    <h3>{entry.title}</h3>
+                    <h3>{entry['title']}</h3>
                     <p>{preview}</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('{js_safe_title}', '{full_story}', '{img_url}')">Full Report</button>
+                        <button class="read-more-btn" onclick="openStory('{js_safe_title}', '{js_safe_content}', '{entry['image']}')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -165,16 +178,44 @@ def generate_sections():
     return html
 
 def update_website():
-    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Syncing Global Feeds...")
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Syncing and Archiving Feeds...")
+    
+    # 1. Load History
+    db_data = load_database()
+    
+    # 2. Fetch New Posts & Rewrite
+    for category, urls in FEEDS.items():
+        if category not in db_data: db_data[category] = []
+        
+        existing_titles = [post['title'] for post in db_data[category]]
+        
+        for url in urls:
+            try:
+                feed = feedparser.parse(url)
+                for entry in feed.entries[:2]: # Pull 2 from each source per cycle
+                    if entry.title not in existing_titles:
+                        source_url = getattr(entry, 'link', '#')
+                        rewritten_content = ai_rewrite(entry.title, getattr(entry, 'summary', ''), source_url)
+                        
+                        db_data[category].append({
+                            "title": entry.title,
+                            "content": rewritten_content,
+                            "image": get_image(entry),
+                            "timestamp": time.time(),
+                            "source": source_url
+                        })
+            except: continue
+    
+    # 3. Persist Updated Data
+    save_database(db_data)
+    
+    # 4. Generate the Page
     current_time = datetime.datetime.now().strftime("%Y")
     last_sync = datetime.datetime.now().strftime("%H:%M:%S")
-    GA_ID = "G-ZH9DSKC65T"
-    
-    sections_content = generate_sections()
+    sections_content = generate_sections(db_data)
     tg_news = get_telegram_data()
-    
-    # Use json.dumps to ensure the string is safe for JavaScript
     tg_json = json.dumps(tg_news)
+    GA_ID = "G-ZH9DSKC65T"
 
     full_html = f"""
 <!DOCTYPE html>
@@ -187,7 +228,6 @@ def update_website():
       gtag('js', new Date());
       gtag('config', '{GA_ID}');
     </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Continent News | Global Intelligence</title>
@@ -197,116 +237,52 @@ def update_website():
         body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; overflow-x: hidden; }}
         header {{ background: var(--white); padding: 30px 10px; text-align: center; border-bottom: 4px solid var(--dark); cursor: pointer; }}
         header h1 {{ margin: 0; font-size: 2.5rem; letter-spacing: -1px; text-transform: uppercase; font-weight: 900; }}
-        
         .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); height: 46px; }}
-        
         nav {{ background: var(--white); padding: 12px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }}
         nav a {{ color: #444; margin: 0 15px; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; font-weight: 800; cursor: pointer; padding: 5px 0; transition: 0.2s; }}
         nav a:hover, nav a.active {{ color: var(--red); border-bottom: 2px solid var(--red); }}
-
         .container {{ max-width: 1200px; margin: 20px auto; padding: 0 20px; min-height: 80vh; }}
         .news-section {{ display: none; }}
         .news-section.active {{ display: block; animation: fadeIn 0.5s ease; }}
         .news-section h2 {{ border-left: 5px solid var(--red); padding-left: 15px; text-transform: uppercase; font-size: 1.2rem; margin-bottom: 25px; }}
-
         @keyframes fadeIn {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
-
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }}
         .card {{ background: var(--white); border: 1px solid #ddd; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }}
         .card:hover {{ box-shadow: 0 10px 20px rgba(0,0,0,0.1); }}
-        
         .img-container {{ width: 100%; height: 220px; background: #222; overflow: hidden; }}
         .card img {{ width: 100%; height: 100%; object-fit: cover; display: block; transition: 0.5s; }}
         .card:hover img {{ transform: scale(1.05); }}
-        
         .card-content {{ padding: 20px; flex-grow: 1; }}
         .card h3 {{ font-size: 1.1rem; margin: 0 0 12px 0; line-height: 1.3; font-weight: 800; }}
         .card p {{ font-size: 0.9rem; color: #555; line-height: 1.6; }}
-
         .meta {{ display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid #eee; }}
         .read-more-btn {{ background: var(--dark); color: white; border: none; padding: 8px 15px; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; }}
         .exclusive-tag {{ font-size: 0.6rem; color: var(--red); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }}
-
-        /* X.com Floating Sidebar with Preview */
-        .x-sidebar-container {{
-            position: fixed; left: -320px; top: 50%; transform: translateY(-50%);
-            width: 360px; height: 500px; background: #fff;
-            display: flex; z-index: 4500; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 5px 0 25px rgba(0,0,0,0.3); border-radius: 0 12px 12px 0; overflow: hidden;
-        }}
+        .x-sidebar-container {{ position: fixed; left: -320px; top: 50%; transform: translateY(-50%); width: 360px; height: 500px; background: #fff; display: flex; z-index: 4500; transition: 0.4s; box-shadow: 5px 0 25px rgba(0,0,0,0.3); border-radius: 0 12px 12px 0; }}
         .x-sidebar-container:hover {{ left: 0; }}
-        
-        .x-preview-window {{ width: 320px; height: 100%; background: #000; overflow-y: auto; }}
-        
-        .x-handle {{
-            width: 40px; height: 100%; background: #000; color: #fff;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer;
-        }}
-        .x-handle i {{ font-size: 1.4rem; }}
-        .x-handle span {{ 
-            writing-mode: vertical-rl; text-transform: uppercase; 
-            font-size: 0.7rem; font-weight: bold; margin-top: 15px; letter-spacing: 3px;
-        }}
-
-        #tg-popup {{
-            position: fixed; bottom: 100px; right: 20px; width: 300px; background: white;
-            border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 4000;
-            display: none; flex-direction: column; overflow: hidden; border-left: 6px solid var(--tg-blue);
-            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }}
-        @keyframes slideUp {{ from {{ transform: translateY(150%); opacity: 0; }} to {{ transform: translateY(0); opacity: 1; }} }}
-        .tg-head {{ background: #f8f9fa; padding: 12px; font-size: 0.7rem; font-weight: bold; color: var(--tg-blue); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }}
-        .tg-body {{ padding: 15px; }}
-        .tg-body h4 {{ margin: 0 0 8px 0; font-size: 0.95rem; line-height: 1.2; }}
-        .tg-body p {{ margin: 0; font-size: 0.8rem; color: #666; line-height: 1.4; }}
-        .tg-btn {{ display: block; background: var(--tg-blue); color: white; text-align: center; padding: 10px; text-decoration: none; font-size: 0.75rem; font-weight: bold; }}
-
-        #storyModal {{ display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }}
-        .modal-body {{ background: var(--white); margin: 2% auto; padding: 0; width: 95%; max-width: 800px; border-radius: 0; position: relative; }}
-        .close {{ position: absolute; right: 20px; top: 15px; font-size: 40px; color: white; cursor: pointer; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }}
-        .modal-img-container {{ width: 100%; height: 450px; background: #000; }}
+        .x-preview-window {{ width: 320px; height: 100%; background: #000; overflow: auto; }}
+        .x-handle {{ width: 40px; height: 100%; background: #000; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; }}
+        #tg-popup {{ position: fixed; bottom: 100px; right: 20px; width: 300px; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 4000; display: none; border-left: 6px solid var(--tg-blue); flex-direction: column; }}
+        #storyModal {{ display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; }}
+        .modal-body {{ background: var(--white); margin: 2% auto; width: 95%; max-width: 850px; position: relative; }}
+        .modal-img-container {{ width: 100%; height: 400px; }}
         .modal-img {{ width: 100%; height: 100%; object-fit: cover; }}
         .modal-inner-padding {{ padding: 40px; }}
-        .modal-body h2 {{ font-size: 2.5rem; margin-top: 0; line-height: 1; font-weight: 900; letter-spacing: -1px; }}
-        .story-content {{ font-family: 'Georgia', serif; font-size: 1.25rem; line-height: 1.8; color: #222; }}
-
-        #sync-info {{ position: fixed; bottom: 85px; right: 20px; background: var(--red); color: white; padding: 4px 12px; border-radius: 2px; font-size: 10px; font-weight: bold; z-index: 500; }}
-        footer {{ position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #777; text-align: center; padding: 20px 0; font-size: 0.7rem; letter-spacing: 1px; z-index: 1000; }}
+        .story-content {{ font-family: 'Georgia', serif; font-size: 1.2rem; line-height: 1.8; color: #222; }}
+        #sync-info {{ position: fixed; bottom: 85px; right: 20px; background: var(--red); color: white; padding: 4px 12px; font-size: 10px; z-index: 500; }}
+        footer {{ position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #777; text-align: center; padding: 20px 0; font-size: 0.7rem; }}
     </style>
 </head>
 <body>
     <header onclick="switchPage('LatestNews')"><h1>The Continent News</h1></header>
-
-    <div class="x-sidebar-container">
-        <div class="x-preview-window">
-            <a class="twitter-timeline" data-width="320" data-height="500" data-theme="dark" href="https://twitter.com/sputnik_africa?ref_src=twsrc%5Etfw">Latest from @sputnik_africa</a> 
-            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-        </div>
-        <div class="x-handle">
-            <i class="fab fa-x-twitter"></i>
-            <span>UPDATES</span>
-        </div>
-    </div>
-
+    
     <div class="tradingview-widget-container">
       <div class="tradingview-widget-container__widget"></div>
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-      {{
-      "symbols": [
+      {{ "symbols": [
         {{ "proName": "FX_IDC:USDKES", "title": "USD/KES" }},
-        {{ "proName": "OANDA:XAUUSD", "title": "Gold" }},
-        {{ "proName": "OANDA:UK100GBP", "title": "FTSE 100" }},
-        {{ "proName": "INDEX:DXY", "title": "US Dollar Index" }},
-        {{ "proName": "INDEX:SPX", "title": "S&P 500" }},
         {{ "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" }}
-      ],
-      "showSymbolLogo": true,
-      "colorTheme": "dark",
-      "isTransparent": true,
-      "displayMode": "adaptive",
-      "locale": "en"
-    }}
+      ], "colorTheme": "dark", "isTransparent": true, "displayMode": "adaptive", "locale": "en" }}
       </script>
     </div>
 
@@ -319,86 +295,52 @@ def update_website():
         <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Tech & Business</a>
     </nav>
 
-    <div id="sync-info">LIVE UPDATE: {last_sync}</div>
+    <div id="sync-info">LAST SYNC: {last_sync}</div>
 
-    <div class="container" id="news-container">
+    <div class="container">
         {sections_content}
     </div>
 
-    <div id="tg-popup">
-        <div class="tg-head">
-            <span><i class="fab fa-telegram"></i> @SPUTNIK_AFRICA FLASH</span>
-            <span onclick="this.parentElement.parentElement.style.display='none'" style="cursor:pointer">&times;</span>
-        </div>
-        <div class="tg-body">
-            <h4 id="tg-title"></h4>
-            <p id="tg-desc"></p>
-        </div>
-        <a href="https://t.me/sputnik_africa" target="_blank" class="tg-btn">READ ON TELEGRAM</a>
-    </div>
-
     <div id="storyModal">
-        <span class="close" onclick="closeStory()">&times;</span>
+        <span onclick="closeStory()" style="position:fixed; right:30px; top:20px; color:white; font-size:40px; cursor:pointer;">&times;</span>
         <div class="modal-body">
-            <div class="modal-img-container">
-                <img id="modalImg" class="modal-img" src="" alt="Lead Image">
-            </div>
+            <div class="modal-img-container"><img id="modalImg" class="modal-img" src=""></div>
             <div class="modal-inner-padding">
-                <h2 id="modalTitle"></h2>
+                <h2 id="modalTitle" style="font-size:2.2rem; font-weight:900; margin-top:0;"></h2>
                 <div id="modalText" class="story-content"></div>
             </div>
         </div>
     </div>
 
-    <footer>&copy; {current_time} THE CONTINENT NEWS • GLOBAL INTELLIGENCE NETWORK • POWERED BY AI</footer>
+    <footer>&copy; {current_time} THE CONTINENT NEWS • GLOBAL INTELLIGENCE NETWORK</footer>
 
     <script>
-        let currentActiveSection = 'LatestNews';
-        const tgData = {tg_json};
-
-        function switchPage(sectionId) {{
-            currentActiveSection = sectionId;
-            const sections = document.querySelectorAll('.news-section');
-            sections.forEach(sec => {{
-                sec.classList.toggle('active', sec.id === sectionId);
-            }});
-
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {{
-                link.classList.toggle('active', link.id === 'btn-' + sectionId);
-            }});
+        function switchPage(id) {{
+            document.querySelectorAll('.news-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('btn-'+id).classList.add('active');
+            window.scrollTo(0,0);
         }}
-
-        function openStory(title, htmlContent, img) {{
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalText').innerHTML = htmlContent;
-            document.getElementById('modalImg').src = img;
+        function openStory(t, c, i) {{
+            document.getElementById('modalTitle').innerText = t;
+            document.getElementById('modalText').innerHTML = c;
+            document.getElementById('modalImg').src = i;
             document.getElementById('storyModal').style.display = "block";
             document.body.style.overflow = "hidden";
         }}
-
         function closeStory() {{
             document.getElementById('storyModal').style.display = "none";
             document.body.style.overflow = "auto";
         }}
-
-        window.onclick = e => {{ if (e.target == document.getElementById('storyModal')) closeStory(); }}
-        
-        window.onload = () => {{
-            switchPage('LatestNews');
-            if(tgData && tgData.title) {{
-                document.getElementById('tg-title').innerText = tgData.title;
-                document.getElementById('tg-desc').innerText = tgData.summary;
-                setTimeout(() => {{ document.getElementById('tg-popup').style.display = 'flex'; }}, 4000);
-            }}
-        }};
+        window.onload = () => switchPage('LatestNews');
     </script>
 </body>
 </html>
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(full_html)
-    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Build Complete.")
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Build Complete. Previous posts preserved.")
 
 if __name__ == "__main__":
     while True:
@@ -406,4 +348,4 @@ if __name__ == "__main__":
             update_website()
         except Exception as e:
             print(f"Update failed: {e}")
-        time.sleep(300)
+        time.sleep(900) # Runs every 15 minutes
