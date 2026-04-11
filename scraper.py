@@ -2,18 +2,19 @@ import feedparser
 import os
 import datetime
 import time
-import google.generativeai as genai
+import json
 import re
+from google import genai
 
-# 1. SETUP GEMINI AI
+# 1. SETUP GEMINI AI (Updated to modern google-genai)
 api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    client = genai.Client(api_key=api_key)
+    model_id = "gemini-1.5-flash"
 else:
-    model = None
+    client = None
 
-# 2. CONFIGURATION: RSS FEEDS
+# 2. CONFIGURATION: EXPANDED RSS FEEDS
 FEEDS = {
     'Latest News': [
         'https://www.standardmedia.co.ke/rss/headlines.php',
@@ -64,9 +65,9 @@ FEEDS = {
     ]
 }
 
-def ai_rewrite(title, summary, source_url):
-    """Generates a strictly structured 4-paragraph investigative report with authority backlinks."""
-    if not model:
+def ai_rewrite(title, summary):
+    """Generates a strictly structured 4-paragraph investigative report."""
+    if not client:
         return f"Full report on {title} is being processed."
     
     try:
@@ -77,15 +78,13 @@ def ai_rewrite(title, summary, source_url):
                   f"Paragraph 2 (The Context): Historical background and contributing factors. "
                   f"Paragraph 3 (The Stakes): Socio-economic impact and stakeholder reactions. "
                   f"Paragraph 4 (The Outlook): Future projections and concluding analysis. "
-                  f"At the end of Paragraph 4, add a backlink: <a href='{source_url}' target='_blank' style='color:#c0392b; font-weight:bold;'>[View Original Coverage]</a>. "
-                  f"Strict Rules: No mention of other news sources in prose. Exclusive tone. Format with 4 clear paragraphs.")
+                  f"Strict Rules: No mention of other news sources. Exclusive tone. Format with 4 clear paragraphs.")
         
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(model=model_id, contents=prompt)
         clean_text = response.text.strip().replace('"', '&quot;').replace("'", "\\'")
         return clean_text.replace('\n\n', '<br><br>')
-    except:
-        return (f"Developments regarding {title} continue to emerge. Our correspondents are tracking the situation. "
-                f"<a href='{source_url}' target='_blank'>Source Reference</a><br><br>"
+    except Exception:
+        return (f"Developments regarding {title} continue to emerge as our correspondents track the situation.<br><br>"
                 f"Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>"
                 f"Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>"
                 f"As the situation evolves, our analysts expect a formal policy response within the coming business cycle.")
@@ -107,7 +106,7 @@ def get_image(entry):
     return "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80"
 
 def get_telegram_data():
-    """Fetches the latest post from Sputnik Africa Telegram via RSS Bridge."""
+    """Fetches latest post from Telegram. Returns safe defaults if feed fails."""
     try:
         tg_feed = feedparser.parse("https://rss.rssforever.com/telegram/channel/sputnik_africa")
         if tg_feed.entries:
@@ -118,9 +117,8 @@ def get_telegram_data():
                 "title": latest.title.replace("'", "").replace('"', "")[:60] + "...",
                 "summary": clean_summary
             }
-    except:
-        return {"title": "Live: Sputnik Africa Updates", "summary": "New developments emerging from the region. Stay tuned for live coverage."}
-    return None
+    except: pass
+    return {"title": "Live: Regional Updates", "summary": "New developments emerging. Stay tuned for live coverage."}
 
 def generate_sections():
     html = ""
@@ -137,8 +135,7 @@ def generate_sections():
             except: continue
 
         for entry in all_entries:
-            source_link = getattr(entry, 'link', '#')
-            full_story = ai_rewrite(entry.title, getattr(entry, 'summary', ''), source_link)
+            full_story = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
             preview = full_story.replace('<br><br>', ' ')[:140] + "..."
             img_url = get_image(entry)
             js_safe_title = entry.title.replace("'", "\\'").replace('"', '&quot;')
@@ -162,14 +159,15 @@ def generate_sections():
 
 def update_website():
     print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Syncing Global Feeds...")
-    current_year = datetime.datetime.now().strftime("%Y")
+    current_time = datetime.datetime.now().strftime("%Y")
     last_sync = datetime.datetime.now().strftime("%H:%M:%S")
     GA_ID = "G-ZH9DSKC65T"
     
     sections_content = generate_sections()
-    tg = get_telegram_data()
-    # Safely stringify the JSON for JavaScript
-    tg_json_str = f"{{ \"title\": \"{tg['title']}\", \"summary\": \"{tg['summary']}\" }}"
+    tg_news = get_telegram_data()
+    
+    # Use json.dumps to ensure the string is safe for JavaScript
+    tg_json = json.dumps(tg_news)
 
     full_html = f"""
 <!DOCTYPE html>
@@ -189,7 +187,7 @@ def update_website():
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {{ --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; --tg-blue: #0088cc; }}
-        body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; overflow-x: hidden; }}
+        body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; }}
         header {{ background: var(--white); padding: 30px 10px; text-align: center; border-bottom: 4px solid var(--dark); cursor: pointer; }}
         header h1 {{ margin: 0; font-size: 2.5rem; letter-spacing: -1px; text-transform: uppercase; font-weight: 900; }}
         
@@ -235,14 +233,14 @@ def update_website():
         .tg-body p {{ margin: 0; font-size: 0.8rem; color: #666; line-height: 1.4; }}
         .tg-btn {{ display: block; background: var(--tg-blue); color: white; text-align: center; padding: 10px; text-decoration: none; font-size: 0.75rem; font-weight: bold; }}
 
-        #storyModal {{ display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; }}
-        .modal-body {{ background: var(--white); margin: 2% auto; padding: 0; width: 95%; max-width: 800px; position: relative; }}
-        .close {{ position: absolute; right: 20px; top: 15px; font-size: 40px; color: white; cursor: pointer; z-index: 10; }}
+        #storyModal {{ display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }}
+        .modal-body {{ background: var(--white); margin: 2% auto; padding: 0; width: 95%; max-width: 800px; border-radius: 0; position: relative; }}
+        .close {{ position: absolute; right: 20px; top: 15px; font-size: 40px; color: white; cursor: pointer; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }}
         .modal-img-container {{ width: 100%; height: 450px; background: #000; }}
         .modal-img {{ width: 100%; height: 100%; object-fit: cover; }}
         .modal-inner-padding {{ padding: 40px; }}
-        .modal-body h2 {{ font-size: 2.5rem; margin-top: 0; line-height: 1; font-weight: 900; }}
-        .story-content {{ font-family: 'Georgia', serif; font-size: 1.2rem; line-height: 1.8; color: #222; }}
+        .modal-body h2 {{ font-size: 2.5rem; margin-top: 0; line-height: 1; font-weight: 900; letter-spacing: -1px; }}
+        .story-content {{ font-family: 'Georgia', serif; font-size: 1.25rem; line-height: 1.8; color: #222; }}
 
         #sync-info {{ position: fixed; bottom: 85px; right: 20px; background: var(--red); color: white; padding: 4px 12px; border-radius: 2px; font-size: 10px; font-weight: bold; z-index: 500; }}
         footer {{ position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #777; text-align: center; padding: 20px 0; font-size: 0.7rem; letter-spacing: 1px; z-index: 1000; }}
@@ -258,11 +256,17 @@ def update_website():
       "symbols": [
         {{ "proName": "FX_IDC:USDKES", "title": "USD/KES" }},
         {{ "proName": "OANDA:XAUUSD", "title": "Gold" }},
+        {{ "proName": "OANDA:UK100GBP", "title": "FTSE 100" }},
         {{ "proName": "INDEX:DXY", "title": "US Dollar Index" }},
+        {{ "proName": "INDEX:SPX", "title": "S&P 500" }},
         {{ "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" }}
       ],
-      "showSymbolLogo": true, "colorTheme": "dark", "isTransparent": true, "displayMode": "adaptive", "locale": "en"
-      }}
+      "showSymbolLogo": true,
+      "colorTheme": "dark",
+      "isTransparent": true,
+      "displayMode": "adaptive",
+      "locale": "en"
+    }}
       </script>
     </div>
 
@@ -283,7 +287,7 @@ def update_website():
 
     <div id="tg-popup">
         <div class="tg-head">
-            <span><i class="fab fa-telegram"></i> FLASH UPDATE</span>
+            <span><i class="fab fa-telegram"></i> @SPUTNIK_AFRICA FLASH</span>
             <span onclick="this.parentElement.parentElement.style.display='none'" style="cursor:pointer">&times;</span>
         </div>
         <div class="tg-body">
@@ -306,18 +310,21 @@ def update_website():
         </div>
     </div>
 
-    <footer>&copy; {current_year} THE CONTINENT NEWS • GLOBAL INTELLIGENCE NETWORK • POWERED BY AI</footer>
+    <footer>&copy; {current_time} THE CONTINENT NEWS • GLOBAL INTELLIGENCE NETWORK • POWERED BY AI</footer>
 
     <script>
         let currentActiveSection = 'LatestNews';
-        const tgData = {tg_json_str};
+        const tgData = {tg_json};
 
         function switchPage(sectionId) {{
             currentActiveSection = sectionId;
-            document.querySelectorAll('.news-section').forEach(sec => {{
+            const sections = document.querySelectorAll('.news-section');
+            sections.forEach(sec => {{
                 sec.classList.toggle('active', sec.id === sectionId);
             }});
-            document.querySelectorAll('.nav-link').forEach(link => {{
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {{
                 link.classList.toggle('active', link.id === 'btn-' + sectionId);
             }});
         }}
@@ -335,16 +342,11 @@ def update_website():
             document.body.style.overflow = "auto";
         }}
 
-        setInterval(function() {{
-            if (document.getElementById('storyModal').style.display !== "block") {{
-                location.reload();
-            }}
-        }}, 300000); 
-
         window.onclick = e => {{ if (e.target == document.getElementById('storyModal')) closeStory(); }}
+        
         window.onload = () => {{
             switchPage('LatestNews');
-            if(tgData) {{
+            if(tgData && tgData.title) {{
                 document.getElementById('tg-title').innerText = tgData.title;
                 document.getElementById('tg-desc').innerText = tgData.summary;
                 setTimeout(() => {{ document.getElementById('tg-popup').style.display = 'flex'; }}, 4000);
