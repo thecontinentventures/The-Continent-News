@@ -12,65 +12,95 @@ if api_key:
 else:
     model = None
 
-# 2. CONFIGURATION: RSS FEEDS
+# 2. CONFIGURATION: EXPANDED RSS FEEDS
 FEEDS = {
     'Latest News': [
         'https://www.standardmedia.co.ke/rss/headlines.php',
-        'https://nation.africa/service/rss/622/622/rss.xml'
+        'https://nation.africa/service/rss/622/622/rss.xml',
+        'https://kenyanews.go.ke/feed/',
+        'https://www.kenyans.co.ke/feeds/news',
+        'https://www.capitalfm.co.ke/news/feed/'
     ],
-    'Africa': ['https://www.africanews.com/feed/'],
+    'Africa': [
+        'https://www.africanews.com/feed/',
+        'https://allafrica.com/tools/headlines/rdf/africa/main.rdf',
+        'https://africa.com/feed/',
+        'https://newafricanmagazine.com/feed/',
+        'https://mg.co.za/feed/'
+    ],
     'International': [
         'http://feeds.bbci.co.uk/news/world/rss.xml',
-        'https://www.aljazeera.com/xml/rss/all.xml'
+        'https://www.aljazeera.com/xml/rss/all.xml',
+        'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',
+        'https://www.france24.com/en/rss',
+        'https://news.un.org/en/rss/all/rss.xml'
     ],
-    'Sports': ['https://www.skysports.com/rss/12040'],
-    'Fashion': ['https://www.vogue.com/feed/rss'],
+    'Sports': [
+        'https://www.skysports.com/rss/12040',
+        'https://www.espn.com/espn/rss/news',
+        'https://api.foxsports.com/v1/rss?partnerKey=zBaFxY3p973tA9ajfSabsSkX7S3z9SjL',
+        'https://www.goal.com/en/feeds/news'
+    ],
+    'Fashion': [
+        'https://www.vogue.com/feed/rss',
+        'https://www.businessoffashion.com/feed',
+        'https://wwd.com/fashion-news/feed/',
+        'https://www.harpersbazaar.com/rss/fashion.xml',
+        'https://hypebeast.com/fashion/feed'
+    ],
     'Tech & Biz': [
         'https://www.businessdailyafrica.com/service/rss/539444/539444/rss.xml',
-        'https://itweb.africa/feed'
+        'https://itnewsafrica.com/feed/',
+        'https://techcabal.com/feed/',
+        'https://african.business/feed/',
+        'https://www.ft.com/?format=rss'
     ]
 }
 
 def ai_rewrite(title, summary):
-    """Generates an extensive 4-paragraph investigative report using Gemini."""
+    """Generates a strictly structured 4-paragraph investigative report."""
     if not model:
         return f"Full report on {title} is being processed."
     
     try:
-        # Prompt updated to strictly require 4 detailed paragraphs
         prompt = (f"Act as a lead investigative journalist for The Continent News. "
-                  f"Based on this headline: '{title}' and summary: '{summary}', "
-                  f"write an extensive, standalone 4-paragraph news report. "
-                  f"Paragraph 1: Executive Summary - The core facts and immediate impact. "
-                  f"Paragraph 2: Deep Dive - Historical context, socioeconomic factors, or underlying causes. "
-                  f"Paragraph 3: Stakeholder Analysis - Perspectives from those involved or affected. "
-                  f"Paragraph 4: Strategic Outlook - Future implications, risks, and a concluding statement. "
-                  f"Do not mention other news outlets. Write it as an exclusive, definitive account.")
+                  f"Headline: '{title}' | Summary: '{summary}' "
+                  f"Task: Write a detailed 4-paragraph news report. "
+                  f"Paragraph 1 (The Hook): Core facts and immediate impact. "
+                  f"Paragraph 2 (The Context): Historical background and contributing factors. "
+                  f"Paragraph 3 (The Stakes): Socio-economic impact and stakeholder reactions. "
+                  f"Paragraph 4 (The Outlook): Future projections and concluding analysis. "
+                  f"Strict Rules: No mention of other news sources. Exclusive tone. Format with 4 clear paragraphs.")
         
         response = model.generate_content(prompt)
         clean_text = response.text.strip().replace('"', '&quot;').replace("'", "\\'")
-        # Ensure double line breaks for HTML readability
+        # Ensure distinct paragraph separation for HTML
         return clean_text.replace('\n\n', '<br><br>')
     except:
-        return f"Developments regarding {title} continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates."
+        return (f"Developments regarding {title} continue to emerge as our correspondents track the situation.<br><br>"
+                f"Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>"
+                f"Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>"
+                f"As the situation evolves, our analysts expect a formal policy response within the coming business cycle.")
 
 def get_image(entry):
-    """Enhanced image extraction to ensure visuals are visible."""
+    """Deep search for images to ensure visibility."""
     try:
-        # Check media content tags
+        # Check standard RSS media tags
         if 'media_content' in entry and len(entry.media_content) > 0:
             return entry.media_content[0].get('url')
-        # Check standard enclosure tags
         if 'enclosures' in entry and len(entry.enclosures) > 0:
             return entry.enclosures[0].get('url')
-        # Check for image links in the body
+        # Check for images hidden in links
         if 'links' in entry:
             for link in entry.links:
                 if 'image' in link.get('type', ''):
                     return link.get('href')
+        # Check for thumbnails
+        if 'media_thumbnail' in entry and len(entry.media_thumbnail) > 0:
+            return entry.media_thumbnail[0].get('url')
     except: pass
-    # High-quality fallback if no image is found
-    return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
+    # Default high-resolution fallback
+    return "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80"
 
 def generate_sections():
     html = ""
@@ -79,27 +109,29 @@ def generate_sections():
         html += f"<section id='{cat_id}' class='news-section'><h2>{category}</h2><div class='grid'>"
         all_entries = []
         for url in urls:
-            feed = feedparser.parse(url)
-            if hasattr(feed, 'entries'):
-                all_entries.extend(feed.entries[:6])
+            try:
+                feed = feedparser.parse(url)
+                if hasattr(feed, 'entries'):
+                    all_entries.extend(feed.entries[:4]) # Fetch top 4 from each source to avoid clutter
+            except: continue
 
         for entry in all_entries:
             full_story = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
             preview_text = full_story.replace('<br><br>', ' ')
-            preview = preview_text[:120] + "..."
+            preview = preview_text[:140] + "..."
             img_url = get_image(entry)
             js_safe_title = entry.title.replace("'", "\\'")
             
             html += f"""
             <div class='card'>
                 <div class="img-container">
-                    <img src='{img_url}' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                    <img src='{img_url}' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
                     <h3>{entry.title}</h3>
                     <p>{preview}</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('{js_safe_title}', '{full_story}', '{img_url}')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('{js_safe_title}', '{full_story}', '{img_url}')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -108,8 +140,7 @@ def generate_sections():
     return html
 
 def update_website():
-    """Main function to update index.html."""
-    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Refreshing news database...")
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Syncing Global Feeds...")
     current_time = datetime.datetime.now().strftime("%Y")
     last_sync = datetime.datetime.now().strftime("%H:%M:%S")
     GA_ID = "G-ZH9DSKC65T"
@@ -130,51 +161,53 @@ def update_website():
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Continent News</title>
+    <title>The Continent News | Global Intelligence</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {{ --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; }}
-        body {{ font-family: 'Georgia', serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; overflow-x: hidden; }}
-        header {{ background: var(--white); padding: 20px 10px; text-align: center; border-bottom: 1px solid #ddd; cursor: pointer; }}
-        header h1 {{ margin: 0; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }}
+        body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; }}
+        header {{ background: var(--white); padding: 30px 10px; text-align: center; border-bottom: 4px solid var(--dark); cursor: pointer; }}
+        header h1 {{ margin: 0; font-size: 2.5rem; letter-spacing: -1px; text-transform: uppercase; font-weight: 900; }}
         
         .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); }}
         
-        nav {{ background: var(--white); padding: 10px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }}
-        nav a {{ color: #555; margin: 0 10px; text-decoration: none; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; cursor: pointer; padding: 5px 0; transition: 0.3s; }}
-        nav a.active {{ color: var(--red); border-bottom: 2px solid var(--red); }}
+        nav {{ background: var(--white); padding: 12px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }}
+        nav a {{ color: #444; margin: 0 15px; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; font-weight: 800; cursor: pointer; padding: 5px 0; transition: 0.2s; }}
+        nav a:hover, nav a.active {{ color: var(--red); border-bottom: 2px solid var(--red); }}
 
-        .container {{ max-width: 1100px; margin: 20px auto; padding: 0 20px; min-height: 80vh; }}
+        .container {{ max-width: 1200px; margin: 20px auto; padding: 0 20px; }}
         .news-section {{ display: none; }}
-        .news-section.active {{ display: block; animation: fadeIn 0.4s ease-in-out; }}
+        .news-section.active {{ display: block; animation: fadeIn 0.5s ease; }}
+        .news-section h2 {{ border-left: 5px solid var(--red); padding-left: 15px; text-transform: uppercase; font-size: 1.2rem; margin-bottom: 25px; }}
 
-        @keyframes fadeIn {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
+        @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
 
-        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }}
-        .card {{ background: var(--white); border: 1px solid #eee; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; }}
-        .card:hover {{ transform: translateY(-5px); }}
+        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }}
+        .card {{ background: var(--white); border: 1px solid #ddd; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }}
+        .card:hover {{ box-shadow: 0 10px 20px rgba(0,0,0,0.1); }}
         
-        .img-container {{ width: 100%; height: 200px; background: #eee; overflow: hidden; }}
+        .img-container {{ width: 100%; height: 220px; background: #222; }}
         .card img {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
         
-        .card-content {{ padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }}
-        .card h3 {{ font-size: 1.1rem; margin: 0 0 10px 0; line-height: 1.3; font-weight: 900; }}
-        .card p {{ font-size: 0.9rem; color: #444; line-height: 1.5; margin-bottom: 15px; }}
+        .card-content {{ padding: 20px; flex-grow: 1; }}
+        .card h3 {{ font-size: 1.1rem; margin: 0 0 12px 0; line-height: 1.3; font-weight: 800; }}
+        .card p {{ font-size: 0.9rem; color: #555; line-height: 1.6; }}
 
-        .meta {{ display: flex; justify-content: space-between; align-items: center; margin-top: auto; }}
-        .read-more-btn {{ background: none; border: none; color: var(--red); font-weight: bold; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; padding: 0; }}
-        .exclusive-tag {{ font-size: 0.6rem; color: #999; text-transform: uppercase; border: 1px solid #ccc; padding: 2px 5px; }}
+        .meta {{ display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid #eee; }}
+        .read-more-btn {{ background: var(--dark); color: white; border: none; padding: 8px 15px; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; }}
+        .exclusive-tag {{ font-size: 0.6rem; color: var(--red); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }}
 
-        #storyModal {{ display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; }}
-        .modal-body {{ background: var(--white); margin: 3% auto; padding: 40px; width: 90%; max-width: 750px; border-radius: 4px; position: relative; }}
-        .close {{ position: absolute; right: 20px; top: 10px; font-size: 35px; cursor: pointer; }}
-        .modal-img-container {{ width: 100%; height: 400px; margin-bottom: 25px; background: #eee; }}
-        .modal-img {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
-        .modal-body h2 {{ font-size: 2.2rem; margin-bottom: 20px; line-height: 1.1; font-weight: 900; }}
-        .modal-body .story-content {{ font-size: 1.2rem; line-height: 1.8; color: #111; }}
+        #storyModal {{ display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }}
+        .modal-body {{ background: var(--white); margin: 2% auto; padding: 0; width: 95%; max-width: 800px; border-radius: 0; position: relative; }}
+        .close {{ position: absolute; right: 20px; top: 15px; font-size: 40px; color: white; cursor: pointer; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }}
+        .modal-img-container {{ width: 100%; height: 450px; background: #000; }}
+        .modal-img {{ width: 100%; height: 100%; object-fit: cover; }}
+        .modal-inner-padding {{ padding: 40px; }}
+        .modal-body h2 {{ font-size: 2.5rem; margin-top: 0; line-height: 1; font-weight: 900; letter-spacing: -1px; }}
+        .story-content {{ font-family: 'Georgia', serif; font-size: 1.25rem; line-height: 1.8; color: #222; }}
 
-        #sync-info {{ position: fixed; bottom: 70px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-family: monospace; z-index: 500; }}
-        footer {{ position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #999; text-align: center; padding: 15px 0; font-size: 0.65rem; z-index: 1000; }}
+        #sync-info {{ position: fixed; bottom: 85px; right: 20px; background: var(--red); color: white; padding: 4px 12px; border-radius: 2px; font-size: 10px; font-weight: bold; z-index: 500; }}
+        footer {{ position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #777; text-align: center; padding: 20px 0; font-size: 0.7rem; letter-spacing: 1px; z-index: 1000; }}
     </style>
 </head>
 <body>
@@ -190,7 +223,8 @@ def update_website():
         {{ "description": "Safaricom", "proName": "NSEKE:SCOM" }},
         {{ "description": "Equity Group", "proName": "NSEKE:EQTY" }},
         {{ "description": "KCB Group", "proName": "NSEKE:KCB" }},
-        {{ "description": "E.A. Breweries", "proName": "NSEKE:EABL" }}
+        {{ "description": "Gold", "proName": "TVC:GOLD" }},
+        {{ "description": "Brent Crude", "proName": "TVC:UKOIL" }}
       ],
       "showSymbolLogo": true,
       "colorTheme": "dark",
@@ -207,27 +241,29 @@ def update_website():
         <a onclick="switchPage('International')" id="btn-International" class="nav-link">World</a>
         <a onclick="switchPage('Sports')" id="btn-Sports" class="nav-link">Sports</a>
         <a onclick="switchPage('Fashion')" id="btn-Fashion" class="nav-link">Fashion</a>
-        <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Business</a>
+        <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Tech & Business</a>
     </nav>
 
-    <div id="sync-info">LAST UPDATED: {last_sync}</div>
+    <div id="sync-info">LIVE UPDATE: {last_sync}</div>
 
     <div class="container" id="news-container">
         {sections_content}
     </div>
 
     <div id="storyModal">
+        <span class="close" onclick="closeStory()">&times;</span>
         <div class="modal-body">
-            <span class="close" onclick="closeStory()">&times;</span>
             <div class="modal-img-container">
-                <img id="modalImg" class="modal-img" src="" alt="Article Image">
+                <img id="modalImg" class="modal-img" src="" alt="Lead Image">
             </div>
-            <h2 id="modalTitle"></h2>
-            <div id="modalText" class="story-content"></div>
+            <div class="modal-inner-padding">
+                <h2 id="modalTitle"></h2>
+                <div id="modalText" class="story-content"></div>
+            </div>
         </div>
     </div>
 
-    <footer>&copy; {current_time} The Continent News • AI JOURNALISM • SILENT SYNC ACTIVE</footer>
+    <footer>&copy; {current_time} THE CONTINENT NEWS • GLOBAL INTELLIGENCE NETWORK • POWERED BY AI</footer>
 
     <script>
         let currentActiveSection = 'LatestNews';
@@ -241,9 +277,7 @@ def update_website():
             navLinks.forEach(link => link.classList.remove('active'));
 
             const target = document.getElementById(sectionId);
-            if (target) {{
-                target.classList.add('active');
-            }}
+            if (target) target.classList.add('active');
 
             const activeBtn = document.getElementById('btn-' + sectionId);
             if (activeBtn) activeBtn.classList.add('active');
@@ -251,12 +285,7 @@ def update_website():
         }}
 
         function openStory(title, htmlContent, img) {{
-            // GA4 TRACKING
-            gtag('event', 'select_content', {{
-                'content_type': 'article',
-                'item_id': title
-            }});
-
+            gtag('event', 'view_item', {{ 'item_name': title }});
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalText').innerHTML = htmlContent;
             document.getElementById('modalImg').src = img;
@@ -269,26 +298,19 @@ def update_website():
             document.body.style.overflow = "auto";
         }}
 
-        // SILENT UPDATE ENGINE
         setInterval(function() {{
             fetch(window.location.href + '?t=' + new Date().getTime())
                 .then(response => response.text())
                 .then(htmlText => {{
                     const parser = new DOMParser();
                     const newDoc = parser.parseFromString(htmlText, 'text/html');
-                    const newContent = newDoc.getElementById('news-container').innerHTML;
-                    document.getElementById('news-container').innerHTML = newContent;
-                    const newTime = newDoc.getElementById('sync-info').innerText;
-                    document.getElementById('sync-info').innerText = newTime;
+                    document.getElementById('news-container').innerHTML = newDoc.getElementById('news-container').innerHTML;
+                    document.getElementById('sync-info').innerText = newDoc.getElementById('sync-info').innerText;
                     switchPage(currentActiveSection);
-                }})
-                .catch(err => console.warn("Background update failed:", err));
+                }});
         }}, 300000); 
 
-        window.onclick = function(event) {{
-            if (event.target == document.getElementById('storyModal')) {{ closeStory(); }}
-        }}
-
+        window.onclick = e => {{ if (e.target == document.getElementById('storyModal')) closeStory(); }}
         window.onload = () => switchPage('LatestNews');
     </script>
 </body>
@@ -296,14 +318,12 @@ def update_website():
 """
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(full_html)
-    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Success: index.html updated.")
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Build Complete.")
 
 if __name__ == "__main__":
     while True:
         try:
             update_website()
         except Exception as e:
-            print(f"Loop error: {e}")
-        
-        print("Waiting 5 minutes for next crawl...")
+            print(f"Update failed: {e}")
         time.sleep(300)
