@@ -9,7 +9,6 @@
       gtag('js', new Date());
       gtag('config', 'G-ZH9DSKC65T');
     </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Continent News | Global Intelligence</title>
@@ -19,81 +18,41 @@
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; overflow-x: hidden; }
         header { background: var(--white); padding: 30px 10px; text-align: center; border-bottom: 4px solid var(--dark); cursor: pointer; }
         header h1 { margin: 0; font-size: 2.5rem; letter-spacing: -1px; text-transform: uppercase; font-weight: 900; }
-        
         .tradingview-widget-container { width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); height: 46px; }
-        
         nav { background: var(--white); padding: 12px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         nav a { color: #444; margin: 0 15px; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; font-weight: 800; cursor: pointer; padding: 5px 0; transition: 0.2s; }
         nav a:hover, nav a.active { color: var(--red); border-bottom: 2px solid var(--red); }
-
         .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; min-height: 80vh; }
         .news-section { display: none; }
         .news-section.active { display: block; animation: fadeIn 0.5s ease; }
         .news-section h2 { border-left: 5px solid var(--red); padding-left: 15px; text-transform: uppercase; font-size: 1.2rem; margin-bottom: 25px; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
         .card { background: var(--white); border: 1px solid #ddd; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }
         .card:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        
         .img-container { width: 100%; height: 220px; background: #222; overflow: hidden; }
         .card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: 0.5s; }
         .card:hover img { transform: scale(1.05); }
-        
         .card-content { padding: 20px; flex-grow: 1; }
         .card h3 { font-size: 1.1rem; margin: 0 0 12px 0; line-height: 1.3; font-weight: 800; }
         .card p { font-size: 0.9rem; color: #555; line-height: 1.6; }
-
         .meta { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid #eee; }
         .read-more-btn { background: var(--dark); color: white; border: none; padding: 8px 15px; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; }
         .exclusive-tag { font-size: 0.6rem; color: var(--red); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-
-        .x-sidebar-container {
-            position: fixed; left: -320px; top: 50%; transform: translateY(-50%);
-            width: 360px; height: 500px; background: #fff;
-            display: flex; z-index: 4500; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 5px 0 25px rgba(0,0,0,0.3); border-radius: 0 12px 12px 0; overflow: hidden;
-        }
+        .x-sidebar-container { position: fixed; left: -320px; top: 50%; transform: translateY(-50%); width: 360px; height: 500px; background: #fff; display: flex; z-index: 4500; transition: 0.4s; box-shadow: 5px 0 25px rgba(0,0,0,0.3); border-radius: 0 12px 12px 0; overflow: hidden; }
         .x-sidebar-container:hover { left: 0; }
-        
         .x-preview-window { width: 320px; height: 100%; background: #000; overflow-y: auto; }
-        
-        .x-handle {
-            width: 40px; height: 100%; background: #000; color: #fff;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer;
-        }
-        .x-handle i { font-size: 1.4rem; }
-        .x-handle span { 
-            writing-mode: vertical-rl; text-transform: uppercase; 
-            font-size: 0.7rem; font-weight: bold; margin-top: 15px; letter-spacing: 3px;
-        }
-
-        #tg-popup {
-            position: fixed; bottom: 100px; right: 20px; width: 300px; background: white;
-            border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 4000;
-            display: none; flex-direction: column; overflow: hidden; border-left: 6px solid var(--tg-blue);
-            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes slideUp { from { transform: translateY(150%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .tg-head { background: #f8f9fa; padding: 12px; font-size: 0.7rem; font-weight: bold; color: var(--tg-blue); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .tg-body { padding: 15px; }
-        .tg-body h4 { margin: 0 0 8px 0; font-size: 0.95rem; line-height: 1.2; }
-        .tg-body p { margin: 0; font-size: 0.8rem; color: #666; line-height: 1.4; }
-        .tg-btn { display: block; background: var(--tg-blue); color: white; text-align: center; padding: 10px; text-decoration: none; font-size: 0.75rem; font-weight: bold; }
-
+        .x-handle { width: 40px; height: 100%; background: #000; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
+        #tg-popup { position: fixed; bottom: 100px; right: 20px; width: 300px; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 4000; display: none; flex-direction: column; overflow: hidden; border-left: 6px solid var(--tg-blue); }
         #storyModal { display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
-        .modal-body { background: var(--white); margin: 2% auto; padding: 0; width: 95%; max-width: 800px; border-radius: 0; position: relative; }
-        .close { position: absolute; right: 20px; top: 15px; font-size: 40px; color: white; cursor: pointer; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .modal-body { background: var(--white); margin: 2% auto; padding: 0; width: 95%; max-width: 800px; position: relative; }
+        .close { position: absolute; right: 20px; top: 15px; font-size: 40px; color: white; cursor: pointer; z-index: 10; }
         .modal-img-container { width: 100%; height: 450px; background: #000; }
         .modal-img { width: 100%; height: 100%; object-fit: cover; }
         .modal-inner-padding { padding: 40px; }
-        .modal-body h2 { font-size: 2.5rem; margin-top: 0; line-height: 1; font-weight: 900; letter-spacing: -1px; }
         .story-content { font-family: 'Georgia', serif; font-size: 1.25rem; line-height: 1.8; color: #222; }
-
         #sync-info { position: fixed; bottom: 85px; right: 20px; background: var(--red); color: white; padding: 4px 12px; border-radius: 2px; font-size: 10px; font-weight: bold; z-index: 500; }
-        footer { position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #777; text-align: center; padding: 20px 0; font-size: 0.7rem; letter-spacing: 1px; z-index: 1000; }
+        footer { position: fixed; bottom: 0; width: 100%; background: var(--dark); color: #777; text-align: center; padding: 20px 0; font-size: 0.7rem; z-index: 1000; }
     </style>
 </head>
 <body>
@@ -101,34 +60,10 @@
 
     <div class="x-sidebar-container">
         <div class="x-preview-window">
-            <a class="twitter-timeline" data-width="320" data-height="500" data-theme="dark" href="https://twitter.com/sputnik_africa?ref_src=twsrc%5Etfw">Latest from @sputnik_africa</a> 
+            <a class="twitter-timeline" data-width="320" data-height="500" data-theme="dark" href="https://twitter.com/sputnik_africa">Latest from @sputnik_africa</a> 
             <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         </div>
-        <div class="x-handle">
-            <i class="fab fa-x-twitter"></i>
-            <span>UPDATES</span>
-        </div>
-    </div>
-
-    <div class="tradingview-widget-container">
-      <div class="tradingview-widget-container__widget"></div>
-      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-      {
-      "symbols": [
-        { "proName": "FX_IDC:USDKES", "title": "USD/KES" },
-        { "proName": "OANDA:XAUUSD", "title": "Gold" },
-        { "proName": "OANDA:UK100GBP", "title": "FTSE 100" },
-        { "proName": "INDEX:DXY", "title": "US Dollar Index" },
-        { "proName": "INDEX:SPX", "title": "S&P 500" },
-        { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" }
-      ],
-      "showSymbolLogo": true,
-      "colorTheme": "dark",
-      "isTransparent": true,
-      "displayMode": "adaptive",
-      "locale": "en"
-    }
-      </script>
+        <div class="x-handle"><i class="fab fa-x-twitter"></i><span>UPDATES</span></div>
     </div>
 
     <nav id="mainNav">
@@ -140,23 +75,8 @@
         <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Tech & Business</a>
     </nav>
 
-    <div id="sync-info">LIVE UPDATE: 14:09:49</div>
-
-    <div class="container" id="news-container">
-        <section id='LatestNews' class='news-section'><h2>Latest News</h2><div class='grid'>
-            <div class='card'>
-                <div class="img-container">
-                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                </div>
-                <div class="card-content">
-                    <h3>Gachagua accuses police of ‘pretending to act’ after Southern Bypass chaos</h3>
-                    <p>Developments regarding Gachagua accuses police of ‘pretending to act’ after Southern Bypass chaos continue to emerge as our correspondents t...</p>
-                    <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Gachagua accuses police of ‘pretending to act’ after Southern Bypass chaos', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBHYWNoYWd1YSBhY2N1c2VzIHBvbGljZSBvZiDigJhwcmV0ZW5kaW5nIHRvIGFjdOKAmSBhZnRlciBTb3V0aGVybiBCeXBhc3MgY2hhb3MgY29udGludWUgdG8gZW1lcmdlIGFzIG91ciBjb3JyZXNwb25kZW50cyB0cmFjayB0aGUgc2l0dWF0aW9uLjxicj48YnI+SGlzdG9yaWNhbCBkYXRhIHN1Z2dlc3RzIHRoaXMgdHJlbmQgZm9sbG93cyBhIHBhdHRlcm4gb2YgcmVnaW9uYWwgc2hpZnRzIG9ic2VydmVkIG92ZXIgdGhlIGxhc3QgZGVjYWRlLjxicj48YnI+TG9jYWwgc3Rha2Vob2xkZXJzIGFuZCBjb21tdW5pdHkgbGVhZGVycyBhcmUgY3VycmVudGx5IGJlaW5nIGNvbnN1bHRlZCB0byBnYXVnZSB0aGUgZnVsbCBicmVhZHRoIG9mIHRoZSBpbXBhY3QuPGJyPjxicj5BcyB0aGUgc2l0dWF0aW9uIGV2b2x2ZXMsIG91ciBhbmFseXN0cyBleHBlY3QgYSBmb3JtYWwgcG9saWN5IHJlc3BvbnNlIHdpdGhpbiB0aGUgY29taW5nIGJ1c2luZXNzIGN5Y2xlLjxicj48YnI+PGEgaHJlZj0iaHR0cHM6Ly93d3cuY2FwaXRhbGZtLmNvLmtlL25ld3MvMjAyNi8wNC9nYWNoYWd1YS1hY2N1c2VzLXBvbGljZS1raWt1eXUtY2hhb3Mtc291dGhlcm4tYnlwYXNzLWF0dGFja3MvIiB0YXJnZXQ9Il9ibGFuayIgc3R5bGU9ImNvbG9yOiNjMDM5MmI7IGZvbnQtd2VpZ2h0OmJvbGQ7IHRleHQtZGVjb3JhdGlvbjpub25lOyBmb250LXNpemU6MC45cmVtOyI+W1JlYWQgdGhlIG9yaWdpbmFsIGZ1bGwgcmVwb3J0IG9uIHRoZSBzb3VyY2Ugc2l0ZSDihpJdPC9hPg==', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
-                        <span class="exclusive-tag">Exclusive</span>
-                    </div>
-                </div>
-            </div>
+    <div id="sync-info">LIVE UPDATE: 14:30:30</div>
+    <div class="container" id="news-container"><section id='LatestNews' class='news-section'><h2>Latest News</h2><div class='grid'>
             <div class='card'>
                 <div class="img-container">
                     <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
@@ -179,6 +99,19 @@
                     <p>Developments regarding Kikuyu on edge as police tighten security, remain mum on planned rally continue to emerge as our correspondents track...</p>
                     <div class="meta">
                         <button class="read-more-btn" onclick="openStory('Kikuyu on edge as police tighten security, remain mum on planned rally', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBLaWt1eXUgb24gZWRnZSBhcyBwb2xpY2UgdGlnaHRlbiBzZWN1cml0eSwgcmVtYWluIG11bSBvbiBwbGFubmVkIHJhbGx5IGNvbnRpbnVlIHRvIGVtZXJnZSBhcyBvdXIgY29ycmVzcG9uZGVudHMgdHJhY2sgdGhlIHNpdHVhdGlvbi48YnI+PGJyPkhpc3RvcmljYWwgZGF0YSBzdWdnZXN0cyB0aGlzIHRyZW5kIGZvbGxvd3MgYSBwYXR0ZXJuIG9mIHJlZ2lvbmFsIHNoaWZ0cyBvYnNlcnZlZCBvdmVyIHRoZSBsYXN0IGRlY2FkZS48YnI+PGJyPkxvY2FsIHN0YWtlaG9sZGVycyBhbmQgY29tbXVuaXR5IGxlYWRlcnMgYXJlIGN1cnJlbnRseSBiZWluZyBjb25zdWx0ZWQgdG8gZ2F1Z2UgdGhlIGZ1bGwgYnJlYWR0aCBvZiB0aGUgaW1wYWN0Ljxicj48YnI+QXMgdGhlIHNpdHVhdGlvbiBldm9sdmVzLCBvdXIgYW5hbHlzdHMgZXhwZWN0IGEgZm9ybWFsIHBvbGljeSByZXNwb25zZSB3aXRoaW4gdGhlIGNvbWluZyBidXNpbmVzcyBjeWNsZS48YnI+PGJyPjxhIGhyZWY9Imh0dHBzOi8vd3d3LmNhcGl0YWxmbS5jby5rZS9uZXdzLzIwMjYvMDQvcG9saWNlLXNpbGVudC1nYWNoYWd1YS1yYWxseS1raWt1eXUtc291dGhlcm4tYnlwYXNzLWNoYW9zLyIgdGFyZ2V0PSJfYmxhbmsiIHN0eWxlPSJjb2xvcjojYzAzOTJiOyBmb250LXdlaWdodDpib2xkOyB0ZXh0LWRlY29yYXRpb246bm9uZTsgZm9udC1zaXplOjAuOXJlbTsiPltSZWFkIHRoZSBvcmlnaW5hbCBmdWxsIHJlcG9ydCBvbiB0aGUgc291cmNlIHNpdGUg4oaSXTwvYT4=', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>Gachagua defies police, addresses supporters in Kikuyu amid teargas and clashes</h3>
+                    <p>Developments regarding Gachagua defies police, addresses supporters in Kikuyu amid teargas and clashes continue to emerge as our corresponde...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Gachagua defies police, addresses supporters in Kikuyu amid teargas and clashes', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBHYWNoYWd1YSBkZWZpZXMgcG9saWNlLCBhZGRyZXNzZXMgc3VwcG9ydGVycyBpbiBLaWt1eXUgYW1pZCB0ZWFyZ2FzIGFuZCBjbGFzaGVzIGNvbnRpbnVlIHRvIGVtZXJnZSBhcyBvdXIgY29ycmVzcG9uZGVudHMgdHJhY2sgdGhlIHNpdHVhdGlvbi48YnI+PGJyPkhpc3RvcmljYWwgZGF0YSBzdWdnZXN0cyB0aGlzIHRyZW5kIGZvbGxvd3MgYSBwYXR0ZXJuIG9mIHJlZ2lvbmFsIHNoaWZ0cyBvYnNlcnZlZCBvdmVyIHRoZSBsYXN0IGRlY2FkZS48YnI+PGJyPkxvY2FsIHN0YWtlaG9sZGVycyBhbmQgY29tbXVuaXR5IGxlYWRlcnMgYXJlIGN1cnJlbnRseSBiZWluZyBjb25zdWx0ZWQgdG8gZ2F1Z2UgdGhlIGZ1bGwgYnJlYWR0aCBvZiB0aGUgaW1wYWN0Ljxicj48YnI+QXMgdGhlIHNpdHVhdGlvbiBldm9sdmVzLCBvdXIgYW5hbHlzdHMgZXhwZWN0IGEgZm9ybWFsIHBvbGljeSByZXNwb25zZSB3aXRoaW4gdGhlIGNvbWluZyBidXNpbmVzcyBjeWNsZS48YnI+PGJyPjxhIGhyZWY9Imh0dHBzOi8vd3d3LmNhcGl0YWxmbS5jby5rZS9uZXdzLzIwMjYvMDQvZ2FjaGFndWEta2lrdXl1LXJhbGx5LWNsYXNoZXMtdGVhcmdhcy1wb2xpY2UtdGVuc2lvbnMvIiB0YXJnZXQ9Il9ibGFuayIgc3R5bGU9ImNvbG9yOiNjMDM5MmI7IGZvbnQtd2VpZ2h0OmJvbGQ7IHRleHQtZGVjb3JhdGlvbjpub25lOyBmb250LXNpemU6MC45cmVtOyI+W1JlYWQgdGhlIG9yaWdpbmFsIGZ1bGwgcmVwb3J0IG9uIHRoZSBzb3VyY2Ugc2l0ZSDihpJdPC9hPg==', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -289,52 +222,52 @@
             </div>
             <div class='card'>
                 <div class="img-container">
-                    <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/ua2ZusKlX5FD05HFBuVc67mKgGXYb6Zixl7Jb73M.jpg' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                    <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/c4t8DXOFcUWQaWFpjwsoyotbAwAQGbi57z63l0Pk.jpg' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
-                    <h3>Gachagua Kikuyu rally: What we know so far</h3>
-                    <p>Developments regarding Gachagua Kikuyu rally: What we know so far continue to emerge as our correspondents track the situation.Historical da...</p>
+                    <h3>Fear of diseases outbreak as Kayole residents demand fixing of broken sewage</h3>
+                    <p>Developments regarding Fear of diseases outbreak as Kayole residents demand fixing of broken sewage continue to emerge as our correspondents...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Gachagua Kikuyu rally: What we know so far', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBHYWNoYWd1YSBLaWt1eXUgcmFsbHk6IFdoYXQgd2Uga25vdyBzbyBmYXIgY29udGludWUgdG8gZW1lcmdlIGFzIG91ciBjb3JyZXNwb25kZW50cyB0cmFjayB0aGUgc2l0dWF0aW9uLjxicj48YnI+SGlzdG9yaWNhbCBkYXRhIHN1Z2dlc3RzIHRoaXMgdHJlbmQgZm9sbG93cyBhIHBhdHRlcm4gb2YgcmVnaW9uYWwgc2hpZnRzIG9ic2VydmVkIG92ZXIgdGhlIGxhc3QgZGVjYWRlLjxicj48YnI+TG9jYWwgc3Rha2Vob2xkZXJzIGFuZCBjb21tdW5pdHkgbGVhZGVycyBhcmUgY3VycmVudGx5IGJlaW5nIGNvbnN1bHRlZCB0byBnYXVnZSB0aGUgZnVsbCBicmVhZHRoIG9mIHRoZSBpbXBhY3QuPGJyPjxicj5BcyB0aGUgc2l0dWF0aW9uIGV2b2x2ZXMsIG91ciBhbmFseXN0cyBleHBlY3QgYSBmb3JtYWwgcG9saWN5IHJlc3BvbnNlIHdpdGhpbiB0aGUgY29taW5nIGJ1c2luZXNzIGN5Y2xlLjxicj48YnI+PGEgaHJlZj0iaHR0cHM6Ly93d3cuc3RhbmRhcmRtZWRpYS5jby5rZS9hcnRpY2xlLzIwMDE1NDUxMTcvZ2FjaGFndWEta2lrdXl1LXJhbGx5LXdoYXQtd2Uta25vdy1zby1mYXIiIHRhcmdldD0iX2JsYW5rIiBzdHlsZT0iY29sb3I6I2MwMzkyYjsgZm9udC13ZWlnaHQ6Ym9sZDsgdGV4dC1kZWNvcmF0aW9uOm5vbmU7IGZvbnQtc2l6ZTowLjlyZW07Ij5bUmVhZCB0aGUgb3JpZ2luYWwgZnVsbCByZXBvcnQgb24gdGhlIHNvdXJjZSBzaXRlIOKGkl08L2E+', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/ua2ZusKlX5FD05HFBuVc67mKgGXYb6Zixl7Jb73M.jpg')">Full Report</button>
+                        <button class="read-more-btn" onclick="openStory('Fear of diseases outbreak as Kayole residents demand fixing of broken sewage', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBGZWFyIG9mIGRpc2Vhc2VzIG91dGJyZWFrIGFzIEtheW9sZSByZXNpZGVudHMgZGVtYW5kIGZpeGluZyBvZiBicm9rZW4gc2V3YWdlIGNvbnRpbnVlIHRvIGVtZXJnZSBhcyBvdXIgY29ycmVzcG9uZGVudHMgdHJhY2sgdGhlIHNpdHVhdGlvbi48YnI+PGJyPkhpc3RvcmljYWwgZGF0YSBzdWdnZXN0cyB0aGlzIHRyZW5kIGZvbGxvd3MgYSBwYXR0ZXJuIG9mIHJlZ2lvbmFsIHNoaWZ0cyBvYnNlcnZlZCBvdmVyIHRoZSBsYXN0IGRlY2FkZS48YnI+PGJyPkxvY2FsIHN0YWtlaG9sZGVycyBhbmQgY29tbXVuaXR5IGxlYWRlcnMgYXJlIGN1cnJlbnRseSBiZWluZyBjb25zdWx0ZWQgdG8gZ2F1Z2UgdGhlIGZ1bGwgYnJlYWR0aCBvZiB0aGUgaW1wYWN0Ljxicj48YnI+QXMgdGhlIHNpdHVhdGlvbiBldm9sdmVzLCBvdXIgYW5hbHlzdHMgZXhwZWN0IGEgZm9ybWFsIHBvbGljeSByZXNwb25zZSB3aXRoaW4gdGhlIGNvbWluZyBidXNpbmVzcyBjeWNsZS48YnI+PGJyPjxhIGhyZWY9Imh0dHBzOi8vd3d3LnN0YW5kYXJkbWVkaWEuY28ua2UvYXJ0aWNsZS8yMDAxNTQ1MTMyL2ZlYXItb2YtZGlzZWFzZXMtb3V0YnJlYWstYXMta2F5b2xlLXJlc2lkZW50cy1kZW1hbmQtZml4aW5nLW9mLWJyb2tlbi1zZXdhZ2UiIHRhcmdldD0iX2JsYW5rIiBzdHlsZT0iY29sb3I6I2MwMzkyYjsgZm9udC13ZWlnaHQ6Ym9sZDsgdGV4dC1kZWNvcmF0aW9uOm5vbmU7IGZvbnQtc2l6ZTowLjlyZW07Ij5bUmVhZCB0aGUgb3JpZ2luYWwgZnVsbCByZXBvcnQgb24gdGhlIHNvdXJjZSBzaXRlIOKGkl08L2E+', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/c4t8DXOFcUWQaWFpjwsoyotbAwAQGbi57z63l0Pk.jpg')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div></div></section><section id='Africa' class='news-section'><h2>Africa</h2><div class='grid'>
             <div class='card'>
                 <div class="img-container">
-                    <img src='https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2022/01/FUTA-main-gate.jpg?fit=720%2C420&amp;ssl=1' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                    <img src='https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2026/04/Screenshot-2026-04-11-151348.jpg?fit=746%2C509&amp;ssl=1' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
-                    <h3>‎FUTA allays fears over delays in MBBS accreditation amidst students’ restiveness</h3>
-                    <p>Developments regarding ‎FUTA allays fears over delays in MBBS accreditation amidst students’ restiveness continue to emerge as our correspon...</p>
+                    <h3>Nigerian govt to create 30,000 jobs as Tinubu approves incentives for shipowners</h3>
+                    <p>Developments regarding Nigerian govt to create 30,000 jobs as Tinubu approves incentives for shipowners continue to emerge as our correspond...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('‎FUTA allays fears over delays in MBBS accreditation amidst students’ restiveness', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyDigI5GVVRBIGFsbGF5cyBmZWFycyBvdmVyIGRlbGF5cyBpbiBNQkJTIGFjY3JlZGl0YXRpb24gYW1pZHN0IHN0dWRlbnRz4oCZIHJlc3RpdmVuZXNzIGNvbnRpbnVlIHRvIGVtZXJnZSBhcyBvdXIgY29ycmVzcG9uZGVudHMgdHJhY2sgdGhlIHNpdHVhdGlvbi48YnI+PGJyPkhpc3RvcmljYWwgZGF0YSBzdWdnZXN0cyB0aGlzIHRyZW5kIGZvbGxvd3MgYSBwYXR0ZXJuIG9mIHJlZ2lvbmFsIHNoaWZ0cyBvYnNlcnZlZCBvdmVyIHRoZSBsYXN0IGRlY2FkZS48YnI+PGJyPkxvY2FsIHN0YWtlaG9sZGVycyBhbmQgY29tbXVuaXR5IGxlYWRlcnMgYXJlIGN1cnJlbnRseSBiZWluZyBjb25zdWx0ZWQgdG8gZ2F1Z2UgdGhlIGZ1bGwgYnJlYWR0aCBvZiB0aGUgaW1wYWN0Ljxicj48YnI+QXMgdGhlIHNpdHVhdGlvbiBldm9sdmVzLCBvdXIgYW5hbHlzdHMgZXhwZWN0IGEgZm9ybWFsIHBvbGljeSByZXNwb25zZSB3aXRoaW4gdGhlIGNvbWluZyBidXNpbmVzcyBjeWNsZS48YnI+PGJyPjxhIGhyZWY9Imh0dHBzOi8vd3d3LnByZW1pdW10aW1lc25nLmNvbS9uZXdzL21vcmUtbmV3cy84NzA5NjgtZnV0YS1hbGxheXMtZmVhcnMtb3Zlci1kZWxheXMtaW4tbWJicy1hY2NyZWRpdGF0aW9uLWFtaWRzdC1zdHVkZW50cy1yZXN0aXZlbmVzcy5odG1sIiB0YXJnZXQ9Il9ibGFuayIgc3R5bGU9ImNvbG9yOiNjMDM5MmI7IGZvbnQtd2VpZ2h0OmJvbGQ7IHRleHQtZGVjb3JhdGlvbjpub25lOyBmb250LXNpemU6MC45cmVtOyI+W1JlYWQgdGhlIG9yaWdpbmFsIGZ1bGwgcmVwb3J0IG9uIHRoZSBzb3VyY2Ugc2l0ZSDihpJdPC9hPg==', 'https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2022/01/FUTA-main-gate.jpg?fit=720%2C420&amp;ssl=1')">Full Report</button>
+                        <button class="read-more-btn" onclick="openStory('Nigerian govt to create 30,000 jobs as Tinubu approves incentives for shipowners', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBOaWdlcmlhbiBnb3Z0IHRvIGNyZWF0ZSAzMCwwMDAgam9icyBhcyBUaW51YnUgYXBwcm92ZXMgaW5jZW50aXZlcyBmb3Igc2hpcG93bmVycyBjb250aW51ZSB0byBlbWVyZ2UgYXMgb3VyIGNvcnJlc3BvbmRlbnRzIHRyYWNrIHRoZSBzaXR1YXRpb24uPGJyPjxicj5IaXN0b3JpY2FsIGRhdGEgc3VnZ2VzdHMgdGhpcyB0cmVuZCBmb2xsb3dzIGEgcGF0dGVybiBvZiByZWdpb25hbCBzaGlmdHMgb2JzZXJ2ZWQgb3ZlciB0aGUgbGFzdCBkZWNhZGUuPGJyPjxicj5Mb2NhbCBzdGFrZWhvbGRlcnMgYW5kIGNvbW11bml0eSBsZWFkZXJzIGFyZSBjdXJyZW50bHkgYmVpbmcgY29uc3VsdGVkIHRvIGdhdWdlIHRoZSBmdWxsIGJyZWFkdGggb2YgdGhlIGltcGFjdC48YnI+PGJyPkFzIHRoZSBzaXR1YXRpb24gZXZvbHZlcywgb3VyIGFuYWx5c3RzIGV4cGVjdCBhIGZvcm1hbCBwb2xpY3kgcmVzcG9uc2Ugd2l0aGluIHRoZSBjb21pbmcgYnVzaW5lc3MgY3ljbGUuPGJyPjxicj48YSBocmVmPSJodHRwczovL3d3dy5wcmVtaXVtdGltZXNuZy5jb20vbmV3cy9tb3JlLW5ld3MvODcwOTc1LW5pZ2VyaWFuLWdvdnQtdG8tY3JlYXRlLTMwMDAwLWpvYnMtYXMtdGludWJ1LWFwcHJvdmVzLWluY2VudGl2ZXMtZm9yLXNoaXBvd25lcnMuaHRtbCIgdGFyZ2V0PSJfYmxhbmsiIHN0eWxlPSJjb2xvcjojYzAzOTJiOyBmb250LXdlaWdodDpib2xkOyB0ZXh0LWRlY29yYXRpb246bm9uZTsgZm9udC1zaXplOjAuOXJlbTsiPltSZWFkIHRoZSBvcmlnaW5hbCBmdWxsIHJlcG9ydCBvbiB0aGUgc291cmNlIHNpdGUg4oaSXTwvYT4=', 'https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2026/04/Screenshot-2026-04-11-151348.jpg?fit=746%2C509&amp;ssl=1')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
                 <div class="img-container">
-                    <img src='https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2026/04/1002964546-e1775915531849.jpg?fit=1078%2C674&amp;ssl=1' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                    <img src='https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2025/09/The-National-Assembly-e1757361263639.jpg?fit=1400%2C790&amp;ssl=1' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
-                    <h3>Nigerian fighters shine as PFL Africa debut sets stage for Lagos showdown</h3>
-                    <p>Developments regarding Nigerian fighters shine as PFL Africa debut sets stage for Lagos showdown continue to emerge as our correspondents tr...</p>
+                    <h3>National Assembly assures military of support after Benisheikh attack</h3>
+                    <p>Developments regarding National Assembly assures military of support after Benisheikh attack continue to emerge as our correspondents track ...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Nigerian fighters shine as PFL Africa debut sets stage for Lagos showdown', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBOaWdlcmlhbiBmaWdodGVycyBzaGluZSBhcyBQRkwgQWZyaWNhIGRlYnV0IHNldHMgc3RhZ2UgZm9yIExhZ29zIHNob3dkb3duIGNvbnRpbnVlIHRvIGVtZXJnZSBhcyBvdXIgY29ycmVzcG9uZGVudHMgdHJhY2sgdGhlIHNpdHVhdGlvbi48YnI+PGJyPkhpc3RvcmljYWwgZGF0YSBzdWdnZXN0cyB0aGlzIHRyZW5kIGZvbGxvd3MgYSBwYXR0ZXJuIG9mIHJlZ2lvbmFsIHNoaWZ0cyBvYnNlcnZlZCBvdmVyIHRoZSBsYXN0IGRlY2FkZS48YnI+PGJyPkxvY2FsIHN0YWtlaG9sZGVycyBhbmQgY29tbXVuaXR5IGxlYWRlcnMgYXJlIGN1cnJlbnRseSBiZWluZyBjb25zdWx0ZWQgdG8gZ2F1Z2UgdGhlIGZ1bGwgYnJlYWR0aCBvZiB0aGUgaW1wYWN0Ljxicj48YnI+QXMgdGhlIHNpdHVhdGlvbiBldm9sdmVzLCBvdXIgYW5hbHlzdHMgZXhwZWN0IGEgZm9ybWFsIHBvbGljeSByZXNwb25zZSB3aXRoaW4gdGhlIGNvbWluZyBidXNpbmVzcyBjeWNsZS48YnI+PGJyPjxhIGhyZWY9Imh0dHBzOi8vd3d3LnByZW1pdW10aW1lc25nLmNvbS9zcG9ydHMvbmlnZXJpYS1zcG9ydHMtbmV3cy84NzA5NzItbmlnZXJpYW4tZmlnaHRlcnMtc2hpbmUtYXMtcGZsLWFmcmljYS1kZWJ1dC1zZXRzLXN0YWdlLWZvci1sYWdvcy1zaG93ZG93bi5odG1sIiB0YXJnZXQ9Il9ibGFuayIgc3R5bGU9ImNvbG9yOiNjMDM5MmI7IGZvbnQtd2VpZ2h0OmJvbGQ7IHRleHQtZGVjb3JhdGlvbjpub25lOyBmb250LXNpemU6MC45cmVtOyI+W1JlYWQgdGhlIG9yaWdpbmFsIGZ1bGwgcmVwb3J0IG9uIHRoZSBzb3VyY2Ugc2l0ZSDihpJdPC9hPg==', 'https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2026/04/1002964546-e1775915531849.jpg?fit=1078%2C674&amp;ssl=1')">Full Report</button>
+                        <button class="read-more-btn" onclick="openStory('National Assembly assures military of support after Benisheikh attack', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBOYXRpb25hbCBBc3NlbWJseSBhc3N1cmVzIG1pbGl0YXJ5IG9mIHN1cHBvcnQgYWZ0ZXIgQmVuaXNoZWlraCBhdHRhY2sgY29udGludWUgdG8gZW1lcmdlIGFzIG91ciBjb3JyZXNwb25kZW50cyB0cmFjayB0aGUgc2l0dWF0aW9uLjxicj48YnI+SGlzdG9yaWNhbCBkYXRhIHN1Z2dlc3RzIHRoaXMgdHJlbmQgZm9sbG93cyBhIHBhdHRlcm4gb2YgcmVnaW9uYWwgc2hpZnRzIG9ic2VydmVkIG92ZXIgdGhlIGxhc3QgZGVjYWRlLjxicj48YnI+TG9jYWwgc3Rha2Vob2xkZXJzIGFuZCBjb21tdW5pdHkgbGVhZGVycyBhcmUgY3VycmVudGx5IGJlaW5nIGNvbnN1bHRlZCB0byBnYXVnZSB0aGUgZnVsbCBicmVhZHRoIG9mIHRoZSBpbXBhY3QuPGJyPjxicj5BcyB0aGUgc2l0dWF0aW9uIGV2b2x2ZXMsIG91ciBhbmFseXN0cyBleHBlY3QgYSBmb3JtYWwgcG9saWN5IHJlc3BvbnNlIHdpdGhpbiB0aGUgY29taW5nIGJ1c2luZXNzIGN5Y2xlLjxicj48YnI+PGEgaHJlZj0iaHR0cHM6Ly93d3cucHJlbWl1bXRpbWVzbmcuY29tL25ld3MvbW9yZS1uZXdzLzg3MDk4MC1uYXRpb25hbC1hc3NlbWJseS1hc3N1cmVzLW1pbGl0YXJ5LW9mLXN1cHBvcnQtYWZ0ZXItYmVuaXNoZWlraC1hdHRhY2suaHRtbCIgdGFyZ2V0PSJfYmxhbmsiIHN0eWxlPSJjb2xvcjojYzAzOTJiOyBmb250LXdlaWdodDpib2xkOyB0ZXh0LWRlY29yYXRpb246bm9uZTsgZm9udC1zaXplOjAuOXJlbTsiPltSZWFkIHRoZSBvcmlnaW5hbCBmdWxsIHJlcG9ydCBvbiB0aGUgc291cmNlIHNpdGUg4oaSXTwvYT4=', 'https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2025/09/The-National-Assembly-e1757361263639.jpg?fit=1400%2C790&amp;ssl=1')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
                 <div class="img-container">
-                    <img src='https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2026/04/Paulinus-Ekwueme--e1775916282249.png?fit=1024%2C640&amp;ssl=1' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                    <img src='https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2026/04/1002964371.jpg?fit=1600%2C968&amp;ssl=1' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
-                    <h3>Gunmen invade Imo community, kill traditional ruler, five others</h3>
-                    <p>Developments regarding Gunmen invade Imo community, kill traditional ruler, five others continue to emerge as our correspondents track the s...</p>
+                    <h3>Africa All-Stars exhibition match set for Lagos as women’s rugby league makes history</h3>
+                    <p>Developments regarding Africa All-Stars exhibition match set for Lagos as women’s rugby league makes history continue to emerge as our corre...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Gunmen invade Imo community, kill traditional ruler, five others', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBHdW5tZW4gaW52YWRlIEltbyBjb21tdW5pdHksIGtpbGwgdHJhZGl0aW9uYWwgcnVsZXIsIGZpdmUgb3RoZXJzIGNvbnRpbnVlIHRvIGVtZXJnZSBhcyBvdXIgY29ycmVzcG9uZGVudHMgdHJhY2sgdGhlIHNpdHVhdGlvbi48YnI+PGJyPkhpc3RvcmljYWwgZGF0YSBzdWdnZXN0cyB0aGlzIHRyZW5kIGZvbGxvd3MgYSBwYXR0ZXJuIG9mIHJlZ2lvbmFsIHNoaWZ0cyBvYnNlcnZlZCBvdmVyIHRoZSBsYXN0IGRlY2FkZS48YnI+PGJyPkxvY2FsIHN0YWtlaG9sZGVycyBhbmQgY29tbXVuaXR5IGxlYWRlcnMgYXJlIGN1cnJlbnRseSBiZWluZyBjb25zdWx0ZWQgdG8gZ2F1Z2UgdGhlIGZ1bGwgYnJlYWR0aCBvZiB0aGUgaW1wYWN0Ljxicj48YnI+QXMgdGhlIHNpdHVhdGlvbiBldm9sdmVzLCBvdXIgYW5hbHlzdHMgZXhwZWN0IGEgZm9ybWFsIHBvbGljeSByZXNwb25zZSB3aXRoaW4gdGhlIGNvbWluZyBidXNpbmVzcyBjeWNsZS48YnI+PGJyPjxhIGhyZWY9Imh0dHBzOi8vd3d3LnByZW1pdW10aW1lc25nLmNvbS9yZWdpb25hbC9zc291dGgtZWFzdC84NzA5NzctZ3VubWVuLWludmFkZS1pbW8tY29tbXVuaXR5LWtpbGwtdHJhZGl0aW9uYWwtcnVsZXItZml2ZS1vdGhlcnMuaHRtbCIgdGFyZ2V0PSJfYmxhbmsiIHN0eWxlPSJjb2xvcjojYzAzOTJiOyBmb250LXdlaWdodDpib2xkOyB0ZXh0LWRlY29yYXRpb246bm9uZTsgZm9udC1zaXplOjAuOXJlbTsiPltSZWFkIHRoZSBvcmlnaW5hbCBmdWxsIHJlcG9ydCBvbiB0aGUgc291cmNlIHNpdGUg4oaSXTwvYT4=', 'https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2026/04/Paulinus-Ekwueme--e1775916282249.png?fit=1024%2C640&amp;ssl=1')">Full Report</button>
+                        <button class="read-more-btn" onclick="openStory('Africa All-Stars exhibition match set for Lagos as women’s rugby league makes history', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBBZnJpY2EgQWxsLVN0YXJzIGV4aGliaXRpb24gbWF0Y2ggc2V0IGZvciBMYWdvcyBhcyB3b21lbuKAmXMgcnVnYnkgbGVhZ3VlIG1ha2VzIGhpc3RvcnkgY29udGludWUgdG8gZW1lcmdlIGFzIG91ciBjb3JyZXNwb25kZW50cyB0cmFjayB0aGUgc2l0dWF0aW9uLjxicj48YnI+SGlzdG9yaWNhbCBkYXRhIHN1Z2dlc3RzIHRoaXMgdHJlbmQgZm9sbG93cyBhIHBhdHRlcm4gb2YgcmVnaW9uYWwgc2hpZnRzIG9ic2VydmVkIG92ZXIgdGhlIGxhc3QgZGVjYWRlLjxicj48YnI+TG9jYWwgc3Rha2Vob2xkZXJzIGFuZCBjb21tdW5pdHkgbGVhZGVycyBhcmUgY3VycmVudGx5IGJlaW5nIGNvbnN1bHRlZCB0byBnYXVnZSB0aGUgZnVsbCBicmVhZHRoIG9mIHRoZSBpbXBhY3QuPGJyPjxicj5BcyB0aGUgc2l0dWF0aW9uIGV2b2x2ZXMsIG91ciBhbmFseXN0cyBleHBlY3QgYSBmb3JtYWwgcG9saWN5IHJlc3BvbnNlIHdpdGhpbiB0aGUgY29taW5nIGJ1c2luZXNzIGN5Y2xlLjxicj48YnI+PGEgaHJlZj0iaHR0cHM6Ly93d3cucHJlbWl1bXRpbWVzbmcuY29tL3Nwb3J0cy9uaWdlcmlhLXNwb3J0cy1uZXdzLzg3MDk4My1hZnJpY2EtYWxsLXN0YXJzLWV4aGliaXRpb24tbWF0Y2gtc2V0LWZvci1sYWdvcy1hcy13b21lbnMtcnVnYnktbGVhZ3VlLW1ha2VzLWhpc3RvcnkuaHRtbCIgdGFyZ2V0PSJfYmxhbmsiIHN0eWxlPSJjb2xvcjojYzAzOTJiOyBmb250LXdlaWdodDpib2xkOyB0ZXh0LWRlY29yYXRpb246bm9uZTsgZm9udC1zaXplOjAuOXJlbTsiPltSZWFkIHRoZSBvcmlnaW5hbCBmdWxsIHJlcG9ydCBvbiB0aGUgc291cmNlIHNpdGUg4oaSXTwvYT4=', 'https://i0.wp.com/media.premiumtimesng.com/wp-content/files/2026/04/1002964371.jpg?fit=1600%2C968&amp;ssl=1')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -666,13 +599,13 @@
             </div>
             <div class='card'>
                 <div class="img-container">
-                    <img src='https://e1.365dm.com/26/04/1920x1080/skysports-declan-rice-arsenal_7216985.jpg?20260411143337' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                    <img src='https://e0.365dm.com/26/04/1920x1080/skysports-declan-rice-arsenal_7216965.jpg?20260411141941' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
                     <h3>Bournemouth blow title race wide open with victory at nervous Arsenal</h3>
                     <p>Developments regarding Bournemouth blow title race wide open with victory at nervous Arsenal continue to emerge as our correspondents track ...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Bournemouth blow title race wide open with victory at nervous Arsenal', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBCb3VybmVtb3V0aCBibG93IHRpdGxlIHJhY2Ugd2lkZSBvcGVuIHdpdGggdmljdG9yeSBhdCBuZXJ2b3VzIEFyc2VuYWwgY29udGludWUgdG8gZW1lcmdlIGFzIG91ciBjb3JyZXNwb25kZW50cyB0cmFjayB0aGUgc2l0dWF0aW9uLjxicj48YnI+SGlzdG9yaWNhbCBkYXRhIHN1Z2dlc3RzIHRoaXMgdHJlbmQgZm9sbG93cyBhIHBhdHRlcm4gb2YgcmVnaW9uYWwgc2hpZnRzIG9ic2VydmVkIG92ZXIgdGhlIGxhc3QgZGVjYWRlLjxicj48YnI+TG9jYWwgc3Rha2Vob2xkZXJzIGFuZCBjb21tdW5pdHkgbGVhZGVycyBhcmUgY3VycmVudGx5IGJlaW5nIGNvbnN1bHRlZCB0byBnYXVnZSB0aGUgZnVsbCBicmVhZHRoIG9mIHRoZSBpbXBhY3QuPGJyPjxicj5BcyB0aGUgc2l0dWF0aW9uIGV2b2x2ZXMsIG91ciBhbmFseXN0cyBleHBlY3QgYSBmb3JtYWwgcG9saWN5IHJlc3BvbnNlIHdpdGhpbiB0aGUgY29taW5nIGJ1c2luZXNzIGN5Y2xlLjxicj48YnI+PGEgaHJlZj0iaHR0cHM6Ly93d3cuc2t5c3BvcnRzLmNvbS9mb290YmFsbC9hcnNlbmFsLXZzLWJvdXJuZW1vdXRoL3JlcG9ydC81MzE0MzkiIHRhcmdldD0iX2JsYW5rIiBzdHlsZT0iY29sb3I6I2MwMzkyYjsgZm9udC13ZWlnaHQ6Ym9sZDsgdGV4dC1kZWNvcmF0aW9uOm5vbmU7IGZvbnQtc2l6ZTowLjlyZW07Ij5bUmVhZCB0aGUgb3JpZ2luYWwgZnVsbCByZXBvcnQgb24gdGhlIHNvdXJjZSBzaXRlIOKGkl08L2E+', 'https://e1.365dm.com/26/04/1920x1080/skysports-declan-rice-arsenal_7216985.jpg?20260411143337')">Full Report</button>
+                        <button class="read-more-btn" onclick="openStory('Bournemouth blow title race wide open with victory at nervous Arsenal', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBCb3VybmVtb3V0aCBibG93IHRpdGxlIHJhY2Ugd2lkZSBvcGVuIHdpdGggdmljdG9yeSBhdCBuZXJ2b3VzIEFyc2VuYWwgY29udGludWUgdG8gZW1lcmdlIGFzIG91ciBjb3JyZXNwb25kZW50cyB0cmFjayB0aGUgc2l0dWF0aW9uLjxicj48YnI+SGlzdG9yaWNhbCBkYXRhIHN1Z2dlc3RzIHRoaXMgdHJlbmQgZm9sbG93cyBhIHBhdHRlcm4gb2YgcmVnaW9uYWwgc2hpZnRzIG9ic2VydmVkIG92ZXIgdGhlIGxhc3QgZGVjYWRlLjxicj48YnI+TG9jYWwgc3Rha2Vob2xkZXJzIGFuZCBjb21tdW5pdHkgbGVhZGVycyBhcmUgY3VycmVudGx5IGJlaW5nIGNvbnN1bHRlZCB0byBnYXVnZSB0aGUgZnVsbCBicmVhZHRoIG9mIHRoZSBpbXBhY3QuPGJyPjxicj5BcyB0aGUgc2l0dWF0aW9uIGV2b2x2ZXMsIG91ciBhbmFseXN0cyBleHBlY3QgYSBmb3JtYWwgcG9saWN5IHJlc3BvbnNlIHdpdGhpbiB0aGUgY29taW5nIGJ1c2luZXNzIGN5Y2xlLjxicj48YnI+PGEgaHJlZj0iaHR0cHM6Ly93d3cuc2t5c3BvcnRzLmNvbS9mb290YmFsbC9hcnNlbmFsLXZzLWJvdXJuZW1vdXRoL3JlcG9ydC81MzE0MzkiIHRhcmdldD0iX2JsYW5rIiBzdHlsZT0iY29sb3I6I2MwMzkyYjsgZm9udC13ZWlnaHQ6Ym9sZDsgdGV4dC1kZWNvcmF0aW9uOm5vbmU7IGZvbnQtc2l6ZTowLjlyZW07Ij5bUmVhZCB0aGUgb3JpZ2luYWwgZnVsbCByZXBvcnQgb24gdGhlIHNvdXJjZSBzaXRlIOKGkl08L2E+', 'https://e0.365dm.com/26/04/1920x1080/skysports-declan-rice-arsenal_7216965.jpg?20260411141941')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -929,19 +862,6 @@
                     <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
-                    <h3>US and Iran Hold Peace Talks in Pakistan, Artemis Mission, More</h3>
-                    <p>Developments regarding US and Iran Hold Peace Talks in Pakistan, Artemis Mission, More continue to emerge as our correspondents track the si...</p>
-                    <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('US and Iran Hold Peace Talks in Pakistan, Artemis Mission, More', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBVUyBhbmQgSXJhbiBIb2xkIFBlYWNlIFRhbGtzIGluIFBha2lzdGFuLCBBcnRlbWlzIE1pc3Npb24sIE1vcmUgY29udGludWUgdG8gZW1lcmdlIGFzIG91ciBjb3JyZXNwb25kZW50cyB0cmFjayB0aGUgc2l0dWF0aW9uLjxicj48YnI+SGlzdG9yaWNhbCBkYXRhIHN1Z2dlc3RzIHRoaXMgdHJlbmQgZm9sbG93cyBhIHBhdHRlcm4gb2YgcmVnaW9uYWwgc2hpZnRzIG9ic2VydmVkIG92ZXIgdGhlIGxhc3QgZGVjYWRlLjxicj48YnI+TG9jYWwgc3Rha2Vob2xkZXJzIGFuZCBjb21tdW5pdHkgbGVhZGVycyBhcmUgY3VycmVudGx5IGJlaW5nIGNvbnN1bHRlZCB0byBnYXVnZSB0aGUgZnVsbCBicmVhZHRoIG9mIHRoZSBpbXBhY3QuPGJyPjxicj5BcyB0aGUgc2l0dWF0aW9uIGV2b2x2ZXMsIG91ciBhbmFseXN0cyBleHBlY3QgYSBmb3JtYWwgcG9saWN5IHJlc3BvbnNlIHdpdGhpbiB0aGUgY29taW5nIGJ1c2luZXNzIGN5Y2xlLjxicj48YnI+PGEgaHJlZj0iaHR0cHM6Ly93d3cuYmxvb21iZXJnLmNvbS9uZXdzL2F1ZGlvLzIwMjYtMDQtMTEvdXMtYW5kLWlyYW4taG9sZC1wZWFjZS10YWxrcy1pbi1wYWtpc3Rhbi1hcnRlbWlzLW1pc3Npb24tbW9yZSIgdGFyZ2V0PSJfYmxhbmsiIHN0eWxlPSJjb2xvcjojYzAzOTJiOyBmb250LXdlaWdodDpib2xkOyB0ZXh0LWRlY29yYXRpb246bm9uZTsgZm9udC1zaXplOjAuOXJlbTsiPltSZWFkIHRoZSBvcmlnaW5hbCBmdWxsIHJlcG9ydCBvbiB0aGUgc291cmNlIHNpdGUg4oaSXTwvYT4=', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
-                        <span class="exclusive-tag">Exclusive</span>
-                    </div>
-                </div>
-            </div>
-            <div class='card'>
-                <div class="img-container">
-                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                </div>
-                <div class="card-content">
                     <h3>Vance Leads US-Iran Peace Talks, Artemis II Nails Mission, More</h3>
                     <p>Developments regarding Vance Leads US-Iran Peace Talks, Artemis II Nails Mission, More continue to emerge as our correspondents track the si...</p>
                     <div class="meta">
@@ -959,6 +879,19 @@
                     <p>Developments regarding Trump Warns Against Price Gouging by ‘Fertilizer Monopoly’ continue to emerge as our correspondents track the situati...</p>
                     <div class="meta">
                         <button class="read-more-btn" onclick="openStory('Trump Warns Against Price Gouging by ‘Fertilizer Monopoly’', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBUcnVtcCBXYXJucyBBZ2FpbnN0IFByaWNlIEdvdWdpbmcgYnkg4oCYRmVydGlsaXplciBNb25vcG9seeKAmSBjb250aW51ZSB0byBlbWVyZ2UgYXMgb3VyIGNvcnJlc3BvbmRlbnRzIHRyYWNrIHRoZSBzaXR1YXRpb24uPGJyPjxicj5IaXN0b3JpY2FsIGRhdGEgc3VnZ2VzdHMgdGhpcyB0cmVuZCBmb2xsb3dzIGEgcGF0dGVybiBvZiByZWdpb25hbCBzaGlmdHMgb2JzZXJ2ZWQgb3ZlciB0aGUgbGFzdCBkZWNhZGUuPGJyPjxicj5Mb2NhbCBzdGFrZWhvbGRlcnMgYW5kIGNvbW11bml0eSBsZWFkZXJzIGFyZSBjdXJyZW50bHkgYmVpbmcgY29uc3VsdGVkIHRvIGdhdWdlIHRoZSBmdWxsIGJyZWFkdGggb2YgdGhlIGltcGFjdC48YnI+PGJyPkFzIHRoZSBzaXR1YXRpb24gZXZvbHZlcywgb3VyIGFuYWx5c3RzIGV4cGVjdCBhIGZvcm1hbCBwb2xpY3kgcmVzcG9uc2Ugd2l0aGluIHRoZSBjb21pbmcgYnVzaW5lc3MgY3ljbGUuPGJyPjxicj48YSBocmVmPSJodHRwczovL3d3dy5ibG9vbWJlcmcuY29tL25ld3MvYXJ0aWNsZXMvMjAyNi0wNC0xMS90cnVtcC13YXJucy1hZ2FpbnN0LXByaWNlLWdvdWdpbmctYnktZmVydGlsaXplci1tb25vcG9seSIgdGFyZ2V0PSJfYmxhbmsiIHN0eWxlPSJjb2xvcjojYzAzOTJiOyBmb250LXdlaWdodDpib2xkOyB0ZXh0LWRlY29yYXRpb246bm9uZTsgZm9udC1zaXplOjAuOXJlbTsiPltSZWFkIHRoZSBvcmlnaW5hbCBmdWxsIHJlcG9ydCBvbiB0aGUgc291cmNlIHNpdGUg4oaSXTwvYT4=', 'https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iT6suChB3L70/v0/1200x-1.jpg')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>US, Iran Begin Ceasefire Talks in Pakistan, Artemis Return, More</h3>
+                    <p>Developments regarding US, Iran Begin Ceasefire Talks in Pakistan, Artemis Return, More continue to emerge as our correspondents track the s...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('US, Iran Begin Ceasefire Talks in Pakistan, Artemis Return, More', 'RGV2ZWxvcG1lbnRzIHJlZ2FyZGluZyBVUywgSXJhbiBCZWdpbiBDZWFzZWZpcmUgVGFsa3MgaW4gUGFraXN0YW4sIEFydGVtaXMgUmV0dXJuLCBNb3JlIGNvbnRpbnVlIHRvIGVtZXJnZSBhcyBvdXIgY29ycmVzcG9uZGVudHMgdHJhY2sgdGhlIHNpdHVhdGlvbi48YnI+PGJyPkhpc3RvcmljYWwgZGF0YSBzdWdnZXN0cyB0aGlzIHRyZW5kIGZvbGxvd3MgYSBwYXR0ZXJuIG9mIHJlZ2lvbmFsIHNoaWZ0cyBvYnNlcnZlZCBvdmVyIHRoZSBsYXN0IGRlY2FkZS48YnI+PGJyPkxvY2FsIHN0YWtlaG9sZGVycyBhbmQgY29tbXVuaXR5IGxlYWRlcnMgYXJlIGN1cnJlbnRseSBiZWluZyBjb25zdWx0ZWQgdG8gZ2F1Z2UgdGhlIGZ1bGwgYnJlYWR0aCBvZiB0aGUgaW1wYWN0Ljxicj48YnI+QXMgdGhlIHNpdHVhdGlvbiBldm9sdmVzLCBvdXIgYW5hbHlzdHMgZXhwZWN0IGEgZm9ybWFsIHBvbGljeSByZXNwb25zZSB3aXRoaW4gdGhlIGNvbWluZyBidXNpbmVzcyBjeWNsZS48YnI+PGJyPjxhIGhyZWY9Imh0dHBzOi8vd3d3LmJsb29tYmVyZy5jb20vbmV3cy9hdWRpby8yMDI2LTA0LTExL3VzLWlyYW4tYmVnaW4tY2Vhc2VmaXJlLXRhbGtzLWluLXBha2lzdGFuLWFydGVtaXMtcmV0dXJuLW1vcmUiIHRhcmdldD0iX2JsYW5rIiBzdHlsZT0iY29sb3I6I2MwMzkyYjsgZm9udC13ZWlnaHQ6Ym9sZDsgdGV4dC1kZWNvcmF0aW9uOm5vbmU7IGZvbnQtc2l6ZTowLjlyZW07Ij5bUmVhZCB0aGUgb3JpZ2luYWwgZnVsbCByZXBvcnQgb24gdGhlIHNvdXJjZSBzaXRlIOKGkl08L2E+', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -1118,51 +1051,33 @@
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
-            </div></div></section>
-    </div>
+            </div></div></section></div>
 
     <div id="tg-popup">
-        <div class="tg-head">
-            <span><i class="fab fa-telegram"></i> @SPUTNIK_AFRICA FLASH</span>
-            <span onclick="this.parentElement.parentElement.style.display='none'" style="cursor:pointer">&times;</span>
-        </div>
-        <div class="tg-body">
-            <h4 id="tg-title"></h4>
-            <p id="tg-desc"></p>
-        </div>
+        <div class="tg-head"><span><i class="fab fa-telegram"></i> @SPUTNIK_AFRICA FLASH</span></div>
+        <div class="tg-body"><h4 id="tg-title"></h4><p id="tg-desc"></p></div>
         <a href="https://t.me/sputnik_africa" target="_blank" class="tg-btn">READ ON TELEGRAM</a>
     </div>
 
     <div id="storyModal">
         <span class="close" onclick="closeStory()">&times;</span>
         <div class="modal-body">
-            <div class="modal-img-container">
-                <img id="modalImg" class="modal-img" src="" alt="Lead Image">
-            </div>
-            <div class="modal-inner-padding">
-                <h2 id="modalTitle"></h2>
-                <div id="modalText" class="story-content"></div>
-            </div>
+            <div class="modal-img-container"><img id="modalImg" class="modal-img" src=""></div>
+            <div class="modal-inner-padding"><h2 id="modalTitle"></h2><div id="modalText" class="story-content"></div></div>
         </div>
     </div>
 
-    <footer>&copy; 2026 THE CONTINENT NEWS • GLOBAL INTELLIGENCE NETWORK • POWERED BY AI</footer>
+    <footer>&copy; 2026 THE CONTINENT NEWS • GLOBAL INTELLIGENCE NETWORK</footer>
 
     <script>
         let currentActiveSection = 'LatestNews';
         const tgData = {"title": "Live: Regional Updates", "summary": "New developments emerging. Stay tuned for live coverage."};
 
         function switchPage(sectionId) {
-            currentActiveSection = sectionId;
             const sections = document.querySelectorAll('.news-section');
-            sections.forEach(sec => {
-                sec.classList.toggle('active', sec.id === sectionId);
-            });
-
+            sections.forEach(sec => sec.classList.toggle('active', sec.id === sectionId));
             const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.classList.toggle('active', link.id === 'btn-' + sectionId);
-            });
+            navLinks.forEach(link => link.classList.toggle('active', link.id === 'btn-' + sectionId));
         }
 
         function openStory(title, b64Content, img) {
@@ -1179,8 +1094,6 @@
             document.body.style.overflow = "auto";
         }
 
-        window.onclick = e => { if (e.target == document.getElementById('storyModal')) closeStory(); }
-        
         window.onload = () => {
             switchPage('LatestNews');
             if(tgData && tgData.title) {
