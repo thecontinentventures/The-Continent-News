@@ -15,7 +15,7 @@
     <title>The Continent News | Global Intelligence</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; }
+        :root { --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; --tg-blue: #0088cc; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; }
         header { background: var(--white); padding: 30px 10px; text-align: center; border-bottom: 4px solid var(--dark); cursor: pointer; }
         header h1 { margin: 0; font-size: 2.5rem; letter-spacing: -1px; text-transform: uppercase; font-weight: 900; }
@@ -49,7 +49,21 @@
         .read-more-btn { background: var(--dark); color: white; border: none; padding: 8px 15px; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; }
         .exclusive-tag { font-size: 0.6rem; color: var(--red); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
 
-        #storyModal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
+        /* Telegram Popup Styles */
+        #tg-popup {
+            position: fixed; bottom: 100px; right: 20px; width: 300px; background: white;
+            border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 4000;
+            display: none; flex-direction: column; overflow: hidden; border-left: 6px solid var(--tg-blue);
+            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes slideUp { from { transform: translateY(150%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .tg-head { background: #f8f9fa; padding: 12px; font-size: 0.7rem; font-weight: bold; color: var(--tg-blue); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .tg-body { padding: 15px; }
+        .tg-body h4 { margin: 0 0 8px 0; font-size: 0.95rem; line-height: 1.2; }
+        .tg-body p { margin: 0; font-size: 0.8rem; color: #666; line-height: 1.4; }
+        .tg-btn { display: block; background: var(--tg-blue); color: white; text-align: center; padding: 10px; text-decoration: none; font-size: 0.75rem; font-weight: bold; }
+
+        #storyModal { display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
         .modal-body { background: var(--white); margin: 2% auto; padding: 0; width: 95%; max-width: 800px; border-radius: 0; position: relative; }
         .close { position: absolute; right: 20px; top: 15px; font-size: 40px; color: white; cursor: pointer; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .modal-img-container { width: 100%; height: 450px; background: #000; }
@@ -95,7 +109,7 @@
         <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Tech & Business</a>
     </nav>
 
-    <div id="sync-info">LIVE UPDATE: 09:17:15</div>
+    <div id="sync-info">LIVE UPDATE: 09:28:00</div>
 
     <div class="container" id="news-container">
         <section id='LatestNews' class='news-section'><h2>Latest News</h2><div class='grid'>
@@ -134,6 +148,45 @@
                     <p>Developments regarding Ousted: Humphrey Wattanga exits KRA continue to emerge as our correspondents track the situation. Historical data sug...</p>
                     <div class="meta">
                         <button class="read-more-btn" onclick="openStory('Ousted: Humphrey Wattanga exits KRA', 'Developments regarding Ousted: Humphrey Wattanga exits KRA continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/RzSVD3dbw1QzRS25lRihCYDfvVJmfBZJc9b0T8WC.jpg')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>Sh1.7 billion Taunet hydropower project to lower tea energy costs</h3>
+                    <p>Developments regarding Sh1.7 billion Taunet hydropower project to lower tea energy costs continue to emerge as our correspondents track the ...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Sh1.7 billion Taunet hydropower project to lower tea energy costs', 'Developments regarding Sh1.7 billion Taunet hydropower project to lower tea energy costs continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>Bio digesters offer cheaper way to manage home waste</h3>
+                    <p>Developments regarding Bio digesters offer cheaper way to manage home waste continue to emerge as our correspondents track the situation. Hi...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Bio digesters offer cheaper way to manage home waste', 'Developments regarding Bio digesters offer cheaper way to manage home waste continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>Kaimosi University hosts major tree planting initiative</h3>
+                    <p>Developments regarding Kaimosi University hosts major tree planting initiative continue to emerge as our correspondents track the situation....</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Kaimosi University hosts major tree planting initiative', 'Developments regarding Kaimosi University hosts major tree planting initiative continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -182,6 +235,19 @@
                     <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
+                    <h3>Teargas in Kikuyu as police break up roadblocks ahead of Gachagua-led rally</h3>
+                    <p>Developments regarding Teargas in Kikuyu as police break up roadblocks ahead of Gachagua-led rally continue to emerge as our correspondents ...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Teargas in Kikuyu as police break up roadblocks ahead of Gachagua-led rally', 'Developments regarding Teargas in Kikuyu as police break up roadblocks ahead of Gachagua-led rally continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
                     <h3>Chaos on Southern Bypass as suspected goons attack motorists ahead of Kikuyu rally</h3>
                     <p>Developments regarding Chaos on Southern Bypass as suspected goons attack motorists ahead of Kikuyu rally continue to emerge as our correspo...</p>
                     <div class="meta">
@@ -199,19 +265,6 @@
                     <p>Developments regarding Govt revives Voi–Taveta Railway after 20 years to unlock Bujumbura trade route continue to emerge as our corresponden...</p>
                     <div class="meta">
                         <button class="read-more-btn" onclick="openStory('Govt revives Voi–Taveta Railway after 20 years to unlock Bujumbura trade route', 'Developments regarding Govt revives Voi–Taveta Railway after 20 years to unlock Bujumbura trade route continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
-                        <span class="exclusive-tag">Exclusive</span>
-                    </div>
-                </div>
-            </div>
-            <div class='card'>
-                <div class="img-container">
-                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                </div>
-                <div class="card-content">
-                    <h3>Ruto pushes for overhaul of Africa’s security systems amid rising global threats</h3>
-                    <p>Developments regarding Ruto pushes for overhaul of Africa’s security systems amid rising global threats continue to emerge as our correspond...</p>
-                    <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Ruto pushes for overhaul of Africa’s security systems amid rising global threats', 'Developments regarding Ruto pushes for overhaul of Africa’s security systems amid rising global threats continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -257,6 +310,84 @@
             </div>
             <div class='card'>
                 <div class="img-container">
+                    <img src='https://africa.com/wp-content/uploads/2026/04/Africa-Rising-Music-Conference.jpg' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>Africa Rising Music Conference Announces Australia Focus And PRS Foundation Backing</h3>
+                    <p>Developments regarding Africa Rising Music Conference Announces Australia Focus And PRS Foundation Backing continue to emerge as our corresp...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Africa Rising Music Conference Announces Australia Focus And PRS Foundation Backing', 'Developments regarding Africa Rising Music Conference Announces Australia Focus And PRS Foundation Backing continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://africa.com/wp-content/uploads/2026/04/Africa-Rising-Music-Conference.jpg')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://africa.com/wp-content/uploads/2026/04/Chancel-Mbemba.jpg' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>Chancel Mbemba – ONE Voice, ONE People, A Historic Qualification</h3>
+                    <p>Developments regarding Chancel Mbemba – ONE Voice, ONE People, A Historic Qualification continue to emerge as our correspondents track the s...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Chancel Mbemba – ONE Voice, ONE People, A Historic Qualification', 'Developments regarding Chancel Mbemba – ONE Voice, ONE People, A Historic Qualification continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://africa.com/wp-content/uploads/2026/04/Chancel-Mbemba.jpg')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://africa.com/wp-content/uploads/2026/04/Feature-Image-1200-x-6283.png' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>African Safari Bookings Surge: US Travelers Dominate Market</h3>
+                    <p>Developments regarding African Safari Bookings Surge: US Travelers Dominate Market continue to emerge as our correspondents track the situat...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('African Safari Bookings Surge: US Travelers Dominate Market', 'Developments regarding African Safari Bookings Surge: US Travelers Dominate Market continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://africa.com/wp-content/uploads/2026/04/Feature-Image-1200-x-6283.png')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>Slow Poison: Idi Amin, Yoweri Museveni, and the Making of the Ugandan State by Mahmood Mamdani.</h3>
+                    <p>Developments regarding Slow Poison: Idi Amin, Yoweri Museveni, and the Making of the Ugandan State by Mahmood Mamdani. continue to emerge as...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Slow Poison: Idi Amin, Yoweri Museveni, and the Making of the Ugandan State by Mahmood Mamdani.', 'Developments regarding Slow Poison: Idi Amin, Yoweri Museveni, and the Making of the Ugandan State by Mahmood Mamdani. continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>Africa Forward will be judged by what it delivers</h3>
+                    <p>Developments regarding Africa Forward will be judged by what it delivers continue to emerge as our correspondents track the situation. Histo...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Africa Forward will be judged by what it delivers', 'Developments regarding Africa Forward will be judged by what it delivers continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>Chagos: Britain must act on the law or forfeit credibilty</h3>
+                    <p>Developments regarding Chagos: Britain must act on the law or forfeit credibilty continue to emerge as our correspondents track the situatio...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Chagos: Britain must act on the law or forfeit credibilty', 'Developments regarding Chagos: Britain must act on the law or forfeit credibilty continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
                     <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
@@ -290,6 +421,45 @@
                     <p>Developments regarding Welcome to the age of empire continue to emerge as our correspondents track the situation. Historical data suggests t...</p>
                     <div class="meta">
                         <button class="read-more-btn" onclick="openStory('Welcome to the age of empire', 'Developments regarding Welcome to the age of empire continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>FG approves 2026 Fiscal Policy Measures, cuts tariffs on cars, others</h3>
+                    <p>Developments regarding FG approves 2026 Fiscal Policy Measures, cuts tariffs on cars, others continue to emerge as our correspondents track ...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('FG approves 2026 Fiscal Policy Measures, cuts tariffs on cars, others', 'Developments regarding FG approves 2026 Fiscal Policy Measures, cuts tariffs on cars, others continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>DNA: Nearly three years after, Mohbad remains unburied, as father seeks Tinubu’s intervention</h3>
+                    <p>Developments regarding DNA: Nearly three years after, Mohbad remains unburied, as father seeks Tinubu’s intervention continue to emerge as o...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('DNA: Nearly three years after, Mohbad remains unburied, as father seeks Tinubu’s intervention', 'Developments regarding DNA: Nearly three years after, Mohbad remains unburied, as father seeks Tinubu’s intervention continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>US/Israel-Iran War: Tinubu pledges to implement policies to reduce impact on Nigerians</h3>
+                    <p>Developments regarding US/Israel-Iran War: Tinubu pledges to implement policies to reduce impact on Nigerians continue to emerge as our corr...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('US/Israel-Iran War: Tinubu pledges to implement policies to reduce impact on Nigerians', 'Developments regarding US/Israel-Iran War: Tinubu pledges to implement policies to reduce impact on Nigerians continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -338,6 +508,19 @@
                     <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
                 </div>
                 <div class="card-content">
+                    <h3>What’s at stake in Benin’s presidential election?</h3>
+                    <p>Developments regarding What’s at stake in Benin’s presidential election? continue to emerge as our correspondents track the situation. Histo...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('What’s at stake in Benin’s presidential election?', 'Developments regarding What’s at stake in Benin’s presidential election? continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
                     <h3>At least seven Palestinians killed in Israeli attacks on Gaza</h3>
                     <p>Developments regarding At least seven Palestinians killed in Israeli attacks on Gaza continue to emerge as our correspondents track the situ...</p>
                     <div class="meta">
@@ -355,19 +538,6 @@
                     <p>Developments regarding Israel rejects ceasefire with Hezbollah ahead of Lebanon talks next week continue to emerge as our correspondents tra...</p>
                     <div class="meta">
                         <button class="read-more-btn" onclick="openStory('Israel rejects ceasefire with Hezbollah ahead of Lebanon talks next week', 'Developments regarding Israel rejects ceasefire with Hezbollah ahead of Lebanon talks next week continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
-                        <span class="exclusive-tag">Exclusive</span>
-                    </div>
-                </div>
-            </div>
-            <div class='card'>
-                <div class="img-container">
-                    <img src='https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80' alt='News' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                </div>
-                <div class="card-content">
-                    <h3>Israeli drone attack kills Palestinians near Gaza mosque</h3>
-                    <p>Developments regarding Israeli drone attack kills Palestinians near Gaza mosque continue to emerge as our correspondents track the situation...</p>
-                    <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Israeli drone attack kills Palestinians near Gaza mosque', 'Developments regarding Israeli drone attack kills Palestinians near Gaza mosque continue to emerge as our correspondents track the situation.<br><br>Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.<br><br>Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.<br><br>As the situation evolves, our analysts expect a formal policy response within the coming business cycle.', 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -959,6 +1129,18 @@
             </div></div></section>
     </div>
 
+    <div id="tg-popup">
+        <div class="tg-head">
+            <span><i class="fab fa-telegram"></i> @SPUTNIK_AFRICA FLASH</span>
+            <span onclick="this.parentElement.parentElement.style.display='none'" style="cursor:pointer">&times;</span>
+        </div>
+        <div class="tg-body">
+            <h4 id="tg-title"></h4>
+            <p id="tg-desc"></p>
+        </div>
+        <a href="https://t.me/sputnik_africa" target="_blank" class="tg-btn">READ ON TELEGRAM</a>
+    </div>
+
     <div id="storyModal">
         <span class="close" onclick="closeStory()">&times;</span>
         <div class="modal-body">
@@ -976,6 +1158,7 @@
 
     <script>
         let currentActiveSection = 'LatestNews';
+        const tgData = null;
 
         function switchPage(sectionId) {
             currentActiveSection = sectionId;
@@ -1018,12 +1201,9 @@
                 .then(htmlText => {
                     const parser = new DOMParser();
                     const newDoc = parser.parseFromString(htmlText, 'text/html');
-                    
-                    // Update only the news content container
                     const newNews = newDoc.getElementById('news-container').innerHTML;
                     const container = document.getElementById('news-container');
                     
-                    // We check if a modal is open before updating to avoid losing user state
                     if (document.getElementById('storyModal').style.display !== "block") {
                         container.innerHTML = newNews;
                         document.getElementById('sync-info').innerText = newDoc.getElementById('sync-info').innerText;
@@ -1033,7 +1213,14 @@
         }, 300000); 
 
         window.onclick = e => { if (e.target == document.getElementById('storyModal')) closeStory(); }
-        window.onload = () => switchPage('LatestNews');
+        window.onload = () => {
+            switchPage('LatestNews');
+            if(tgData) {
+                document.getElementById('tg-title').innerText = tgData.title;
+                document.getElementById('tg-desc').innerText = tgData.summary;
+                setTimeout(() => { document.getElementById('tg-popup').style.display = 'flex'; }, 4000);
+            }
+        };
     </script>
 </body>
 </html>
