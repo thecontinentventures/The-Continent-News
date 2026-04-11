@@ -19,41 +19,47 @@ FEEDS = {
         'https://nation.africa/service/rss/622/622/rss.xml',
         'https://kenyanews.go.ke/feed/',
         'https://www.kenyans.co.ke/feeds/news',
-        'https://www.capitalfm.co.ke/news/feed/'
+        'https://www.capitalfm.co.ke/news/feed/',
+        'https://www.the-star.co.ke/rss/'
     ],
     'Africa': [
         'https://www.africanews.com/feed/',
         'https://allafrica.com/tools/headlines/rdf/africa/main.rdf',
         'https://africa.com/feed/',
         'https://newafricanmagazine.com/feed/',
-        'https://mg.co.za/feed/'
+        'https://mg.co.za/feed/',
+        'https://www.premiumtimesng.com/feed'
     ],
     'International': [
         'http://feeds.bbci.co.uk/news/world/rss.xml',
         'https://www.aljazeera.com/xml/rss/all.xml',
         'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',
         'https://www.france24.com/en/rss',
-        'https://news.un.org/en/rss/all/rss.xml'
+        'https://news.un.org/en/rss/all/rss.xml',
+        'https://www.dw.com/en/top-stories/s-9097'
     ],
     'Sports': [
         'https://www.skysports.com/rss/12040',
         'https://www.espn.com/espn/rss/news',
-        'https://api.foxsports.com/v1/rss?partnerKey=zBaFxY3p973tA9ajfSabsSkX7S3z9SjL',
-        'https://www.goal.com/en/feeds/news'
+        'https://www.goal.com/en/feeds/news',
+        'https://bc.ctvnews.ca/rss/sports-1.822340',
+        'https://feeds.feedburner.com/daily-sun-sports'
     ],
     'Fashion': [
         'https://www.vogue.com/feed/rss',
         'https://www.businessoffashion.com/feed',
         'https://wwd.com/fashion-news/feed/',
         'https://www.harpersbazaar.com/rss/fashion.xml',
-        'https://hypebeast.com/fashion/feed'
+        'https://hypebeast.com/fashion/feed',
+        'https://www.elle.com/rss/fashion.xml'
     ],
     'Tech & Biz': [
         'https://www.businessdailyafrica.com/service/rss/539444/539444/rss.xml',
         'https://itnewsafrica.com/feed/',
         'https://techcabal.com/feed/',
         'https://african.business/feed/',
-        'https://www.ft.com/?format=rss'
+        'https://www.ft.com/?format=rss',
+        'https://feeds.bloomberg.com/business/news.rss'
     ]
 }
 
@@ -74,7 +80,6 @@ def ai_rewrite(title, summary):
         
         response = model.generate_content(prompt)
         clean_text = response.text.strip().replace('"', '&quot;').replace("'", "\\'")
-        # Ensure distinct paragraph separation for HTML
         return clean_text.replace('\n\n', '<br><br>')
     except:
         return (f"Developments regarding {title} continue to emerge as our correspondents track the situation.<br><br>"
@@ -85,21 +90,17 @@ def ai_rewrite(title, summary):
 def get_image(entry):
     """Deep search for images to ensure visibility."""
     try:
-        # Check standard RSS media tags
         if 'media_content' in entry and len(entry.media_content) > 0:
             return entry.media_content[0].get('url')
         if 'enclosures' in entry and len(entry.enclosures) > 0:
             return entry.enclosures[0].get('url')
-        # Check for images hidden in links
         if 'links' in entry:
             for link in entry.links:
                 if 'image' in link.get('type', ''):
                     return link.get('href')
-        # Check for thumbnails
         if 'media_thumbnail' in entry and len(entry.media_thumbnail) > 0:
             return entry.media_thumbnail[0].get('url')
     except: pass
-    # Default high-resolution fallback
     return "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80"
 
 def generate_sections():
@@ -112,7 +113,7 @@ def generate_sections():
             try:
                 feed = feedparser.parse(url)
                 if hasattr(feed, 'entries'):
-                    all_entries.extend(feed.entries[:4]) # Fetch top 4 from each source to avoid clutter
+                    all_entries.extend(feed.entries[:3]) 
             except: continue
 
         for entry in all_entries:
@@ -169,25 +170,26 @@ def update_website():
         header {{ background: var(--white); padding: 30px 10px; text-align: center; border-bottom: 4px solid var(--dark); cursor: pointer; }}
         header h1 {{ margin: 0; font-size: 2.5rem; letter-spacing: -1px; text-transform: uppercase; font-weight: 900; }}
         
-        .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); }}
+        .tradingview-widget-container {{ width: 100%; background: var(--dark); border-bottom: 3px solid var(--red); height: 46px; }}
         
         nav {{ background: var(--white); padding: 12px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }}
         nav a {{ color: #444; margin: 0 15px; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; font-weight: 800; cursor: pointer; padding: 5px 0; transition: 0.2s; }}
         nav a:hover, nav a.active {{ color: var(--red); border-bottom: 2px solid var(--red); }}
 
-        .container {{ max-width: 1200px; margin: 20px auto; padding: 0 20px; }}
+        .container {{ max-width: 1200px; margin: 20px auto; padding: 0 20px; min-height: 80vh; }}
         .news-section {{ display: none; }}
         .news-section.active {{ display: block; animation: fadeIn 0.5s ease; }}
         .news-section h2 {{ border-left: 5px solid var(--red); padding-left: 15px; text-transform: uppercase; font-size: 1.2rem; margin-bottom: 25px; }}
 
-        @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+        @keyframes fadeIn {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
 
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }}
         .card {{ background: var(--white); border: 1px solid #ddd; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s; }}
         .card:hover {{ box-shadow: 0 10px 20px rgba(0,0,0,0.1); }}
         
-        .img-container {{ width: 100%; height: 220px; background: #222; }}
-        .card img {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
+        .img-container {{ width: 100%; height: 220px; background: #222; overflow: hidden; }}
+        .card img {{ width: 100%; height: 100%; object-fit: cover; display: block; transition: 0.5s; }}
+        .card:hover img {{ transform: scale(1.05); }}
         
         .card-content {{ padding: 20px; flex-grow: 1; }}
         .card h3 {{ font-size: 1.1rem; margin: 0 0 12px 0; line-height: 1.3; font-weight: 800; }}
@@ -218,13 +220,12 @@ def update_website():
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {{
       "symbols": [
-        {{ "proName": "NSEKE:NSE", "title": "NSE ALL SHARE" }},
         {{ "proName": "FX_IDC:USDKES", "title": "USD/KES" }},
-        {{ "description": "Safaricom", "proName": "NSEKE:SCOM" }},
-        {{ "description": "Equity Group", "proName": "NSEKE:EQTY" }},
-        {{ "description": "KCB Group", "proName": "NSEKE:KCB" }},
-        {{ "description": "Gold", "proName": "TVC:GOLD" }},
-        {{ "description": "Brent Crude", "proName": "TVC:UKOIL" }}
+        {{ "proName": "OANDA:XAUUSD", "title": "Gold" }},
+        {{ "proName": "OANDA:UK100GBP", "title": "FTSE 100" }},
+        {{ "proName": "INDEX:DXY", "title": "US Dollar Index" }},
+        {{ "proName": "INDEX:SPX", "title": "S&P 500" }},
+        {{ "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" }}
       ],
       "showSymbolLogo": true,
       "colorTheme": "dark",
@@ -271,21 +272,25 @@ def update_website():
         function switchPage(sectionId) {{
             currentActiveSection = sectionId;
             const sections = document.querySelectorAll('.news-section');
-            sections.forEach(sec => sec.classList.remove('active'));
+            sections.forEach(sec => {{
+                if(sec.id === sectionId) {{
+                    sec.classList.add('active');
+                }} else {{
+                    sec.classList.remove('active');
+                }}
+            }});
 
             const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => link.classList.remove('active'));
-
-            const target = document.getElementById(sectionId);
-            if (target) target.classList.add('active');
-
-            const activeBtn = document.getElementById('btn-' + sectionId);
-            if (activeBtn) activeBtn.classList.add('active');
-            window.scrollTo(0, 0);
+            navLinks.forEach(link => {{
+                if(link.id === 'btn-' + sectionId) {{
+                    link.classList.add('active');
+                }} else {{
+                    link.classList.remove('active');
+                }}
+            }});
         }}
 
         function openStory(title, htmlContent, img) {{
-            gtag('event', 'view_item', {{ 'item_name': title }});
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalText').innerHTML = htmlContent;
             document.getElementById('modalImg').src = img;
@@ -298,15 +303,24 @@ def update_website():
             document.body.style.overflow = "auto";
         }}
 
+        // AUTO-UPDATE ENGINE (No Flickering)
         setInterval(function() {{
             fetch(window.location.href + '?t=' + new Date().getTime())
                 .then(response => response.text())
                 .then(htmlText => {{
                     const parser = new DOMParser();
                     const newDoc = parser.parseFromString(htmlText, 'text/html');
-                    document.getElementById('news-container').innerHTML = newDoc.getElementById('news-container').innerHTML;
-                    document.getElementById('sync-info').innerText = newDoc.getElementById('sync-info').innerText;
-                    switchPage(currentActiveSection);
+                    
+                    // Update only the news content container
+                    const newNews = newDoc.getElementById('news-container').innerHTML;
+                    const container = document.getElementById('news-container');
+                    
+                    // We check if a modal is open before updating to avoid losing user state
+                    if (document.getElementById('storyModal').style.display !== "block") {{
+                        container.innerHTML = newNews;
+                        document.getElementById('sync-info').innerText = newDoc.getElementById('sync-info').innerText;
+                        switchPage(currentActiveSection);
+                    }}
                 }});
         }}, 300000); 
 
