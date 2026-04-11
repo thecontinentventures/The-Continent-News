@@ -32,37 +32,44 @@ FEEDS = {
 }
 
 def ai_rewrite(title, summary):
-    """Generates a multi-paragraph investigative report using Gemini."""
+    """Generates an extensive 4-paragraph investigative report using Gemini."""
     if not model:
         return f"Full report on {title} is being processed."
     
     try:
-        # Prompt modified to request multiple paragraphs
+        # Prompt updated to strictly require 4 detailed paragraphs
         prompt = (f"Act as a lead investigative journalist for The Continent News. "
                   f"Based on this headline: '{title}' and summary: '{summary}', "
-                  f"write a detailed, standalone 3-paragraph news report. "
-                  f"Paragraph 1: The core facts and immediate impact. "
-                  f"Paragraph 2: Historical context or underlying causes. "
-                  f"Paragraph 3: Future implications or a concluding statement. "
+                  f"write an extensive, standalone 4-paragraph news report. "
+                  f"Paragraph 1: Executive Summary - The core facts and immediate impact. "
+                  f"Paragraph 2: Deep Dive - Historical context, socioeconomic factors, or underlying causes. "
+                  f"Paragraph 3: Stakeholder Analysis - Perspectives from those involved or affected. "
+                  f"Paragraph 4: Strategic Outlook - Future implications, risks, and a concluding statement. "
                   f"Do not mention other news outlets. Write it as an exclusive, definitive account.")
         
         response = model.generate_content(prompt)
-        # Clean text and preserve newlines for HTML
         clean_text = response.text.strip().replace('"', '&quot;').replace("'", "\\'")
-        # Convert double newlines to double line breaks for HTML display
+        # Ensure double line breaks for HTML readability
         return clean_text.replace('\n\n', '<br><br>')
     except:
-        return f"Developments regarding {title} continue to emerge as our correspondents track the situation on the ground."
+        return f"Developments regarding {title} continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates."
 
 def get_image(entry):
+    """Enhanced image extraction to ensure visuals are visible."""
     try:
+        # Check media content tags
         if 'media_content' in entry and len(entry.media_content) > 0:
             return entry.media_content[0].get('url')
+        # Check standard enclosure tags
+        if 'enclosures' in entry and len(entry.enclosures) > 0:
+            return entry.enclosures[0].get('url')
+        # Check for image links in the body
         if 'links' in entry:
             for link in entry.links:
                 if 'image' in link.get('type', ''):
                     return link.get('href')
     except: pass
+    # High-quality fallback if no image is found
     return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
 
 def generate_sections():
@@ -78,7 +85,6 @@ def generate_sections():
 
         for entry in all_entries:
             full_story = ai_rewrite(entry.title, getattr(entry, 'summary', ''))
-            # Create a plain text version for the card preview
             preview_text = full_story.replace('<br><br>', ' ')
             preview = preview_text[:120] + "..."
             img_url = get_image(entry)
@@ -86,7 +92,9 @@ def generate_sections():
             
             html += f"""
             <div class='card'>
-                <img src='{img_url}' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='{img_url}' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>{entry.title}</h3>
                     <p>{preview}</p>
@@ -145,7 +153,10 @@ def update_website():
         .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }}
         .card {{ background: var(--white); border: 1px solid #eee; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; }}
         .card:hover {{ transform: translateY(-5px); }}
-        .card img {{ width: 100%; height: 200px; object-fit: cover; }}
+        
+        .img-container {{ width: 100%; height: 200px; background: #eee; overflow: hidden; }}
+        .card img {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
+        
         .card-content {{ padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }}
         .card h3 {{ font-size: 1.1rem; margin: 0 0 10px 0; line-height: 1.3; font-weight: 900; }}
         .card p {{ font-size: 0.9rem; color: #444; line-height: 1.5; margin-bottom: 15px; }}
@@ -157,7 +168,8 @@ def update_website():
         #storyModal {{ display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; }}
         .modal-body {{ background: var(--white); margin: 3% auto; padding: 40px; width: 90%; max-width: 750px; border-radius: 4px; position: relative; }}
         .close {{ position: absolute; right: 20px; top: 10px; font-size: 35px; cursor: pointer; }}
-        .modal-img {{ width: 100%; height: 400px; object-fit: cover; margin-bottom: 25px; }}
+        .modal-img-container {{ width: 100%; height: 400px; margin-bottom: 25px; background: #eee; }}
+        .modal-img {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
         .modal-body h2 {{ font-size: 2.2rem; margin-bottom: 20px; line-height: 1.1; font-weight: 900; }}
         .modal-body .story-content {{ font-size: 1.2rem; line-height: 1.8; color: #111; }}
 
@@ -207,7 +219,9 @@ def update_website():
     <div id="storyModal">
         <div class="modal-body">
             <span class="close" onclick="closeStory()">&times;</span>
-            <img id="modalImg" class="modal-img" src="">
+            <div class="modal-img-container">
+                <img id="modalImg" class="modal-img" src="" alt="Article Image">
+            </div>
             <h2 id="modalTitle"></h2>
             <div id="modalText" class="story-content"></div>
         </div>
@@ -233,6 +247,7 @@ def update_website():
 
             const activeBtn = document.getElementById('btn-' + sectionId);
             if (activeBtn) activeBtn.classList.add('active');
+            window.scrollTo(0, 0);
         }}
 
         function openStory(title, htmlContent, img) {{
