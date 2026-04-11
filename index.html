@@ -35,7 +35,10 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }
         .card { background: var(--white); border: 1px solid #eee; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s; }
         .card:hover { transform: translateY(-5px); }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
+        
+        .img-container { width: 100%; height: 200px; background: #eee; overflow: hidden; }
+        .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
         .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
         .card h3 { font-size: 1.1rem; margin: 0 0 10px 0; line-height: 1.3; font-weight: 900; }
         .card p { font-size: 0.9rem; color: #444; line-height: 1.5; margin-bottom: 15px; }
@@ -47,7 +50,8 @@
         #storyModal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; }
         .modal-body { background: var(--white); margin: 3% auto; padding: 40px; width: 90%; max-width: 750px; border-radius: 4px; position: relative; }
         .close { position: absolute; right: 20px; top: 10px; font-size: 35px; cursor: pointer; }
-        .modal-img { width: 100%; height: 400px; object-fit: cover; margin-bottom: 25px; }
+        .modal-img-container { width: 100%; height: 400px; margin-bottom: 25px; background: #eee; }
+        .modal-img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .modal-body h2 { font-size: 2.2rem; margin-bottom: 20px; line-height: 1.1; font-weight: 900; }
         .modal-body .story-content { font-size: 1.2rem; line-height: 1.8; color: #111; }
 
@@ -88,402 +92,474 @@
         <a onclick="switchPage('TechBiz')" id="btn-TechBiz" class="nav-link">Business</a>
     </nav>
 
-    <div id="sync-info">LAST UPDATED: 08:07:36</div>
+    <div id="sync-info">LAST UPDATED: 08:48:29</div>
 
     <div class="container" id="news-container">
         <section id='LatestNews' class='news-section'><h2>Latest News</h2><div class='grid'>
             <div class='card'>
-                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/fCc0womZbdVZKBEh1eXROlWwcNezq7ajYrPXg2AR.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/fCc0womZbdVZKBEh1eXROlWwcNezq7ajYrPXg2AR.jpg' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Fuel consumers grapple with uneven supply despite government assurances</h3>
                     <p>Developments regarding Fuel consumers grapple with uneven supply despite government assurances continue to emerge as our...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Fuel consumers grapple with uneven supply despite government assurances', 'Developments regarding Fuel consumers grapple with uneven supply despite government assurances continue to emerge as our correspondents track the situation on the ground.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/fCc0womZbdVZKBEh1eXROlWwcNezq7ajYrPXg2AR.jpg')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Fuel consumers grapple with uneven supply despite government assurances', 'Developments regarding Fuel consumers grapple with uneven supply despite government assurances continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/fCc0womZbdVZKBEh1eXROlWwcNezq7ajYrPXg2AR.jpg')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/CoirJtnnLEZhksWqkemJDCgqsiQg0KBWJMPjSL2a.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/CoirJtnnLEZhksWqkemJDCgqsiQg0KBWJMPjSL2a.jpg' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>EPRA issues show-cause notices to petrol stations over alleged fuel price hike</h3>
                     <p>Developments regarding EPRA issues show-cause notices to petrol stations over alleged fuel price hike continue to emerge...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('EPRA issues show-cause notices to petrol stations over alleged fuel price hike', 'Developments regarding EPRA issues show-cause notices to petrol stations over alleged fuel price hike continue to emerge as our correspondents track the situation on the ground.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/CoirJtnnLEZhksWqkemJDCgqsiQg0KBWJMPjSL2a.jpg')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('EPRA issues show-cause notices to petrol stations over alleged fuel price hike', 'Developments regarding EPRA issues show-cause notices to petrol stations over alleged fuel price hike continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/CoirJtnnLEZhksWqkemJDCgqsiQg0KBWJMPjSL2a.jpg')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/RzSVD3dbw1QzRS25lRihCYDfvVJmfBZJc9b0T8WC.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/RzSVD3dbw1QzRS25lRihCYDfvVJmfBZJc9b0T8WC.jpg' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Ousted: Humphrey Wattanga exits KRA</h3>
                     <p>Developments regarding Ousted: Humphrey Wattanga exits KRA continue to emerge as our correspondents track the situation ...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Ousted: Humphrey Wattanga exits KRA', 'Developments regarding Ousted: Humphrey Wattanga exits KRA continue to emerge as our correspondents track the situation on the ground.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/RzSVD3dbw1QzRS25lRihCYDfvVJmfBZJc9b0T8WC.jpg')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Ousted: Humphrey Wattanga exits KRA', 'Developments regarding Ousted: Humphrey Wattanga exits KRA continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/RzSVD3dbw1QzRS25lRihCYDfvVJmfBZJc9b0T8WC.jpg')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/9jfvkBkur0FRxtePOxiukp1qf3XUjQuTDwwwgSs5.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/9jfvkBkur0FRxtePOxiukp1qf3XUjQuTDwwwgSs5.jpg' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community</h3>
                     <p>Developments regarding Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community continue...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community', 'Developments regarding Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community continue to emerge as our correspondents track the situation on the ground.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/9jfvkBkur0FRxtePOxiukp1qf3XUjQuTDwwwgSs5.jpg')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community', 'Developments regarding Gachagua unveils DCP candidate for Emurua Dikirr seat, vows to defend Kipsigis community continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/9jfvkBkur0FRxtePOxiukp1qf3XUjQuTDwwwgSs5.jpg')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/EZT5h6RFPaoOiuhrP8xuPV9LmUn73ChEGhv3d3Rc.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/EZT5h6RFPaoOiuhrP8xuPV9LmUn73ChEGhv3d3Rc.jpg' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Senate flags ballooning wage bills in county water companies</h3>
                     <p>Developments regarding Senate flags ballooning wage bills in county water companies continue to emerge as our correspond...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Senate flags ballooning wage bills in county water companies', 'Developments regarding Senate flags ballooning wage bills in county water companies continue to emerge as our correspondents track the situation on the ground.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/EZT5h6RFPaoOiuhrP8xuPV9LmUn73ChEGhv3d3Rc.jpg')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Senate flags ballooning wage bills in county water companies', 'Developments regarding Senate flags ballooning wage bills in county water companies continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/EZT5h6RFPaoOiuhrP8xuPV9LmUn73ChEGhv3d3Rc.jpg')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/IfEPeeqeWCtZ4BjQirrfPKsqBezhp13HpBakfKOD.jpg' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://cdn.standardmedia.co.ke/images/articles/thumbnails/IfEPeeqeWCtZ4BjQirrfPKsqBezhp13HpBakfKOD.jpg' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Gachagua draws DCI fury after linking Ruto to Sh500m exhibit</h3>
                     <p>Developments regarding Gachagua draws DCI fury after linking Ruto to Sh500m exhibit continue to emerge as our correspond...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Gachagua draws DCI fury after linking Ruto to Sh500m exhibit', 'Developments regarding Gachagua draws DCI fury after linking Ruto to Sh500m exhibit continue to emerge as our correspondents track the situation on the ground.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/IfEPeeqeWCtZ4BjQirrfPKsqBezhp13HpBakfKOD.jpg')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Gachagua draws DCI fury after linking Ruto to Sh500m exhibit', 'Developments regarding Gachagua draws DCI fury after linking Ruto to Sh500m exhibit continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://cdn.standardmedia.co.ke/images/articles/thumbnails/IfEPeeqeWCtZ4BjQirrfPKsqBezhp13HpBakfKOD.jpg')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div></div></section><section id='Africa' class='news-section'><h2>Africa</h2><div class='grid'>
             <div class='card'>
-                <img src='http://images.euronews.com/articles/stories/09/71/82/27/640x360_cmsv2_47332714-d976-5436-9a72-7f3cb8f6a39a-9718227.jpg?1775887101' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='http://images.euronews.com/articles/stories/09/71/82/27/640x360_cmsv2_47332714-d976-5436-9a72-7f3cb8f6a39a-9718227.jpg?1775887101' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Djibouti: A landslide victory for Guelleh according to official results</h3>
                     <p>Developments regarding Djibouti: A landslide victory for Guelleh according to official results continue to emerge as our...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Djibouti: A landslide victory for Guelleh according to official results', 'Developments regarding Djibouti: A landslide victory for Guelleh according to official results continue to emerge as our correspondents track the situation on the ground.', 'http://images.euronews.com/articles/stories/09/71/82/27/640x360_cmsv2_47332714-d976-5436-9a72-7f3cb8f6a39a-9718227.jpg?1775887101')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Djibouti: A landslide victory for Guelleh according to official results', 'Developments regarding Djibouti: A landslide victory for Guelleh according to official results continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'http://images.euronews.com/articles/stories/09/71/82/27/640x360_cmsv2_47332714-d976-5436-9a72-7f3cb8f6a39a-9718227.jpg?1775887101')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='http://images.euronews.com/articles/stories/09/71/81/30/640x360_cmsv2_f99ea350-e058-5916-b6c3-35cd25158519-9718130.jpg?1775849194' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='http://images.euronews.com/articles/stories/09/71/81/30/640x360_cmsv2_f99ea350-e058-5916-b6c3-35cd25158519-9718130.jpg?1775849194' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>African charity sues British royal Prince Harry for defamation</h3>
                     <p>Developments regarding African charity sues British royal Prince Harry for defamation continue to emerge as our correspo...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('African charity sues British royal Prince Harry for defamation', 'Developments regarding African charity sues British royal Prince Harry for defamation continue to emerge as our correspondents track the situation on the ground.', 'http://images.euronews.com/articles/stories/09/71/81/30/640x360_cmsv2_f99ea350-e058-5916-b6c3-35cd25158519-9718130.jpg?1775849194')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('African charity sues British royal Prince Harry for defamation', 'Developments regarding African charity sues British royal Prince Harry for defamation continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'http://images.euronews.com/articles/stories/09/71/81/30/640x360_cmsv2_f99ea350-e058-5916-b6c3-35cd25158519-9718130.jpg?1775849194')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='http://images.euronews.com/articles/stories/09/71/81/24/640x360_cmsv2_c31d88b6-3b10-5efa-b139-7e5b7671cbe4-9718124.jpg?1775847002' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='http://images.euronews.com/articles/stories/09/71/81/24/640x360_cmsv2_c31d88b6-3b10-5efa-b139-7e5b7671cbe4-9718124.jpg?1775847002' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Benin presidential election favourite Wadagni holds final rally</h3>
                     <p>Developments regarding Benin presidential election favourite Wadagni holds final rally continue to emerge as our corresp...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Benin presidential election favourite Wadagni holds final rally', 'Developments regarding Benin presidential election favourite Wadagni holds final rally continue to emerge as our correspondents track the situation on the ground.', 'http://images.euronews.com/articles/stories/09/71/81/24/640x360_cmsv2_c31d88b6-3b10-5efa-b139-7e5b7671cbe4-9718124.jpg?1775847002')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Benin presidential election favourite Wadagni holds final rally', 'Developments regarding Benin presidential election favourite Wadagni holds final rally continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'http://images.euronews.com/articles/stories/09/71/81/24/640x360_cmsv2_c31d88b6-3b10-5efa-b139-7e5b7671cbe4-9718124.jpg?1775847002')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='http://images.euronews.com/articles/stories/09/71/80/74/640x360_cmsv2_1aaf70e5-42a4-58ef-8638-6e7c565f4823-9718074.jpg?1775842160' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='http://images.euronews.com/articles/stories/09/71/80/74/640x360_cmsv2_1aaf70e5-42a4-58ef-8638-6e7c565f4823-9718074.jpg?1775842160' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Djibouti counts votes as leader seeks sixth term</h3>
                     <p>Developments regarding Djibouti counts votes as leader seeks sixth term continue to emerge as our correspondents track t...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Djibouti counts votes as leader seeks sixth term', 'Developments regarding Djibouti counts votes as leader seeks sixth term continue to emerge as our correspondents track the situation on the ground.', 'http://images.euronews.com/articles/stories/09/71/80/74/640x360_cmsv2_1aaf70e5-42a4-58ef-8638-6e7c565f4823-9718074.jpg?1775842160')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Djibouti counts votes as leader seeks sixth term', 'Developments regarding Djibouti counts votes as leader seeks sixth term continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'http://images.euronews.com/articles/stories/09/71/80/74/640x360_cmsv2_1aaf70e5-42a4-58ef-8638-6e7c565f4823-9718074.jpg?1775842160')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='http://images.euronews.com/articles/stories/09/71/79/97/640x360_cmsv2_25ebf85b-9c80-5e94-b860-dfb6ef0f905b-9717997.jpg?1775835550' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='http://images.euronews.com/articles/stories/09/71/79/97/640x360_cmsv2_25ebf85b-9c80-5e94-b860-dfb6ef0f905b-9717997.jpg?1775835550' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Italy: From Go to Monopoly, board games bridge generations</h3>
                     <p>Developments regarding Italy: From Go to Monopoly, board games bridge generations continue to emerge as our corresponden...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Italy: From Go to Monopoly, board games bridge generations', 'Developments regarding Italy: From Go to Monopoly, board games bridge generations continue to emerge as our correspondents track the situation on the ground.', 'http://images.euronews.com/articles/stories/09/71/79/97/640x360_cmsv2_25ebf85b-9c80-5e94-b860-dfb6ef0f905b-9717997.jpg?1775835550')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Italy: From Go to Monopoly, board games bridge generations', 'Developments regarding Italy: From Go to Monopoly, board games bridge generations continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'http://images.euronews.com/articles/stories/09/71/79/97/640x360_cmsv2_25ebf85b-9c80-5e94-b860-dfb6ef0f905b-9717997.jpg?1775835550')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='http://images.euronews.com/articles/stories/09/71/78/46/640x360_cmsv2_575aa0fe-7727-58df-86c6-a243ff8b996a-9717846.jpg?1775831977' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='http://images.euronews.com/articles/stories/09/71/78/46/640x360_cmsv2_575aa0fe-7727-58df-86c6-a243ff8b996a-9717846.jpg?1775831977' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>African space council chief wins top award</h3>
                     <p>Developments regarding African space council chief wins top award continue to emerge as our correspondents track the sit...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('African space council chief wins top award', 'Developments regarding African space council chief wins top award continue to emerge as our correspondents track the situation on the ground.', 'http://images.euronews.com/articles/stories/09/71/78/46/640x360_cmsv2_575aa0fe-7727-58df-86c6-a243ff8b996a-9717846.jpg?1775831977')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('African space council chief wins top award', 'Developments regarding African space council chief wins top award continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'http://images.euronews.com/articles/stories/09/71/78/46/640x360_cmsv2_575aa0fe-7727-58df-86c6-a243ff8b996a-9717846.jpg?1775831977')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div></div></section><section id='International' class='news-section'><h2>International</h2><div class='grid'>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Lyse Doucet: Historic US-Iran talks must bridge deep distrust</h3>
                     <p>Developments regarding Lyse Doucet: Historic US-Iran talks must bridge deep distrust continue to emerge as our correspon...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Lyse Doucet: Historic US-Iran talks must bridge deep distrust', 'Developments regarding Lyse Doucet: Historic US-Iran talks must bridge deep distrust continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Lyse Doucet: Historic US-Iran talks must bridge deep distrust', 'Developments regarding Lyse Doucet: Historic US-Iran talks must bridge deep distrust continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
-                    <h3>Final push for votes as challenger to Hungary's Orbán scents victory</h3>
-                    <p>Developments regarding Final push for votes as challenger to Hungary's Orbán scents victory continue to emerge as our co...</p>
+                    <h3>Final push for votes as challenger to Hungary's Orbán senses victory</h3>
+                    <p>Developments regarding Final push for votes as challenger to Hungary's Orbán senses victory continue to emerge as our co...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Final push for votes as challenger to Hungary\'s Orbán scents victory', 'Developments regarding Final push for votes as challenger to Hungary's Orbán scents victory continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Final push for votes as challenger to Hungary\'s Orbán senses victory', 'Developments regarding Final push for votes as challenger to Hungary's Orbán senses victory continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Artemis II mission was a triumph - now comes the hard part</h3>
                     <p>Developments regarding Artemis II mission was a triumph - now comes the hard part continue to emerge as our corresponden...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Artemis II mission was a triumph - now comes the hard part', 'Developments regarding Artemis II mission was a triumph - now comes the hard part continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Artemis II mission was a triumph - now comes the hard part', 'Developments regarding Artemis II mission was a triumph - now comes the hard part continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Frontrunner for California governor denies sexual assault allegations</h3>
                     <p>Developments regarding Frontrunner for California governor denies sexual assault allegations continue to emerge as our c...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Frontrunner for California governor denies sexual assault allegations', 'Developments regarding Frontrunner for California governor denies sexual assault allegations continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Frontrunner for California governor denies sexual assault allegations', 'Developments regarding Frontrunner for California governor denies sexual assault allegations continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Melania Trump's speech propels Epstein crisis back to forefront</h3>
                     <p>Developments regarding Melania Trump's speech propels Epstein crisis back to forefront continue to emerge as our corresp...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Melania Trump\'s speech propels Epstein crisis back to forefront', 'Developments regarding Melania Trump's speech propels Epstein crisis back to forefront continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Melania Trump\'s speech propels Epstein crisis back to forefront', 'Developments regarding Melania Trump's speech propels Epstein crisis back to forefront continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
-                    <h3>Man accused of coercing wife into sex with 120 men goes on trial in Sweden</h3>
-                    <p>Developments regarding Man accused of coercing wife into sex with 120 men goes on trial in Sweden continue to emerge as ...</p>
+                    <h3>Baseball statue broken as it is unveiled in Seattle</h3>
+                    <p>Developments regarding Baseball statue broken as it is unveiled in Seattle continue to emerge as our correspondents trac...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Man accused of coercing wife into sex with 120 men goes on trial in Sweden', 'Developments regarding Man accused of coercing wife into sex with 120 men goes on trial in Sweden continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Baseball statue broken as it is unveiled in Seattle', 'Developments regarding Baseball statue broken as it is unveiled in Seattle continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>At least seven Palestinians killed in Israeli attacks on Gaza</h3>
+                    <p>Developments regarding At least seven Palestinians killed in Israeli attacks on Gaza continue to emerge as our correspon...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('At least seven Palestinians killed in Israeli attacks on Gaza', 'Developments regarding At least seven Palestinians killed in Israeli attacks on Gaza continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Israel rejects ceasefire with Hezbollah ahead of Lebanon talks next week</h3>
                     <p>Developments regarding Israel rejects ceasefire with Hezbollah ahead of Lebanon talks next week continue to emerge as ou...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Israel rejects ceasefire with Hezbollah ahead of Lebanon talks next week', 'Developments regarding Israel rejects ceasefire with Hezbollah ahead of Lebanon talks next week continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Israel rejects ceasefire with Hezbollah ahead of Lebanon talks next week', 'Developments regarding Israel rejects ceasefire with Hezbollah ahead of Lebanon talks next week continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Israeli drone attack kills Palestinians near Gaza mosque</h3>
                     <p>Developments regarding Israeli drone attack kills Palestinians near Gaza mosque continue to emerge as our correspondents...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Israeli drone attack kills Palestinians near Gaza mosque', 'Developments regarding Israeli drone attack kills Palestinians near Gaza mosque continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Israeli drone attack kills Palestinians near Gaza mosque', 'Developments regarding Israeli drone attack kills Palestinians near Gaza mosque continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Video: Vance arrives in Pakistan for talks with Iran</h3>
                     <p>Developments regarding Video: Vance arrives in Pakistan for talks with Iran continue to emerge as our correspondents tra...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Video: Vance arrives in Pakistan for talks with Iran', 'Developments regarding Video: Vance arrives in Pakistan for talks with Iran continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Video: Vance arrives in Pakistan for talks with Iran', 'Developments regarding Video: Vance arrives in Pakistan for talks with Iran continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Artemis II marks historic lunar return with Pacific splashdown success</h3>
                     <p>Developments regarding Artemis II marks historic lunar return with Pacific splashdown success continue to emerge as our ...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Artemis II marks historic lunar return with Pacific splashdown success', 'Developments regarding Artemis II marks historic lunar return with Pacific splashdown success continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Artemis II marks historic lunar return with Pacific splashdown success', 'Developments regarding Artemis II marks historic lunar return with Pacific splashdown success continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Chelsea vs Manchester City: Premier League – team news, start, lineups</h3>
                     <p>Developments regarding Chelsea vs Manchester City: Premier League – team news, start, lineups continue to emerge as our ...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Chelsea vs Manchester City: Premier League – team news, start, lineups', 'Developments regarding Chelsea vs Manchester City: Premier League – team news, start, lineups continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
-                        <span class="exclusive-tag">Exclusive</span>
-                    </div>
-                </div>
-            </div>
-            <div class='card'>
-                <img src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <div class="card-content">
-                    <h3>Djibouti’s President Guelleh wins sixth straight term in office</h3>
-                    <p>Developments regarding Djibouti’s President Guelleh wins sixth straight term in office continue to emerge as our corresp...</p>
-                    <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Djibouti’s President Guelleh wins sixth straight term in office', 'Developments regarding Djibouti’s President Guelleh wins sixth straight term in office continue to emerge as our correspondents track the situation on the ground.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Chelsea vs Manchester City: Premier League – team news, start, lineups', 'Developments regarding Chelsea vs Manchester City: Premier League – team news, start, lineups continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div></div></section><section id='Sports' class='news-section'><h2>Sports</h2><div class='grid'>
             <div class='card'>
-                <img src='https://e1.365dm.com/26/04/1920x1080/skysports-harriet-dart-katie-swan_7216759.jpg?20260411082125' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://e2.365dm.com/25/10/1920x1080/skysports-newcastle-news-club_7039263.jpg?20251002160522' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
+                <div class="card-content">
+                    <h3>Newcastle latest: Howe vows to 'work smarter'</h3>
+                    <p>Developments regarding Newcastle latest: Howe vows to 'work smarter' continue to emerge as our correspondents track the ...</p>
+                    <div class="meta">
+                        <button class="read-more-btn" onclick="openStory('Newcastle latest: Howe vows to \'work smarter\'', 'Developments regarding Newcastle latest: Howe vows to 'work smarter' continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://e2.365dm.com/25/10/1920x1080/skysports-newcastle-news-club_7039263.jpg?20251002160522')">Continue Reading</button>
+                        <span class="exclusive-tag">Exclusive</span>
+                    </div>
+                </div>
+            </div>
+            <div class='card'>
+                <div class="img-container">
+                    <img src='https://e1.365dm.com/26/04/1920x1080/skysports-harriet-dart-katie-swan_7216759.jpg?20260411082125' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Great Britain stun Australia to reach Billie Jean King Cup Finals</h3>
                     <p>Developments regarding Great Britain stun Australia to reach Billie Jean King Cup Finals continue to emerge as our corre...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Great Britain stun Australia to reach Billie Jean King Cup Finals', 'Developments regarding Great Britain stun Australia to reach Billie Jean King Cup Finals continue to emerge as our correspondents track the situation on the ground.', 'https://e1.365dm.com/26/04/1920x1080/skysports-harriet-dart-katie-swan_7216759.jpg?20260411082125')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Great Britain stun Australia to reach Billie Jean King Cup Finals', 'Developments regarding Great Britain stun Australia to reach Billie Jean King Cup Finals continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://e1.365dm.com/26/04/1920x1080/skysports-harriet-dart-katie-swan_7216759.jpg?20260411082125')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://e0.365dm.com/26/04/1920x1080/skysports-ellie-kildunne-red-roses_7216053.jpg?20260410135122' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://e0.365dm.com/26/04/1920x1080/skysports-ellie-kildunne-red-roses_7216053.jpg?20260410135122' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Red Roses ready to be 'entertainers' in Six Nations opener</h3>
                     <p>Developments regarding Red Roses ready to be 'entertainers' in Six Nations opener continue to emerge as our corresponden...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Red Roses ready to be \'entertainers\' in Six Nations opener', 'Developments regarding Red Roses ready to be 'entertainers' in Six Nations opener continue to emerge as our correspondents track the situation on the ground.', 'https://e0.365dm.com/26/04/1920x1080/skysports-ellie-kildunne-red-roses_7216053.jpg?20260410135122')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Red Roses ready to be \'entertainers\' in Six Nations opener', 'Developments regarding Red Roses ready to be 'entertainers' in Six Nations opener continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://e0.365dm.com/26/04/1920x1080/skysports-ellie-kildunne-red-roses_7216053.jpg?20260410135122')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://e1.365dm.com/26/04/1920x1080/skysports-tyson-fury-arslanbek-makhmudov_7216475.jpg?20260410213210' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://e1.365dm.com/26/04/1920x1080/skysports-tyson-fury-arslanbek-makhmudov_7216475.jpg?20260410213210' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Big-fight predictions: Fury vs Makhmudov - who wins?</h3>
                     <p>Developments regarding Big-fight predictions: Fury vs Makhmudov - who wins? continue to emerge as our correspondents tra...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Big-fight predictions: Fury vs Makhmudov - who wins?', 'Developments regarding Big-fight predictions: Fury vs Makhmudov - who wins? continue to emerge as our correspondents track the situation on the ground.', 'https://e1.365dm.com/26/04/1920x1080/skysports-tyson-fury-arslanbek-makhmudov_7216475.jpg?20260410213210')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Big-fight predictions: Fury vs Makhmudov - who wins?', 'Developments regarding Big-fight predictions: Fury vs Makhmudov - who wins? continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://e1.365dm.com/26/04/1920x1080/skysports-tyson-fury-arslanbek-makhmudov_7216475.jpg?20260410213210')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://e0.365dm.com/26/04/1920x1080/skysports-coventry-city_7215307.jpg?20260409172921' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://e0.365dm.com/26/04/1920x1080/skysports-coventry-city_7215307.jpg?20260409172921' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>The fall and rise of Coventry City: Back on cusp of Premier League after 25 years</h3>
                     <p>Developments regarding The fall and rise of Coventry City: Back on cusp of Premier League after 25 years continue to eme...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('The fall and rise of Coventry City: Back on cusp of Premier League after 25 years', 'Developments regarding The fall and rise of Coventry City: Back on cusp of Premier League after 25 years continue to emerge as our correspondents track the situation on the ground.', 'https://e0.365dm.com/26/04/1920x1080/skysports-coventry-city_7215307.jpg?20260409172921')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('The fall and rise of Coventry City: Back on cusp of Premier League after 25 years', 'Developments regarding The fall and rise of Coventry City: Back on cusp of Premier League after 25 years continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://e0.365dm.com/26/04/1920x1080/skysports-coventry-city_7215307.jpg?20260409172921')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='https://e0.365dm.com/26/04/1920x1080/skysports-coburn-millwall_7216423.jpg?20260410202903' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='https://e0.365dm.com/26/04/1920x1080/skysports-coburn-millwall_7216423.jpg?20260410202903' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Coburn misses sitter as Millwall settle for draw at West Brom</h3>
                     <p>Developments regarding Coburn misses sitter as Millwall settle for draw at West Brom continue to emerge as our correspon...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Coburn misses sitter as Millwall settle for draw at West Brom', 'Developments regarding Coburn misses sitter as Millwall settle for draw at West Brom continue to emerge as our correspondents track the situation on the ground.', 'https://e0.365dm.com/26/04/1920x1080/skysports-coburn-millwall_7216423.jpg?20260410202903')">Continue Reading</button>
-                        <span class="exclusive-tag">Exclusive</span>
-                    </div>
-                </div>
-            </div>
-            <div class='card'>
-                <img src='https://e1.365dm.com/26/04/1920x1080/skysports-marcelino-nunez-ipswkch_7215127.jpg?20260409143333' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
-                <div class="card-content">
-                    <h3>Nunez: I left Norwich for Ipswich to become a champion</h3>
-                    <p>Developments regarding Nunez: I left Norwich for Ipswich to become a champion continue to emerge as our correspondents t...</p>
-                    <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Nunez: I left Norwich for Ipswich to become a champion', 'Developments regarding Nunez: I left Norwich for Ipswich to become a champion continue to emerge as our correspondents track the situation on the ground.', 'https://e1.365dm.com/26/04/1920x1080/skysports-marcelino-nunez-ipswkch_7215127.jpg?20260409143333')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Coburn misses sitter as Millwall settle for draw at West Brom', 'Developments regarding Coburn misses sitter as Millwall settle for draw at West Brom continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'https://e0.365dm.com/26/04/1920x1080/skysports-coburn-millwall_7216423.jpg?20260410202903')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div></div></section><section id='Fashion' class='news-section'><h2>Fashion</h2><div class='grid'>
             <div class='card'>
-                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='None' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>Beauty Marks: The Best Beauty Looks of the Week</h3>
                     <p>Developments regarding Beauty Marks: The Best Beauty Looks of the Week continue to emerge as our correspondents track th...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('Beauty Marks: The Best Beauty Looks of the Week', 'Developments regarding Beauty Marks: The Best Beauty Looks of the Week continue to emerge as our correspondents track the situation on the ground.', 'None')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('Beauty Marks: The Best Beauty Looks of the Week', 'Developments regarding Beauty Marks: The Best Beauty Looks of the Week continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'None')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='None' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>79 Thoughts I Had While Watching 'You, Me & Tuscany'</h3>
                     <p>Developments regarding 79 Thoughts I Had While Watching 'You, Me & Tuscany' continue to emerge as our correspondents tra...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('79 Thoughts I Had While Watching \'You, Me & Tuscany\'', 'Developments regarding 79 Thoughts I Had While Watching 'You, Me & Tuscany' continue to emerge as our correspondents track the situation on the ground.', 'None')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('79 Thoughts I Had While Watching \'You, Me & Tuscany\'', 'Developments regarding 79 Thoughts I Had While Watching 'You, Me & Tuscany' continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'None')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='None' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>18 Travel Outfits for Women Inspired by Celebs in 2026 | Vogue</h3>
                     <p>Developments regarding 18 Travel Outfits for Women Inspired by Celebs in 2026 | Vogue continue to emerge as our correspo...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('18 Travel Outfits for Women Inspired by Celebs in 2026 | Vogue', 'Developments regarding 18 Travel Outfits for Women Inspired by Celebs in 2026 | Vogue continue to emerge as our correspondents track the situation on the ground.', 'None')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('18 Travel Outfits for Women Inspired by Celebs in 2026 | Vogue', 'Developments regarding 18 Travel Outfits for Women Inspired by Celebs in 2026 | Vogue continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'None')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='None' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>A Guide to the Best Travel Makeup Brush Sets</h3>
                     <p>Developments regarding A Guide to the Best Travel Makeup Brush Sets continue to emerge as our correspondents track the s...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('A Guide to the Best Travel Makeup Brush Sets', 'Developments regarding A Guide to the Best Travel Makeup Brush Sets continue to emerge as our correspondents track the situation on the ground.', 'None')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('A Guide to the Best Travel Makeup Brush Sets', 'Developments regarding A Guide to the Best Travel Makeup Brush Sets continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'None')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='None' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>The CFDA Celebrated Springtime in Los Angeles</h3>
                     <p>Developments regarding The CFDA Celebrated Springtime in Los Angeles continue to emerge as our correspondents track the ...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('The CFDA Celebrated Springtime in Los Angeles', 'Developments regarding The CFDA Celebrated Springtime in Los Angeles continue to emerge as our correspondents track the situation on the ground.', 'None')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('The CFDA Celebrated Springtime in Los Angeles', 'Developments regarding The CFDA Celebrated Springtime in Los Angeles continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'None')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
             </div>
             <div class='card'>
-                <img src='None' alt='News Image' onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                <div class="img-container">
+                    <img src='None' alt='News Image' loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80'">
+                </div>
                 <div class="card-content">
                     <h3>9 Best Sunscreens Under Makeup That Never Pill</h3>
                     <p>Developments regarding 9 Best Sunscreens Under Makeup That Never Pill continue to emerge as our correspondents track the...</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('9 Best Sunscreens Under Makeup That Never Pill', 'Developments regarding 9 Best Sunscreens Under Makeup That Never Pill continue to emerge as our correspondents track the situation on the ground.', 'None')">Continue Reading</button>
+                        <button class="read-more-btn" onclick="openStory('9 Best Sunscreens Under Makeup That Never Pill', 'Developments regarding 9 Best Sunscreens Under Makeup That Never Pill continue to emerge as our correspondents track the situation on the ground.<br><br>Local authorities are currently assessing the impact.<br><br>This remains a developing story with significant regional interest.<br><br>Check back for further exclusive updates.', 'None')">Continue Reading</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -493,7 +569,9 @@
     <div id="storyModal">
         <div class="modal-body">
             <span class="close" onclick="closeStory()">&times;</span>
-            <img id="modalImg" class="modal-img" src="">
+            <div class="modal-img-container">
+                <img id="modalImg" class="modal-img" src="" alt="Article Image">
+            </div>
             <h2 id="modalTitle"></h2>
             <div id="modalText" class="story-content"></div>
         </div>
@@ -519,6 +597,7 @@
 
             const activeBtn = document.getElementById('btn-' + sectionId);
             if (activeBtn) activeBtn.classList.add('active');
+            window.scrollTo(0, 0);
         }
 
         function openStory(title, htmlContent, img) {
