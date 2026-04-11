@@ -4,6 +4,7 @@ import datetime
 import time
 import json
 import re
+import base64
 from google import genai
 
 # 1. SETUP GEMINI AI (Updated to modern google-genai)
@@ -82,10 +83,10 @@ def save_db(data):
 
 def ai_rewrite(title, summary, source_url):
     """Generates a strictly structured 4-paragraph investigative report with backlinks."""
-    backlink = f' <a href="{source_url}" target="_blank" style="color:var(--red); font-weight:bold; text-decoration:none; font-size:0.9rem;">[Read further for more insights →]</a>'
+    backlink = f' <a href="{source_url}" target="_blank" style="color:#c0392b; font-weight:bold; text-decoration:none; font-size:0.9rem;">[Read further for more insights →]</a>'
     
     if not client:
-        return f"Full report on {title} is being processed."
+        return f"Full report on {title} is being processed.{backlink}"
     
     try:
         prompt = (f"Act as a lead investigative journalist for The Continent News. "
@@ -100,11 +101,11 @@ def ai_rewrite(title, summary, source_url):
         response = client.models.generate_content(model=model_id, contents=prompt)
         paragraphs = response.text.strip().split('\n\n')
         
-        # Inject backlink at the end of every paragraph
         formatted_paragraphs = []
         for p in paragraphs:
             if len(p.strip()) > 10:
-                clean_p = p.strip().replace('"', '&quot;').replace("'", "\\'")
+                # Basic cleaning for display
+                clean_p = p.strip().replace('"', '&quot;')
                 formatted_paragraphs.append(f"{clean_p}{backlink}")
         
         return '<br><br>'.join(formatted_paragraphs)
@@ -152,14 +153,12 @@ def generate_sections(all_posts):
         cat_id = category.replace(' ', '').replace('&', '')
         html += f"<section id='{cat_id}' class='news-section'><h2>{category}</h2><div class='grid'>"
         
-        # Filter posts for this category
         cat_posts = [p for p in all_posts if p['category'] == category]
-        # Sort by most recent
         cat_posts.sort(key=lambda x: x['timestamp'], reverse=True)
 
         for entry in cat_posts:
-            # We use the content directly as it already contains the backlinks
-            full_story = entry['content']
+            # FIX: Base64 encode the content so quotes don't break the JS function call
+            b64_content = base64.b64encode(entry['content'].encode('utf-8')).decode('utf-8')
             preview = re.sub('<[^<]+?>', '', entry['content'])[:140] + "..."
             img_url = entry['image']
             js_safe_title = entry['title'].replace("'", "\\'").replace('"', '&quot;')
@@ -173,7 +172,7 @@ def generate_sections(all_posts):
                     <h3>{entry['title']}</h3>
                     <p>{preview}</p>
                     <div class="meta">
-                        <button class="read-more-btn" onclick="openStory('{js_safe_title}', '{full_story}', '{img_url}')">Full Report</button>
+                        <button class="read-more-btn" onclick="openStory('{js_safe_title}', '{b64_content}', '{img_url}')">Full Report</button>
                         <span class="exclusive-tag">Exclusive</span>
                     </div>
                 </div>
@@ -184,11 +183,9 @@ def generate_sections(all_posts):
 def update_website():
     print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] Syncing Global Feeds...")
     
-    # 1. Load existing database
     db_posts = load_db()
     existing_links = {p['link'] for p in db_posts}
     
-    # 2. Scrape new posts
     new_found = False
     for category, urls in FEEDS.items():
         for url in urls:
@@ -211,7 +208,6 @@ def update_website():
                         new_found = True
             except: continue
     
-    # 3. Save database
     if new_found:
         save_db(db_posts)
 
@@ -415,7 +411,9 @@ def update_website():
             }});
         }}
 
-        function openStory(title, htmlContent, img) {{
+        function openStory(title, b64Content, img) {{
+            // Use atob to decode the Base64 content safely
+            const htmlContent = decodeURIComponent(escape(window.atob(b64Content)));
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalText').innerHTML = htmlContent;
             document.getElementById('modalImg').src = img;
