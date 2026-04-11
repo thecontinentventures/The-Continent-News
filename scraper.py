@@ -3,6 +3,7 @@ import os
 import datetime
 import time
 import google.generativeai as genai
+import re
 
 # 1. SETUP GEMINI AI
 api_key = os.getenv("GEMINI_API_KEY")
@@ -103,6 +104,23 @@ def get_image(entry):
     except: pass
     return "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80"
 
+def get_telegram_data():
+    """Fetches the latest post from Sputnik Africa Telegram via RSS Bridge."""
+    try:
+        # Using a reliable RSS bridge for Telegram
+        tg_feed = feedparser.parse("https://rss.rssforever.com/telegram/channel/sputnik_africa")
+        if tg_feed.entries:
+            latest = tg_feed.entries[0]
+            clean_summary = re.sub('<[^<]+?>', '', latest.summary) # Strip HTML
+            clean_summary = clean_summary[:120].replace("'", "").replace('"', "") + "..."
+            return {
+                "title": latest.title.replace("'", "").replace('"', "")[:60] + "...",
+                "summary": clean_summary
+            }
+    except:
+        return {"title": "Live: Sputnik Africa Updates", "summary": "New developments emerging from the region. Stay tuned for live coverage."}
+    return None
+
 def generate_sections():
     html = ""
     for category, urls in FEEDS.items():
@@ -147,6 +165,8 @@ def update_website():
     GA_ID = "G-ZH9DSKC65T"
     
     sections_content = generate_sections()
+    tg_news = get_telegram_data()
+    tg_json = f"{{ 'title': '{tg_news['title']}', 'summary': '{tg_news['summary']}' }}" if tg_news else "null"
 
     full_html = f"""
 <!DOCTYPE html>
@@ -165,7 +185,7 @@ def update_website():
     <title>The Continent News | Global Intelligence</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {{ --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; }}
+        :root {{ --red: #c0392b; --dark: #111; --light: #f4f4f4; --white: #ffffff; --tg-blue: #0088cc; }}
         body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--light); color: var(--dark); padding-bottom: 80px; }}
         header {{ background: var(--white); padding: 30px 10px; text-align: center; border-bottom: 4px solid var(--dark); cursor: pointer; }}
         header h1 {{ margin: 0; font-size: 2.5rem; letter-spacing: -1px; text-transform: uppercase; font-weight: 900; }}
@@ -199,7 +219,21 @@ def update_website():
         .read-more-btn {{ background: var(--dark); color: white; border: none; padding: 8px 15px; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; }}
         .exclusive-tag {{ font-size: 0.6rem; color: var(--red); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }}
 
-        #storyModal {{ display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }}
+        /* Telegram Popup Styles */
+        #tg-popup {{
+            position: fixed; bottom: 100px; right: 20px; width: 300px; background: white;
+            border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 4000;
+            display: none; flex-direction: column; overflow: hidden; border-left: 6px solid var(--tg-blue);
+            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }}
+        @keyframes slideUp {{ from {{ transform: translateY(150%); opacity: 0; }} to {{ transform: translateY(0); opacity: 1; }} }}
+        .tg-head {{ background: #f8f9fa; padding: 12px; font-size: 0.7rem; font-weight: bold; color: var(--tg-blue); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }}
+        .tg-body {{ padding: 15px; }}
+        .tg-body h4 {{ margin: 0 0 8px 0; font-size: 0.95rem; line-height: 1.2; }}
+        .tg-body p {{ margin: 0; font-size: 0.8rem; color: #666; line-height: 1.4; }}
+        .tg-btn {{ display: block; background: var(--tg-blue); color: white; text-align: center; padding: 10px; text-decoration: none; font-size: 0.75rem; font-weight: bold; }}
+
+        #storyModal {{ display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }}
         .modal-body {{ background: var(--white); margin: 2% auto; padding: 0; width: 95%; max-width: 800px; border-radius: 0; position: relative; }}
         .close {{ position: absolute; right: 20px; top: 15px; font-size: 40px; color: white; cursor: pointer; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }}
         .modal-img-container {{ width: 100%; height: 450px; background: #000; }}
@@ -251,6 +285,18 @@ def update_website():
         {sections_content}
     </div>
 
+    <div id="tg-popup">
+        <div class="tg-head">
+            <span><i class="fab fa-telegram"></i> @SPUTNIK_AFRICA FLASH</span>
+            <span onclick="this.parentElement.parentElement.style.display='none'" style="cursor:pointer">&times;</span>
+        </div>
+        <div class="tg-body">
+            <h4 id="tg-title"></h4>
+            <p id="tg-desc"></p>
+        </div>
+        <a href="https://t.me/sputnik_africa" target="_blank" class="tg-btn">READ ON TELEGRAM</a>
+    </div>
+
     <div id="storyModal">
         <span class="close" onclick="closeStory()">&times;</span>
         <div class="modal-body">
@@ -268,6 +314,7 @@ def update_website():
 
     <script>
         let currentActiveSection = 'LatestNews';
+        const tgData = {tg_json};
 
         function switchPage(sectionId) {{
             currentActiveSection = sectionId;
@@ -310,12 +357,9 @@ def update_website():
                 .then(htmlText => {{
                     const parser = new DOMParser();
                     const newDoc = parser.parseFromString(htmlText, 'text/html');
-                    
-                    // Update only the news content container
                     const newNews = newDoc.getElementById('news-container').innerHTML;
                     const container = document.getElementById('news-container');
                     
-                    // We check if a modal is open before updating to avoid losing user state
                     if (document.getElementById('storyModal').style.display !== "block") {{
                         container.innerHTML = newNews;
                         document.getElementById('sync-info').innerText = newDoc.getElementById('sync-info').innerText;
@@ -325,7 +369,14 @@ def update_website():
         }}, 300000); 
 
         window.onclick = e => {{ if (e.target == document.getElementById('storyModal')) closeStory(); }}
-        window.onload = () => switchPage('LatestNews');
+        window.onload = () => {{
+            switchPage('LatestNews');
+            if(tgData) {{
+                document.getElementById('tg-title').innerText = tgData.title;
+                document.getElementById('tg-desc').innerText = tgData.summary;
+                setTimeout(() => {{ document.getElementById('tg-popup').style.display = 'flex'; }}, 4000);
+            }}
+        }};
     </script>
 </body>
 </html>
