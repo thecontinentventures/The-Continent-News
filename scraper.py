@@ -82,11 +82,11 @@ def save_db(data):
         json.dump(data, f, indent=4)
 
 def ai_rewrite(title, summary, source_url):
-    """Generates a strictly structured 4-paragraph investigative report with backlinks."""
-    backlink = f' <a href="{source_url}" target="_blank" style="color:#c0392b; font-weight:bold; text-decoration:none; font-size:0.9rem;">[Read further for more insights →]</a>'
+    """Generates a strictly structured 4-paragraph investigative report with a single backlink at the end."""
+    backlink_html = f'<br><br><a href="{source_url}" target="_blank" style="color:#c0392b; font-weight:bold; text-decoration:none; font-size:0.9rem;">[Read the original full report on the source site →]</a>'
     
     if not client:
-        return f"Full report on {title} is being processed.{backlink}"
+        return f"Full report on {title} is being processed.{backlink_html}"
     
     try:
         prompt = (f"Act as a lead investigative journalist for The Continent News. "
@@ -104,34 +104,42 @@ def ai_rewrite(title, summary, source_url):
         formatted_paragraphs = []
         for p in paragraphs:
             if len(p.strip()) > 10:
-                # Basic cleaning for display
                 clean_p = p.strip().replace('"', '&quot;')
-                formatted_paragraphs.append(f"{clean_p}{backlink}")
+                formatted_paragraphs.append(f"{clean_p}")
         
-        return '<br><br>'.join(formatted_paragraphs)
+        # Combine all paragraphs and attach the single backlink at the very end
+        return '<br><br>'.join(formatted_paragraphs) + backlink_html
+
     except Exception:
         fallback = [
-            f"Developments regarding {title} continue to emerge as our correspondents track the situation.{backlink}",
-            f"Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.{backlink}",
-            f"Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.{backlink}",
-            f"As the situation evolves, our analysts expect a formal policy response within the coming business cycle.{backlink}"
+            f"Developments regarding {title} continue to emerge as our correspondents track the situation.",
+            f"Historical data suggests this trend follows a pattern of regional shifts observed over the last decade.",
+            f"Local stakeholders and community leaders are currently being consulted to gauge the full breadth of the impact.",
+            f"As the situation evolves, our analysts expect a formal policy response within the coming business cycle."
         ]
-        return '<br><br>'.join(fallback)
+        return '<br><br>'.join(fallback) + backlink_html
 
 def get_image(entry):
     try:
+        # Check all possible RSS image fields
         if 'media_content' in entry and len(entry.media_content) > 0:
             return entry.media_content[0].get('url')
+        if 'media_thumbnail' in entry and len(entry.media_thumbnail) > 0:
+            return entry.media_thumbnail[0].get('url')
         if 'enclosures' in entry and len(entry.enclosures) > 0:
             return entry.enclosures[0].get('url')
         if 'links' in entry:
             for link in entry.links:
                 if 'image' in link.get('type', ''):
                     return link.get('href')
-        if 'media_thumbnail' in entry and len(entry.media_thumbnail) > 0:
-            return entry.media_thumbnail[0].get('url')
+        # Check summary for <img> tags
+        if 'summary' in entry:
+            img_match = re.search(r'<img.+?src=["\'](.+?)["\']', entry.summary)
+            if img_match:
+                return img_match.group(1)
     except: pass
-    return "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80"
+    # High-quality fallback if no image is found
+    return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80"
 
 def get_telegram_data():
     try:
@@ -157,7 +165,6 @@ def generate_sections(all_posts):
         cat_posts.sort(key=lambda x: x['timestamp'], reverse=True)
 
         for entry in cat_posts:
-            # FIX: Base64 encode the content so quotes don't break the JS function call
             b64_content = base64.b64encode(entry['content'].encode('utf-8')).decode('utf-8')
             preview = re.sub('<[^<]+?>', '', entry['content'])[:140] + "..."
             img_url = entry['image']
@@ -412,7 +419,6 @@ def update_website():
         }}
 
         function openStory(title, b64Content, img) {{
-            // Use atob to decode the Base64 content safely
             const htmlContent = decodeURIComponent(escape(window.atob(b64Content)));
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalText').innerHTML = htmlContent;
