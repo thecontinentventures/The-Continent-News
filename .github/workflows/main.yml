@@ -1,50 +1,28 @@
-name: Update News Portal
-
+name: Update Website
 on:
   schedule:
-    # GitHub's minimum interval is usually 15-30 minutes. 
-    # This triggers the bot to check for news every 15 minutes.
-    - cron: '*/15 * * * *' 
-  workflow_dispatch: # Allows you to manually click "Run workflow" in the Actions tab
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+env:
+  # This removes the warning and opts into the newer Node version
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write 
-    
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-
-      - name: Install Dependencies
+          python-version: '3.10'
+      
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install feedparser google-generativeai
-
-      - name: Run News Scraper
+          pip install feedparser google-genai
+          
+      - name: Run Scraper
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
-        # This command triggers ONLY the update function once, 
-        # bypassing the "while True" loop in your scraper script.
-        run: python -c "from scraper import update_website; update_website()"
-
-      - name: Commit and Push Updates
-        run: |
-          git config --global user.name "TheContinentBot"
-          git config --global user.email "bot@thecontinentnews.com"
-          
-          git add index.html
-          
-          # Only commit and push if the news actually changed to avoid empty commits
-          if git diff --staged --quiet; then
-            echo "No new updates found in RSS feeds."
-          else
-            git commit -m "Automated News Refresh: $(date)"
-            git push origin main --force
-          fi
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scraper.py
